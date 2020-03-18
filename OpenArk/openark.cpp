@@ -89,7 +89,7 @@ bool OpenArk::InitTargetDev()
 	QFile f(":/OpenArk/QHunTer.sys");
 	f.open(QIODevice::ReadOnly);
 	f.copy(QString( SERVICE_ANME )+ ".sys");
-	QFileInfo info(SERVICE_ANME);
+	QFileInfo info(QString(SERVICE_ANME) + ".sys");
 
 	//创建驱动所对应的服务
 	SC_HANDLE scService = CreateServiceA(scMgr,
@@ -99,7 +99,7 @@ bool OpenArk::InitTargetDev()
 		SERVICE_KERNEL_DRIVER,// 表示加载的服务是驱动程序  
 		SERVICE_DEMAND_START, // 注册表驱动程序的 Start 值  
 		SERVICE_ERROR_IGNORE, // 注册表驱动程序的 ErrorControl 值  
-		info.filePath().toLocal8Bit(), // 注册表驱动程序的 ImagePath 值  
+		info.absoluteFilePath().toLocal8Bit(), // 注册表驱动程序的 ImagePath 值  
 		NULL,
 		NULL,
 		NULL,
