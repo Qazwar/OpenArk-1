@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/OpenArk">
+        <file>OpenArk.ico</file>
+        <file>openark_zh.qm</file>
+        <file>QHunTer.sys</file>
+    </qresource>
+</RCC>

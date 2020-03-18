@@ -1,0 +1,203 @@
+#include "objdirectory.h"
+#include "openark.h"
+#include "processmgr.h"
+#include "common.h"
+
+
+namespace Ark {
+
+
+	typedef enum  ProcHdeaderIdx {
+		S,
+		Name,
+		Pid,
+		PPid,
+		Path,
+		Addr,
+		Access,
+		Corp
+	}PHI;
+
+	 enum ViewIdx {
+
+		Proc
+
+	};
+
+	 HANDLE Device;
+	 OpenArk* Instance;
+
+};
+
+OpenArk::OpenArk(QWidget *parent)
+	: QMainWindow(parent)
+{
+	ui.setupUi(this);
+	//tab
+	auto CreateTabPage = [&](QWidget *widget, QWidget *origin,QTabWidget *tabwidget) {
+		
+		int idx = tabwidget->indexOf(origin);
+		QString text = tabwidget->tabText(idx);
+		tabwidget->removeTab(idx);
+		tabwidget->insertTab(idx, widget, text);
+	};
+
+	//创建tab页
+	auto processmgr = new ProcessMgr(this);
+	CreateTabPage(processmgr, ui.tabProcess,ui.tabWidget); 
+	auto objView = new ObjectView(this);
+	CreateTabPage(objView, ui.tabObjDir,ui.tabWidget);
+	
+	
+	//初始化成员
+	Ark::Instance = this;
+	mLable = new QLabel;
+	ui.statusBar->addPermanentWidget(mLable);//添加永久标签
+
+
+
+	//连接信号槽
+	connect(ui.tabWidget, &QTabWidget::currentChanged, this,&OpenArk::OnTabChanged);
+
+	//SeEnablePrivilege();
+	//加载驱动
+	InitTargetDev();
+}
+
+void OpenArk::OnTabChanged(bool checked)
+{
+	QMetaObject::invokeMethod(ui.tabWidget->currentWidget(), "OnRefresh");
+
+}
+
+bool OpenArk::InitTargetDev()
+{
+	bool result = 1;
+
+	result =  SeEnablePrivilege();
+	if (!result)  return false;
+
+	//打开服务控制管理器
+	SC_HANDLE scMgr = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+
+	if (scMgr == NULL){
+		Ark::Instance->SetLabelText(tr("open scmgr failed"));
+		return false;
+	}
+	auto curDir =  QDir::current().absolutePath();
+	
+	QFile f(":/OpenArk/QHunTer.sys");
+	f.open(QIODevice::ReadOnly);
+	f.copy(QString( SERVICE_ANME )+ ".sys");
+	QFileInfo info(SERVICE_ANME);
+
+	//创建驱动所对应的服务
+	SC_HANDLE scService = CreateServiceA(scMgr,
+		SERVICE_ANME, //驱动程序的在注册表中的名字  
+		SERVICE_ANME, // 注册表驱动程序的 DisplayName 值  
+		SERVICE_ALL_ACCESS, // 加载驱动程序的访问权限  
+		SERVICE_KERNEL_DRIVER,// 表示加载的服务是驱动程序  
+		SERVICE_DEMAND_START, // 注册表驱动程序的 Start 值  
+		SERVICE_ERROR_IGNORE, // 注册表驱动程序的 ErrorControl 值  
+		info.filePath().toLocal8Bit(), // 注册表驱动程序的 ImagePath 值  
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL);
+
+	
+	if (scService == NULL){
+		// 驱动程序已经安装，只需要打开  
+		DWORD dwErrNumber = GetLastError();
+		if (dwErrNumber != ERROR_IO_PENDING && dwErrNumber != ERROR_SERVICE_EXISTS)
+			scService = OpenServiceA(scMgr, SERVICE_ANME, SERVICE_ALL_ACCESS);
+	}
+
+	//开启此项服务
+	 result = StartServiceA(scService, NULL, NULL);
+
+	//获取设备
+	
+	Ark::Device = CreateFileA(
+		WIN32_LINK_NAME,
+		GENERIC_READ | GENERIC_WRITE,
+		FILE_SHARE_READ | FILE_SHARE_WRITE,
+		NULL,
+		OPEN_EXISTING,
+		0,
+		NULL);
+	if (Ark::Device == INVALID_HANDLE_VALUE) {
+		result = false;
+	}
+	
+	f.close();
+	QFile::remove(SERVICE_ANME);//删除文件
+
+	return result;
+}
+
+void OpenArk::SetLabelText(QString str)
+{
+	mLable->setText(str);
+}
+
+void OpenArk::UnLoadTargetDev()
+{
+}
+
+bool OpenArk::IoCallDriver(ParamInfo param)
+{
+
+	ULONG returnSize;
+
+	bool ret = DeviceIoControl(
+		Ark::Device,
+		IOCTL_HELLO_WORLD,
+		&param,
+		sizeof(param),
+		NULL,
+		0,
+		&returnSize,
+		NULL);
+	if (!ret) {
+		delete param.pInData;
+		delete param.pOutData;
+	}
+
+	return ret;
+}
+
+BOOLEAN OpenArk::SeEnablePrivilege()
+{
+
+
+		HANDLE hToken;
+		LUID sedebugnameValue;
+		TOKEN_PRIVILEGES tkp;
+		if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+		{
+			return   FALSE;
+		}
+		if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &sedebugnameValue))
+		{
+			CloseHandle(hToken);
+			return false;
+		}
+		tkp.PrivilegeCount = 1;
+		tkp.Privileges[0].Luid = sedebugnameValue;
+		tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+		if (!AdjustTokenPrivileges(hToken, FALSE, &tkp, sizeof(tkp), NULL, NULL))
+		{
+			CloseHandle(hToken);
+			return false;
+		}
+		return true;
+}
+
+OpenArk::~OpenArk()
+{
+	UnLoadTargetDev();
+}
+
+
