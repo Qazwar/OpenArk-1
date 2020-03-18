@@ -107,12 +107,17 @@ bool OpenArk::InitTargetDev()
 		NULL);
 
 	
-	if (scService == NULL){
+	if (scService == NULL) {
 		// 驱动程序已经安装，只需要打开  
 		DWORD dwErrNumber = GetLastError();
-		if (dwErrNumber != ERROR_IO_PENDING && dwErrNumber != ERROR_SERVICE_EXISTS)
+		if (dwErrNumber == ERROR_IO_PENDING || dwErrNumber == ERROR_SERVICE_EXISTS) {
+
 			scService = OpenServiceA(scMgr, SERVICE_ANME, SERVICE_ALL_ACCESS);
+		}else {
+			return false;
+		}
 	}
+
 
 	//开启此项服务
 	 result = StartServiceA(scService, NULL, NULL);
