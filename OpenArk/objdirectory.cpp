@@ -13,8 +13,10 @@ ObjectView::ObjectView(QWidget *parent)
 	
 
 	ui.tableWidget->setSortingEnabled(true);
-	
-
+	ui.treeWidget->header()->hide();//隐藏标题
+	ui.tableWidget->setWordWrap(false);//禁止换行
+	ui.tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑
+	ui.tableWidget->horizontalHeader()->setStretchLastSection(true);//最后一行扩展
 
 	//比例
 	ui.splitter->setStretchFactor(0, 3);
@@ -38,7 +40,7 @@ ObjectView::~ObjectView()
 	try
 	{
 		PObInfo pDirInfo = ObpInfo;
-		auto pSubItem = new QTreeWidgetItem(parent);//添加子目录
+		
 
 
 		parent->setText(0, QString::fromWCharArray(pDirInfo->ObjName));//设置目录名
@@ -49,13 +51,16 @@ ObjectView::~ObjectView()
 		for (size_t i = 0; i < pDirInfo->SubItems; i++)
 		{
 			if (ObpInfo->IsDirectory){
-				SetTreeItemRecurSion(pSubItem);
+				QTreeWidgetItem *pSubDir;
+				pSubDir = new QTreeWidgetItem(parent);
+				SetTreeItemRecurSion(pSubDir);
 			}
 			else {
 				obList->push_back(ObInfo(*ObpInfo));
 				ObpInfo++;
 			}
 		}
+		
 		parent->setData(0, Qt::UserRole, (ULONG_PTR)obList);
 	}
 	catch (const std::exception&)
@@ -97,6 +102,7 @@ void ObjectView::OnRefresh()
 			 ui.treeWidget->addTopLevelItem(new QTreeWidgetItem);
 
 		 if (result) {
+
 			 ObpInfo = (PObInfo)pBuf;
 			 SetTreeItemRecurSion(ui.treeWidget->topLevelItem(0));
 		 }
@@ -120,6 +126,8 @@ void ObjectView::UpdataObTable(QTreeWidgetItem * current, QTreeWidgetItem * prev
 	int i = 0;
 	if (obList == NULL)
 		return;
+
+	ui.tableWidget->setSortingEnabled(false);
 	for (ObInfo ob : *obList) 
 	{
 		ui.tableWidget->insertRow(i);
@@ -128,7 +136,7 @@ void ObjectView::UpdataObTable(QTreeWidgetItem * current, QTreeWidgetItem * prev
 		ui.tableWidget->setItem(i, LinkSym, new QTableWidgetItem(QString::fromWCharArray(ob.SymLinkName)));
 		i++;
 	}
-
+	ui.tableWidget->setSortingEnabled(true);
 
 }
 

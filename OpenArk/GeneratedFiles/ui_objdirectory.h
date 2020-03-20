@@ -59,6 +59,7 @@ public:
         sizePolicy.setHeightForWidth(tableWidget->sizePolicy().hasHeightForWidth());
         tableWidget->setSizePolicy(sizePolicy);
         splitter->addWidget(tableWidget);
+        tableWidget->horizontalHeader()->setStretchLastSection(true);
 
         gridLayout->addWidget(splitter, 0, 0, 1, 1);
 
@@ -71,6 +72,8 @@ public:
     void retranslateUi(QWidget *objdirectory)
     {
         objdirectory->setWindowTitle(QApplication::translate("objdirectory", "objdirectory", nullptr));
+        QTreeWidgetItem *___qtreewidgetitem = treeWidget->headerItem();
+        ___qtreewidgetitem->setText(0, QApplication::translate("objdirectory", "1", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("objdirectory", "\345\220\215\347\247\260", nullptr));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
