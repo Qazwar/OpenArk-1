@@ -97,7 +97,8 @@ void ObjectView::OnRefresh()
 			 ui.treeWidget->addTopLevelItem(new QTreeWidgetItem);
 
 		 if (result) {
-			 SetTreeItemRecurSion((PObInfo)pBuf, ui.treeWidget->topLevelItem(0));
+			 ObpInfo = (PObInfo)pBuf;
+			 SetTreeItemRecurSion(ui.treeWidget->topLevelItem(0));
 		 }
 
 
