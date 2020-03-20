@@ -24,9 +24,5 @@ void ProcessMgr::InitProcessView()
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsText);
 	
 
-	
-
-
-	
 }
 

@@ -8,6 +8,7 @@ ObjectView::ObjectView(QWidget *parent)
 	ui.setupUi(this);
 	
 
+	ui.tableWidget->setSortingEnabled(true);
 	
 
 
@@ -33,8 +34,10 @@ ObjectView::~ObjectView()
 	try
 	{
 		PObInfo pDirInfo = pObInfo;
-		auto pCurDirItem = new QTreeWidgetItem(parent);//添加子目录
-		pCurDirItem->setText(0, QString::fromWCharArray(pDirInfo->ObjName));//设置目录名
+		auto pSubItem = new QTreeWidgetItem(parent);//添加子目录
+
+
+		parent->setText(0, QString::fromWCharArray(pDirInfo->ObjName));//设置目录名
 		QList<ObInfo> *obList = new QList<ObInfo>;
 		mObListList.push_back(obList);
 		pObInfo++;
@@ -42,14 +45,14 @@ ObjectView::~ObjectView()
 		for (size_t i = 0; i < pDirInfo->SubItems; i++)
 		{
 			if (pObInfo->IsDirectory){
-				SetTreeItemRecurSion(pObInfo, pCurDirItem);
+				SetTreeItemRecurSion(pObInfo, pSubItem);
 			}
 			else {
 				obList->push_back(ObInfo(*pObInfo));
 			}
 			pObInfo++;
 		}
-		pCurDirItem->setData(0, Qt::UserRole, (ULONG_PTR)obList);
+		parent->setData(0, Qt::UserRole, (ULONG_PTR)obList);
 	}
 	catch (const std::exception&)
 	{
@@ -86,6 +89,9 @@ void ObjectView::OnRefresh()
 			mObListList.pop_back();
 		 }
 
+		 if (!ui.treeWidget->topLevelItem(0))
+			 ui.treeWidget->addTopLevelItem(new QTreeWidgetItem);
+
 		 if (result) {
 			 SetTreeItemRecurSion((PObInfo)pBuf, ui.treeWidget->topLevelItem(0));
 		 }
@@ -107,13 +113,15 @@ void ObjectView::UpdataObTable(QTreeWidgetItem * current, QTreeWidgetItem * prev
 
 	ui.tableWidget->setRowCount(0);
 	int i = 0;
-	
+	if (obList == NULL)
+		return;
 	for (ObInfo ob : *obList) 
 	{
-		ui.tableWidget->insertRow(i++);
-		ui.tableWidget->setItem(ui.tableWidget->currentRow(), Name, new QTableWidgetItem(QString::fromWCharArray(ob.ObjName)));
-		ui.tableWidget->setItem(ui.tableWidget->currentRow(), Type, new QTableWidgetItem(QString::fromWCharArray(ob.TypeName)));
-		ui.tableWidget->setItem(ui.tableWidget->currentRow(), LinkSym, new QTableWidgetItem(QString::fromWCharArray(ob.SymLinkName)));
+		ui.tableWidget->insertRow(i);
+		ui.tableWidget->setItem(i, Name, new QTableWidgetItem(QString::fromWCharArray(ob.ObjName)));
+		ui.tableWidget->setItem(i, Type, new QTableWidgetItem(QString::fromWCharArray(ob.TypeName)));
+		ui.tableWidget->setItem(i, LinkSym, new QTableWidgetItem(QString::fromWCharArray(ob.SymLinkName)));
+		i++;
 	}
 
 

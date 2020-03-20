@@ -66,7 +66,8 @@ OpenArk::OpenArk(QWidget *parent)
 
 void OpenArk::OnTabChanged(bool checked)
 {
-	QMetaObject::invokeMethod(ui.tabWidget->currentWidget(), "OnRefresh");
+	auto result = QMetaObject::invokeMethod(ui.tabWidget->currentWidget(), "OnRefresh"); 
+	
 
 }
 
@@ -165,10 +166,7 @@ bool OpenArk::IoCallDriver(ParamInfo param)
 		0,
 		&returnSize,
 		NULL);
-	if (!ret) {
-		delete param.pInData;
-		delete param.pOutData;
-	}
+	
 
 	return ret;
 }

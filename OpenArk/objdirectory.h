@@ -20,12 +20,12 @@ public:
 	ObjectView(QWidget *parent = Q_NULLPTR);
 	~ObjectView();
 
-
-	void OnRefresh();
 	void UpdataObTable(QTreeWidgetItem *current, QTreeWidgetItem *previous);//切换目录项
+
 	void SetTreeItemRecurSion(PObInfo pObInfo, QTreeWidgetItem *parent);//添加树项
 	QList<Oblist> mObListList;
-
+private slots:
+	void OnRefresh();
 private:
 	Ui::objdirectory ui;
 };
