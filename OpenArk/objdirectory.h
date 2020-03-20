@@ -22,7 +22,7 @@ public:
 
 	void UpdataObTable(QTreeWidgetItem *current, QTreeWidgetItem *previous);//切换目录项
 
-	void SetTreeItemRecurSion(PObInfo pObInfo, QTreeWidgetItem *parent);//添加树项
+	void SetTreeItemRecurSion(QTreeWidgetItem *parent);//添加树项
 	QList<Oblist> mObListList;
 private slots:
 	void OnRefresh();

@@ -2,6 +2,10 @@
 #include "common.h"
 #include "openark.h"
 #include <qdebug.h>
+
+
+PObInfo ObpInfo;
+
 ObjectView::ObjectView(QWidget *parent)
 	: QWidget(parent)
 {
@@ -29,28 +33,28 @@ ObjectView::~ObjectView()
 }
 
 
- void ObjectView::SetTreeItemRecurSion(PObInfo pObInfo,QTreeWidgetItem *parent)
+ void ObjectView::SetTreeItemRecurSion( QTreeWidgetItem *parent)
 {
 	try
 	{
-		PObInfo pDirInfo = pObInfo;
+		PObInfo pDirInfo = ObpInfo;
 		auto pSubItem = new QTreeWidgetItem(parent);//添加子目录
 
 
 		parent->setText(0, QString::fromWCharArray(pDirInfo->ObjName));//设置目录名
 		QList<ObInfo> *obList = new QList<ObInfo>;
 		mObListList.push_back(obList);
-		pObInfo++;
+		ObpInfo++;
 
 		for (size_t i = 0; i < pDirInfo->SubItems; i++)
 		{
-			if (pObInfo->IsDirectory){
-				SetTreeItemRecurSion(pObInfo, pSubItem);
+			if (ObpInfo->IsDirectory){
+				SetTreeItemRecurSion(pSubItem);
 			}
 			else {
-				obList->push_back(ObInfo(*pObInfo));
+				obList->push_back(ObInfo(*ObpInfo));
+				ObpInfo++;
 			}
-			pObInfo++;
 		}
 		parent->setData(0, Qt::UserRole, (ULONG_PTR)obList);
 	}
