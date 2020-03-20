@@ -129,14 +129,12 @@ struct ParamInfo
 struct StuProcInfo
 {
 	ULONG ProcessCnt;		//0x0
-
 	BOOLEAN IsWoW64Process;//0x9
-
 	ULONG_PTR ParentProcessId;			//0x10
 	ULONG_PTR ProcessId;			//0x18
 	LARGE_INTEGER CreateTinme;//0x20
 	ULONG_PTR	Process;//0x28
-	WCHAR  wStrProcessPath[252];
+	WCHAR  wStrProcessPath[MAX_PATH];
 
 };
 

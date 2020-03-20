@@ -7,22 +7,7 @@
 namespace Ark {
 
 
-	typedef enum  ProcHdeaderIdx {
-		S,
-		Name,
-		Pid,
-		PPid,
-		Path,
-		Addr,
-		Access,
-		Corp
-	}PHI;
-
-	 enum ViewIdx {
-
-		Proc
-
-	};
+	
 
 	 HANDLE Device;
 	 OpenArk* Instance;

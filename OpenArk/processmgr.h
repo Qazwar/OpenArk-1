@@ -15,21 +15,35 @@ class ProcessMgr : public StdTable
 	Q_OBJECT
 
 public:
+
+	typedef enum  ProcHdeaderIdx {
+		Name,
+		Pid,
+		PPid,
+		Path,
+		Addr,
+		Access,
+		Corp
+	}PHI;
+
+	
 	ProcessMgr(QWidget *parent);
 	~ProcessMgr();
-
-	void onRefresh();
+	QIcon GetFileIcon(QString filePath);
+	bool IsAccessProcess(DWORD dwPsid);
+	QString GetCompanyName(QString filePath);
 	void onProcSelection(QString pid);
 	void onShowProcess();
-
+private slots:
+	void OnRefresh();
 
 private:
 	void InitProcessView();
 
 
-	/*Ui::ProcessMgr  ui;*/
+	
 	QMenu *mMenu = nullptr;
 
-	//QStandardItemModel* mProcModel;
+	
 	
 };
