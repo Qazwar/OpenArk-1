@@ -1,6 +1,8 @@
 #include "processmgr.h"
 #include "common.h"
 #include "openark.h"
+
+#pragma comment (lib,"Version.lib")
 ProcessMgr::ProcessMgr(QWidget *parent)
 	: StdTable(parent)
 {
@@ -44,12 +46,12 @@ QString ProcessMgr::GetCompanyName(QString filePath)
 	
 	DWORD versize = GetFileVersionInfoSizeW(filePath.toStdWString().data(), &reserved1);
 	if (versize == 0) {
-		return QString("err");
+		return QString();
 	}
 	pBlock.resize(versize);
 	memset((void*)pBlock.c_str(), 0, versize * 2);
 	if (!GetFileVersionInfoW(filePath.toStdWString().data(), reserved2, versize, (LPVOID)pBlock.c_str())) {
-		return QString("err");
+		return QString();
 	}
 
 	struct LANGANDCODEPAGE {
@@ -61,7 +63,7 @@ QString ProcessMgr::GetCompanyName(QString filePath)
 
 
 	if (!VerQueryValueW(pBlock.c_str(), L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate, &size)) {
-		return QString("err");
+		return QString();
 	}
 	_snwprintf_s(lpSubBlock, MAX_PATH - 1, L"\\StringFileInfo\\%04X%04X\\%s",
 		lpTranslate->language, lpTranslate->codepage, L"CompanyName");
@@ -73,7 +75,7 @@ QString ProcessMgr::GetCompanyName(QString filePath)
 		}
 	}
 
-	return QString("err");
+	return QString();
 }
 
 void ProcessMgr::OnRefresh()
