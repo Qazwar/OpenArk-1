@@ -1,6 +1,7 @@
 #include "processmgr.h"
 #include "common.h"
 #include "openark.h"
+#include <qvector.h>
 
 #pragma comment (lib,"Version.lib")
 ProcessMgr::ProcessMgr(QWidget *parent)
@@ -78,63 +79,97 @@ QString ProcessMgr::GetCompanyName(QString filePath)
 	return QString();
 }
 
+void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vprocInfo)
+{
+	int procCnt;
+
+	procCnt = procInfo->ProcessCnt;
+
+	for (int i = 0; i < procCnt; i++,procInfo++)
+	{
+		QProcInfo temp;
+		int pos = 0;
+		QString path; 
+
+		if (procInfo->ProcessId == 0) {
+			temp.ProcName = "Idle";
+			temp.ProcPath = "Idle";
+		}
+		else if(procInfo->ProcessId == 4){
+			temp.ProcName = "System";
+			temp.ProcPath = "System";
+		}
+		else {
+			path = QString::fromWCharArray(procInfo->wStrProcessPath);
+			pos = path.lastIndexOf("\\");
+			temp.ProcName = path.right(path.length() - pos);
+			temp.ProcPath = path;
+			temp.CorpName = GetCompanyName(temp.ProcPath);
+		}
+
+		temp.ProcId = QString::number(procInfo->ProcessId);
+
+		if (procInfo->ParentProcessId) {
+			temp.ParentProcId = QString::number(procInfo->ParentProcessId);
+		}
+		else {
+			temp.ParentProcId = "-";
+		}
+
+		temp.ProcAddr = QString::number(procInfo->Process,16);
+
+		bool isAccessble = IsAccessProcess(procInfo->ProcessId);
+		if (isAccessble) {
+			temp.Accessble = "-";
+		}
+		else {
+			temp.Accessble = tr("deny");
+		}
+
+		vprocInfo.push_back(temp);
+	}
+}
+
 void ProcessMgr::OnRefresh()
 {
 
-	StuProcInfo *curProcInfo = (StuProcInfo *)new char[SIZE4M];
+	StuProcInfo *buffer = (StuProcInfo *)new char[SIZE4M];
 
-	if (!curProcInfo) {
+	if (!buffer) {
 		return;
 	}
 	ParamInfo param;
 	param.pInData = 0;
 	param.cbInData = 0;
-	param.pOutData = (PCHAR)curProcInfo;
+	param.pOutData = (PCHAR)buffer;
 	param.cbOutData = SIZE4M;
 	param.FunIdx = SYSCALL::ProcList;
 
 	auto result = OpenArk::IoCallDriver(param);
 	if (reset == false) {
-		delete curProcInfo;
+		delete buffer;
 		return;
 	}
-	int psCnt = curProcInfo->ProcessCnt;
+	int psCnt = buffer->ProcessCnt;
 	//清除内容
 	mSourceModel->removeRows(0, mSourceModel->rowCount());
-	for (int i = 0; i < psCnt; i++, curProcInfo++)
+	QVector<QProcInfo> vprocInfo;
+	ProcessProcInfo(buffer, vprocInfo);//解析得到的数据转化为qstring
+	int row = 0;
+	for (auto procInfo : vprocInfo)
 	{
-		QFileInfo fileInfo(QString::fromWCharArray(curProcInfo->wStrProcessPath));
-		QFileIconProvider icon;
+		 QStandardItem *nameItem = new  QStandardItem(procInfo.ProcName);
+		 nameItem->setIcon(GetFileIcon(procInfo.ProcPath));
+		 mSourceModel->setItem(row, PHI::Name, nameItem);
+		 mSourceModel->setItem(row, PHI::Pid, new QStandardItem(procInfo.ProcId));
+		 mSourceModel->setItem(row, PHI::PPid, new QStandardItem(procInfo.ParentProcId));
+		 mSourceModel->setItem(row, PHI::Addr, new QStandardItem(procInfo.ProcAddr));
+		 mSourceModel->setItem(row, PHI::Access, new QStandardItem(procInfo.Accessble));
+		 mSourceModel->setItem(row, PHI::Path, new QStandardItem(procInfo.ProcPath));
+		 mSourceModel->setItem(row, PHI::Corp, new QStandardItem(procInfo.CorpName));
 
-		 icon.icon(fileInfo);
-		 mSourceModel->setItem(i, PHI::Name, new QStandardItem(fileInfo.fileName()));
-		 mSourceModel->setItem(i, PHI::Pid, new QStandardItem(QString::number(curProcInfo->ProcessId)));
-		 if (curProcInfo->ParentProcessId) {
-			 mSourceModel->setItem(i, PHI::PPid, new QStandardItem(QString::number(curProcInfo->ParentProcessId)));
-		 } else {
-			 mSourceModel->setItem(i, PHI::PPid, new QStandardItem("-"));
-		 }
-		 mSourceModel->setItem(i, PHI::Addr, new QStandardItem(QString::number(curProcInfo->Process,16)));
-
-		 bool isAccessble = IsAccessProcess(curProcInfo->ProcessId);
-		 if (isAccessble) {
-			 mSourceModel->setItem(i, PHI::Access, new QStandardItem(tr("-")));
-		 }
-		 else {
-			 mSourceModel->setItem(i, PHI::Access, new QStandardItem(tr("deny")));
-		 }
-
-		 if (curProcInfo->ProcessId == 0 || curProcInfo->ProcessId == 4) {
-			 continue;
-		 }
-		 mSourceModel->setItem(i, PHI::Path, new QStandardItem(fileInfo.absoluteFilePath()));
-
-		 QString company = GetCompanyName(fileInfo.absoluteFilePath());
-		 mSourceModel->setItem(i, PHI::Corp, new QStandardItem(company));
-
-		
+		 row++;
 	}
-
 }
 
 

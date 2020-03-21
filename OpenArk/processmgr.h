@@ -6,6 +6,7 @@
 #include <qmenu.h>
 #include <QtGui>
 #include <QtCore>
+#include "common.h"
 
 
 
@@ -26,14 +27,24 @@ public:
 		Corp
 	}PHI;
 
+	struct QProcInfo{
+	public:
+		QString ProcName;
+		QString ProcId;
+		QString ParentProcId;
+		QString ProcPath;
+		QString	ProcAddr;
+		QString Accessble;
+		QString CorpName;
+	};
 	
 	ProcessMgr(QWidget *parent);
 	~ProcessMgr();
 	QIcon GetFileIcon(QString filePath);
 	bool IsAccessProcess(DWORD dwPsid);
 	QString GetCompanyName(QString filePath);
-	void onProcSelection(QString pid);
-	void onShowProcess();
+	void ProcessProcInfo(StuProcInfo* procInfo, QVector<QProcInfo> &vprocInfo);
+	
 private slots:
 	void OnRefresh();
 
