@@ -101,7 +101,7 @@ void ProcessMgr::OnRefresh()
 	int psCnt = curProcInfo->ProcessCnt;
 	//Çå³ýÄÚÈÝ
 	mSourceModel->removeRows(0, mSourceModel->rowCount());
-	for (int i = 0; i < psCnt; i++)
+	for (int i = 0; i < psCnt; i++, curProcInfo++)
 	{
 		QFileInfo fileInfo(QString::fromWCharArray(curProcInfo->wStrProcessPath));
 		QFileIconProvider icon;
@@ -110,11 +110,10 @@ void ProcessMgr::OnRefresh()
 		 mSourceModel->setItem(i, PHI::Name, new QStandardItem(fileInfo.fileName()));
 		 mSourceModel->setItem(i, PHI::Pid, new QStandardItem(QString::number(curProcInfo->ProcessId)));
 		 if (curProcInfo->ParentProcessId) {
-			 mSourceModel->setItem(i, PHI::PPid, new QStandardItem(QString::number(curProcInfo->ProcessId)));
+			 mSourceModel->setItem(i, PHI::PPid, new QStandardItem(QString::number(curProcInfo->ParentProcessId)));
 		 } else {
 			 mSourceModel->setItem(i, PHI::PPid, new QStandardItem("-"));
 		 }
-		 mSourceModel->setItem(i, PHI::Path, new QStandardItem(fileInfo.absoluteFilePath()));
 		 mSourceModel->setItem(i, PHI::Addr, new QStandardItem(QString::number(curProcInfo->Process,16)));
 
 		 bool isAccessble = IsAccessProcess(curProcInfo->ProcessId);
@@ -124,8 +123,15 @@ void ProcessMgr::OnRefresh()
 		 else {
 			 mSourceModel->setItem(i, PHI::Access, new QStandardItem(tr("deny")));
 		 }
+		 if (curProcInfo->ProcessId == 0 || curProcInfo->ProcessId == 4) {
+			 continue;
+		 }
+		 mSourceModel->setItem(i, PHI::Path, new QStandardItem(fileInfo.absoluteFilePath()));
+
 		 QString company = GetCompanyName(fileInfo.absoluteFilePath());
 		 mSourceModel->setItem(i, PHI::Corp, new QStandardItem(company));
+
+		
 	}
 
 }
