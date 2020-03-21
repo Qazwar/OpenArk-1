@@ -20,6 +20,7 @@
 
 #else
 #include "ntkrnl.h"
+#define MAX_PATH 260
 
 //typedef unsigned char  BOOL, *PBOOL;
 //typedef unsigned char  BYTE, *PBYTE;
@@ -58,13 +59,13 @@
 #endif // NTKRNL
 
 
-//²»Ö§³Ö·ûºÅÁ´½ÓÓÃ»§Ïà¹ØĞÔ
+//ä¸æ”¯æŒç¬¦å·é“¾æ¥ç”¨æˆ·ç›¸å…³æ€§
 #define DEVICE_NAME                  L"\\Device\\devhunter"             // Driver Name
 #define SYMBOLIC_LINK_NAME           L"\\DosDevices\\hunter"            // Symbolic Link Name
 #define WIN32_LINK_NAME              "\\\\.\\hunter"                    // Win32 Link Name
 #define SERVICE_ANME                 "Qhunter"
 
-//Ö§³Ö·ûºÅÁ´½ÓÓÃ»§Ïà¹ØĞÔ
+//æ”¯æŒç¬¦å·é“¾æ¥ç”¨æˆ·ç›¸å…³æ€§
 #define SYMBOLIC_LINK_GLOBAL_NAME    L"\\DosDevices\\Global\\hunter"    // Symbolic Link Name
 
 #define DATA_TO_APP                  "Hello World from Driver"
