@@ -123,6 +123,7 @@ void ProcessMgr::OnRefresh()
 		 else {
 			 mSourceModel->setItem(i, PHI::Access, new QStandardItem(tr("deny")));
 		 }
+
 		 if (curProcInfo->ProcessId == 0 || curProcInfo->ProcessId == 4) {
 			 continue;
 		 }
