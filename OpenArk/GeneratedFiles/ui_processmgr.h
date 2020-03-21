@@ -28,7 +28,7 @@ public:
     {
         if (ProcessMgr->objectName().isEmpty())
             ProcessMgr->setObjectName(QString::fromUtf8("ProcessMgr"));
-        ProcessMgr->resize(400, 300);
+        ProcessMgr->resize(380, 300);
         gridLayout = new QGridLayout(ProcessMgr);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         viewProcess = new QTreeView(ProcessMgr);

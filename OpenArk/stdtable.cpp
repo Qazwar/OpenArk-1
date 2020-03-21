@@ -31,6 +31,6 @@ void StdTable::InitStdTableView()
 	 mTableView->setWordWrap(false);//禁止换行
 	 mTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑
 	 mTableView->horizontalHeader()->setStretchLastSection(true);//最后一行扩展
-	 mTableView->verticalHeader()->setSectionsMovable(false);
+	 mTableView->verticalHeader()->setHidden(true);//隐藏行标题
 	
 }

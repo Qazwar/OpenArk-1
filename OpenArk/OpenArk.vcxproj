@@ -124,7 +124,7 @@
     <QtMoc Include="openark.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="openark_zh.qm" />
+    <None Include="openark_zh.ts" />
     <None Include="res\openark_zh.qm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

@@ -72,14 +72,14 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <None Include="openark_zh.qm">
-      <Filter>Translation Files</Filter>
-    </None>
     <None Include="res\openark_zh.qm">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="res\QHunTer.sys">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="openark_zh.ts">
+      <Filter>Translation Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

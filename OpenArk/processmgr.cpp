@@ -102,7 +102,7 @@ void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vpr
 		else {
 			path = QString::fromWCharArray(procInfo->wStrProcessPath);
 			pos = path.lastIndexOf("\\");
-			temp.ProcName = path.right(path.length() - pos);
+			temp.ProcName = path.right(path.length() - pos - 1);
 			temp.ProcPath = path;
 			temp.CorpName = GetCompanyName(temp.ProcPath);
 		}
@@ -116,7 +116,7 @@ void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vpr
 			temp.ParentProcId = "-";
 		}
 
-		temp.ProcAddr = QString::number(procInfo->Process,16);
+		temp.ProcAddr = QString::number(procInfo->Process,16).toUpper();
 
 		bool isAccessble = IsAccessProcess(procInfo->ProcessId);
 		if (isAccessble) {
