@@ -44,16 +44,20 @@ public:
 	bool IsAccessProcess(DWORD dwPsid);
 	QString GetCompanyName(QString filePath);
 	void ProcessProcInfo(StuProcInfo* procInfo, QVector<QProcInfo> &vprocInfo);
+	int GetHideProcessCnt(StuProcInfo* procInfo);
+	void SetContextMenu();
 	
 private slots:
 	void OnRefresh();
+	void OnHideProcess();
 
 private:
 	void InitProcessView();
 
 
 	
-	QMenu *mMenu = nullptr;
+	QMenu mMenu;
+	
 
 	
 	

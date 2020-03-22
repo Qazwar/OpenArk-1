@@ -36,10 +36,6 @@ OpenArk::OpenArk(QWidget *parent)
 	
 	//初始化成员
 	Ark::Instance = this;
-	mLable = new QLabel;
-	ui.statusBar->addPermanentWidget(mLable);//添加永久标签
-
-
 
 	//连接信号槽
 	connect(ui.tabWidget, &QTabWidget::currentChanged, this,&OpenArk::OnTabChanged);
@@ -181,6 +177,11 @@ BOOLEAN OpenArk::SeEnablePrivilege()
 			return false;
 		}
 		return true;
+}
+
+void OpenArk::ShowMessage(QString text)
+{
+	ui.statusBar->showMessage(text, 0);
 }
 
 OpenArk::~OpenArk()

@@ -1,7 +1,9 @@
 #include "processmgr.h"
 #include "common.h"
 #include "openark.h"
+#include "arknamespace.h"
 #include <qvector.h>
+#include <TlHelp32.h>
 
 #pragma comment (lib,"Version.lib")
 ProcessMgr::ProcessMgr(QWidget *parent)
@@ -103,6 +105,9 @@ void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vpr
 			path = QString::fromWCharArray(procInfo->wStrProcessPath);
 			pos = path.lastIndexOf("\\");
 			temp.ProcName = path.right(path.length() - pos - 1);
+			if (procInfo->IsWoW64Process) {
+				temp.ProcName += " *32";
+			}
 			temp.ProcPath = path;
 			temp.CorpName = GetCompanyName(temp.ProcPath);
 		}
@@ -128,6 +133,64 @@ void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vpr
 
 		vprocInfo.push_back(temp);
 	}
+}
+
+int ProcessMgr::GetHideProcessCnt(StuProcInfo * procInfo)
+{
+	int totalProcess = procInfo->ProcessCnt;
+	HANDLE hProcessSnap;
+	int hideProcessCnt = 0;
+	PROCESSENTRY32 pe32;
+
+	// Take a snapshot of all processes in the system.
+	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (hProcessSnap == INVALID_HANDLE_VALUE)
+	{
+		qDebug() << (TEXT("CreateToolhelp32Snapshot (of processes)"));
+		return(FALSE);
+	}
+	// Set the size of the structure before using it.
+	pe32.dwSize = sizeof(PROCESSENTRY32);
+
+	// Retrieve information about the first process,
+	// and exit if unsuccessful
+	if (!Process32First(hProcessSnap, &pe32))
+	{
+		qDebug() << (TEXT("Process32First")); // show cause of failure
+		CloseHandle(hProcessSnap);          // clean the snapshot object
+		return(FALSE);
+	}
+
+	//for (int i = 0; i < totalProcess; i++)
+	//{
+	//	CreateToolhelp32Snapshot
+
+
+
+
+
+	//}
+
+
+
+	return 0;
+}
+
+void ProcessMgr::SetContextMenu()
+{
+	mMenu.addAction(tr("hide process"), this,&ProcessMgr::OnHideProcess);
+
+
+	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+	connect(this, &ProcessMgr::customContextMenuRequested, this, [=](const QPoint &pos)
+		{
+			mMenu.exec(QCursor::pos());
+
+		}
+	);
+
+	
+	
 }
 
 void ProcessMgr::OnRefresh()
@@ -167,11 +230,20 @@ void ProcessMgr::OnRefresh()
 		 mSourceModel->setItem(row, PHI::Access, new QStandardItem(procInfo.Accessble));
 		 mSourceModel->setItem(row, PHI::Path, new QStandardItem(procInfo.ProcPath));
 		 mSourceModel->setItem(row, PHI::Corp, new QStandardItem(procInfo.CorpName));
-
 		 row++;
 	}
+	Ark::Instance->ShowMessage(tr("Processes: %d, Hidden Processes: %d, Ring3 Inaccessible Processes: %d"));
+	
 }
 
+
+void ProcessMgr::OnHideProcess()
+{
+	 auto index = ui.tableView->currentIndex();
+	 auto data = mSortModel->data(index);
+	 qDebug() << data.toString();
+
+}
 
 void ProcessMgr::InitProcessView()
 {
@@ -184,6 +256,9 @@ void ProcessMgr::InitProcessView()
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsHex);
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsText);
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsText);
+
+
+	SetContextMenu();
 	
 
 }

@@ -1,9 +1,9 @@
 /**************************************************************************************
-* AUTHOR : 
+* AUTHOR :
 * DATE   : 2020-2-12
 * MODULE : common.h
 *
-* Command: 
+* Command:
 *	IOCTRL Common Header
 *
 * Description:
@@ -59,13 +59,13 @@
 #endif // NTKRNL
 
 
-//ä¸æ”¯æŒç¬¦å·é“¾æ¥ç”¨æˆ·ç›¸å…³æ€§
+//²»Ö§³Ö·ûºÅÁ´½ÓÓÃ»§Ïà¹ØĞÔ
 #define DEVICE_NAME                  L"\\Device\\devhunter"             // Driver Name
 #define SYMBOLIC_LINK_NAME           L"\\DosDevices\\hunter"            // Symbolic Link Name
 #define WIN32_LINK_NAME              "\\\\.\\hunter"                    // Win32 Link Name
 #define SERVICE_ANME                 "Qhunter"
 
-//æ”¯æŒç¬¦å·é“¾æ¥ç”¨æˆ·ç›¸å…³æ€§
+//Ö§³Ö·ûºÅÁ´½ÓÓÃ»§Ïà¹ØĞÔ
 #define SYMBOLIC_LINK_GLOBAL_NAME    L"\\DosDevices\\Global\\hunter"    // Symbolic Link Name
 
 #define DATA_TO_APP                  "Hello World from Driver"
@@ -113,6 +113,7 @@ enum SYSCALL
 {
 	ProcList,
 	ObjDirectory,
+	HideProcess,
 
 	LastId
 };
