@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 
 	QApplication app(argc, argv);
 	app.setWindowIcon(QIcon(":/OpenArk/OpenArk.ico"));
+	//QApplication::setFont(QFont(QString::fromLocal8Bit("Î¢ÈíÑÅºÚ")));
 	QTranslator translator;
 	translator.load(":/OpenArk/openark_zh.qm");
 	app.installTranslator(&translator);

@@ -228,10 +228,13 @@ void ProcessMgr::OnRefresh()
 		 mSourceModel->setItem(row, PHI::PPid, new QStandardItem(procInfo.ParentProcId));
 		 mSourceModel->setItem(row, PHI::Addr, new QStandardItem(procInfo.ProcAddr));
 		 mSourceModel->setItem(row, PHI::Access, new QStandardItem(procInfo.Accessble));
+		 mSourceModel->item(row, PHI::Access)->setTextAlignment(Qt::AlignHCenter);
 		 mSourceModel->setItem(row, PHI::Path, new QStandardItem(procInfo.ProcPath));
 		 mSourceModel->setItem(row, PHI::Corp, new QStandardItem(procInfo.CorpName));
 		 row++;
 	}
+	mTableView->sortByColumn(PHI::Pid, Qt::SortOrder::AscendingOrder);
+	mTableView->resizeColumnToContents(PHI::Addr);
 	Ark::Instance->ShowMessage(tr("Processes: %d, Hidden Processes: %d, Ring3 Inaccessible Processes: %d"));
 	
 }
@@ -257,7 +260,10 @@ void ProcessMgr::InitProcessView()
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsText);
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsText);
 
-
+	//ÉèÖÃ¿í¶È
+	mTableView->setColumnWidth(PHI::Name, 150);
+	mTableView->setColumnWidth(PHI::Pid, 50);
+	mTableView->setColumnWidth(PHI::PPid, 60);
 	SetContextMenu();
 	
 

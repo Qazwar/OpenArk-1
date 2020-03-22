@@ -43,6 +43,9 @@ OpenArk::OpenArk(QWidget *parent)
 	//SeEnablePrivilege();
 	//加载驱动
 	InitTargetDev();
+
+	//显示视图
+	OnTabChanged(false);
 }
 
 void OpenArk::OnTabChanged(bool checked)
@@ -63,7 +66,6 @@ bool OpenArk::InitTargetDev()
 	SC_HANDLE scMgr = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
 
 	if (scMgr == NULL){
-		Ark::Instance->SetLabelText(tr("open scmgr failed"));
 		return false;
 	}
 	auto curDir =  QDir::current().absolutePath();
@@ -124,10 +126,7 @@ bool OpenArk::InitTargetDev()
 	return result;
 }
 
-void OpenArk::SetLabelText(QString str)
-{
-	mLable->setText(str);
-}
+
 
 void OpenArk::UnLoadTargetDev()
 {

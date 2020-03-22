@@ -17,6 +17,10 @@ ObjectView::ObjectView(QWidget *parent)
 	ui.tableWidget->setWordWrap(false);//禁止换行
 	ui.tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);//不可编辑
 	ui.tableWidget->horizontalHeader()->setStretchLastSection(true);//最后一行扩展
+	ui.tableWidget->setFont(QFont(QString::fromLocal8Bit("微软雅黑")));
+	ui.treeWidget->setFont(QFont(QString::fromLocal8Bit("微软雅黑")));
+	ui.tableWidget->verticalHeader()->setDefaultSectionSize(10);//设置默认行高度
+	ui.tableWidget->verticalHeader()->hide();
 
 	//比例
 	ui.splitter->setStretchFactor(0, 3);
@@ -97,6 +101,9 @@ void ObjectView::OnRefresh()
 			delete mObListList.back();
 			mObListList.pop_back();
 		 }
+		 //清空视图
+		 ui.treeWidget->clear();
+		 ui.tableWidget->setRowCount(0);
 
 		 if (!ui.treeWidget->topLevelItem(0))
 			 ui.treeWidget->addTopLevelItem(new QTreeWidgetItem);
@@ -105,6 +112,7 @@ void ObjectView::OnRefresh()
 
 			 ObpInfo = (PObInfo)pBuf;
 			 SetTreeItemRecurSion(ui.treeWidget->topLevelItem(0));
+			 ui.treeWidget->expandItem(ui.treeWidget->topLevelItem(0));
 		 }
 
 
@@ -120,6 +128,8 @@ void ObjectView::OnRefresh()
 
 void ObjectView::UpdataObTable(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
+	if (current == nullptr)
+		return;
 	QList<ObInfo> *obList = (QList<ObInfo>*)current->data(0, Qt::UserRole).toULongLong();
 
 	ui.tableWidget->setRowCount(0);
