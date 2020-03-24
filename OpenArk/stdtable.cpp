@@ -35,7 +35,8 @@ void StdTable::InitStdTableView()
 	 mTableView->setFont(QFont(QString::fromLocal8Bit("微软雅黑")));
 	 mTableView->horizontalHeader()->setSortIndicatorShown(false);//不显示排序指示器
 	 mTableView->horizontalHeader()->setFixedHeight(20);//标题高度
-	 mTableView->horizontalHeader()->setBackgroundRole(QPalette::Base);
-	 //mTableView->horizontalHeader()->setBackgroundRole(QColor(0, 60, 10))
+	 mTableView->horizontalHeader()->setBackgroundRole(QPalette::Base);//标题颜色
+	 mTableView->horizontalHeader()->setHighlightSections(false);//不高亮标题
+	
 	
 }

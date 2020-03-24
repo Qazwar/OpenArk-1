@@ -21,7 +21,6 @@
 #else
 #include "ntkrnl.h"
 #define MAX_PATH 260
-
 //typedef unsigned char  BOOL, *PBOOL;
 //typedef unsigned char  BYTE, *PBYTE;
 //typedef unsigned long  DWORD, _DWORD, *PDWORD;
@@ -143,4 +142,3 @@ struct StuProcInfo
 #define SIZEOFPROCINFO sizeof(StuProcInfo)
 
 /* EOF */
-

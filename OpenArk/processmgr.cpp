@@ -243,7 +243,9 @@ void ProcessMgr::OnRefresh()
 void ProcessMgr::OnHideProcess()
 {
 	 auto index = ui.tableView->currentIndex();
-	 auto data = mSortModel->data(index);
+	 int row = index.row();
+	 QModelIndex idIndex = mSortModel->index(row, PHI::Pid);
+	 auto data = mSortModel->data(idIndex);
 	 qDebug() << data.toString();
 
 }
