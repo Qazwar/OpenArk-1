@@ -81,9 +81,10 @@ QString ProcessMgr::GetCompanyName(QString filePath)
 	return QString();
 }
 
-void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vprocInfo)
+int ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vprocInfo)
 {
 	int procCnt;
+	int denyCnt = 0;
 
 	procCnt = procInfo->ProcessCnt;
 
@@ -129,10 +130,14 @@ void ProcessMgr::ProcessProcInfo(StuProcInfo * procInfo, QVector<QProcInfo> &vpr
 		}
 		else {
 			temp.Accessble = tr("deny");
+			denyCnt++;
 		}
 
 		vprocInfo.push_back(temp);
 	}
+
+
+	return denyCnt;
 }
 
 int ProcessMgr::GetHideProcessCnt(StuProcInfo * procInfo)
@@ -161,19 +166,17 @@ int ProcessMgr::GetHideProcessCnt(StuProcInfo * procInfo)
 		return(FALSE);
 	}
 
-	//for (int i = 0; i < totalProcess; i++)
-	//{
-	//	CreateToolhelp32Snapshot
 
 
+	int i = 1;
+	while (Process32Next(hProcessSnap, &pe32))
+	{
+		i++;
+	}
 
+	CloseHandle(hProcessSnap);
 
-
-	//}
-
-
-
-	return 0;
+	return totalProcess - i;
 }
 
 void ProcessMgr::SetContextMenu()
@@ -197,6 +200,7 @@ void ProcessMgr::OnRefresh()
 {
 
 	StuProcInfo *buffer = (StuProcInfo *)new char[SIZE4M];
+	int denyCnt = 0;
 
 	if (!buffer) {
 		return;
@@ -217,7 +221,7 @@ void ProcessMgr::OnRefresh()
 	//清除内容
 	mSourceModel->removeRows(0, mSourceModel->rowCount());
 	QVector<QProcInfo> vprocInfo;
-	ProcessProcInfo(buffer, vprocInfo);//解析得到的数据转化为qstring
+	denyCnt = ProcessProcInfo(buffer, vprocInfo);//解析得到的数据转化为qstring
 	int row = 0;
 	for (auto procInfo : vprocInfo)
 	{
@@ -235,10 +239,25 @@ void ProcessMgr::OnRefresh()
 	}
 	mTableView->sortByColumn(PHI::Pid, Qt::SortOrder::AscendingOrder);
 	mTableView->resizeColumnToContents(PHI::Addr);
-	Ark::Instance->ShowMessage(tr("Processes: %d, Hidden Processes: %d, Ring3 Inaccessible Processes: %d"));
+
+	int hideProc = 0;
+	int totalProc = vprocInfo.size();
+
+	if (result) {
+		int hideProc = GetHideProcessCnt(buffer);
+	}
+	
+
+	QString msg = QString(tr("Processes: %1, Hidden Processes: %2, Ring3 Inaccessible Processes: %3")).arg(totalProc).arg(hideProc).arg(denyCnt);
+
+
+	Ark::Instance->ShowMessage(msg);
 	
 }
+void ProcessMgr::OnNouse()
+{
 
+}
 
 void ProcessMgr::OnHideProcess()
 {

@@ -39,7 +39,7 @@
     <message>
         <location filename="processmgr.cpp" line="237"/>
         <source>Processes: %1, Hidden Processes: %2, Ring3 Inaccessible Processes: %3</source>
-        <translation>进程：%1，隐藏进程：%d,应用层不可访问进程：%d</translation>
+        <translation>进程：%1，隐藏进程：%2, 应用层不可访问进程：%3</translation>
     </message>
     <message>
         <location filename="processmgr.cpp" line="270"/>
