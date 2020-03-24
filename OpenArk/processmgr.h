@@ -51,6 +51,7 @@ private slots:
 	void OnNouse();
 	void OnRefresh();
 	void OnHideProcess();
+	void OnLookProcMod();
 
 private:
 	void InitProcessView();

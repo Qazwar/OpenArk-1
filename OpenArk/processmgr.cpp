@@ -2,6 +2,7 @@
 #include "common.h"
 #include "openark.h"
 #include "arknamespace.h"
+#include "ModuleView.h"
 #include <qvector.h>
 #include <TlHelp32.h>
 
@@ -9,6 +10,7 @@
 ProcessMgr::ProcessMgr(QWidget *parent)
 	: StdTable(parent)
 {
+	Ark::Ps = this;
 	InitProcessView();
 }
 
@@ -48,6 +50,7 @@ QString ProcessMgr::GetCompanyName(QString filePath)
 	
 	
 	DWORD versize = GetFileVersionInfoSizeW(filePath.toStdWString().data(), &reserved1);
+
 	if (versize == 0) {
 		return QString();
 	}
@@ -181,7 +184,9 @@ int ProcessMgr::GetHideProcessCnt(StuProcInfo * procInfo)
 
 void ProcessMgr::SetContextMenu()
 {
+	mMenu.addAction(tr("refresh"), this,&ProcessMgr::OnRefresh);
 	mMenu.addAction(tr("hide process"), this,&ProcessMgr::OnHideProcess);
+	mMenu.addAction(tr("look process moudle"), this,&ProcessMgr::OnLookProcMod);
 
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -275,6 +280,16 @@ void ProcessMgr::OnHideProcess()
 
 	 auto result = OpenArk::IoCallDriver(param);
 	 qDebug() << "hide" << result;
+
+}
+#include <qdialog.h>
+void ProcessMgr::OnLookProcMod()
+{
+	
+
+	ModuleView *modView = new ModuleView(this);
+	modView->setWindowTitle("dddddddd");
+	modView->show();
 
 }
 

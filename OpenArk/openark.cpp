@@ -4,15 +4,12 @@
 #include "common.h"
 
 
-namespace Ark {
+#define ARKNAMESPACE
+
+#include "arknamespace.h"
 
 
-	
 
-	 HANDLE Device;
-	 OpenArk* Instance;
-
-};
 
 OpenArk::OpenArk(QWidget *parent)
 	: QMainWindow(parent)

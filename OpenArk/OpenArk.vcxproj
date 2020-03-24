@@ -114,10 +114,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ModuleView.cpp" />
     <ClCompile Include="mysortmodel.cpp" />
     <ClCompile Include="objdirectory.cpp" />
     <ClCompile Include="openark.cpp" />
     <ClCompile Include="processmgr.cpp" />
+    <ClCompile Include="StdDialog.cpp" />
     <ClCompile Include="stdtable.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +178,8 @@
   <ItemGroup>
     <ClInclude Include="arknamespace.h" />
     <ClInclude Include="common.h" />
+    <ClInclude Include="ModuleView.h" />
+    <ClInclude Include="StdDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

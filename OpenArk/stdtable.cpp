@@ -39,4 +39,5 @@ void StdTable::InitStdTableView()
 	 mTableView->horizontalHeader()->setHighlightSections(false);//不高亮标题
 	
 	
+	
 }

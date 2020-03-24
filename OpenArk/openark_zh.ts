@@ -2,6 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>ModuleView</name>
+    <message>
+        <location filename="ModuleView.cpp" line="19"/>
+        <source>mod path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ModuleView.cpp" line="19"/>
+        <source>base addr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ModuleView.cpp" line="19"/>
+        <source>mod size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ModuleView.cpp" line="19"/>
+        <source>company</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OpenArkClass</name>
     <message>
         <location filename="openark.ui" line="14"/>
@@ -27,52 +50,62 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="131"/>
+        <location filename="processmgr.cpp" line="135"/>
         <source>deny</source>
         <translation>拒绝</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="179"/>
-        <source>hide process</source>
-        <translation type="unfinished"></translation>
+        <location filename="processmgr.cpp" line="187"/>
+        <source>refresh</source>
+        <translation>刷新</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="237"/>
+        <location filename="processmgr.cpp" line="188"/>
+        <source>hide process</source>
+        <translation>隐藏进程</translation>
+    </message>
+    <message>
+        <location filename="processmgr.cpp" line="189"/>
+        <source>look process moudle</source>
+        <translation>查看进程模块</translation>
+    </message>
+    <message>
+        <location filename="processmgr.cpp" line="256"/>
         <source>Processes: %1, Hidden Processes: %2, Ring3 Inaccessible Processes: %3</source>
         <translation>进程：%1，隐藏进程：%d,应用层不可访问进程：%d</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>Process</source>
         <translation>进程</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>PID</source>
         <translation>进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>PPID</source>
         <translation>父进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>Path</source>
         <translation>映像路径</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>Eprocess</source>
         <translation>EPROCESS</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>Access</source>
         <translation>应用层访问状态</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="270"/>
+        <location filename="processmgr.cpp" line="296"/>
         <source>Company Name</source>
         <translation>文件厂商</translation>
     </message>
