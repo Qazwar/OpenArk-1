@@ -245,8 +245,17 @@ void ProcessMgr::OnHideProcess()
 	 auto index = ui.tableView->currentIndex();
 	 int row = index.row();
 	 QModelIndex idIndex = mSortModel->index(row, PHI::Pid);
-	 auto data = mSortModel->data(idIndex);
-	 qDebug() << data.toString();
+	 auto procId = mSortModel->data(idIndex).toLongLong();
+
+	 ParamInfo param;
+	 param.pInData = (PCHAR)&procId;
+	 param.cbInData = 8;
+	 param.pOutData = 0;
+	 param.cbOutData = 0;
+	 param.FunIdx = SYSCALL::HideProcess;
+
+	 auto result = OpenArk::IoCallDriver(param);
+	 qDebug() << "hide" << result;
 
 }
 
