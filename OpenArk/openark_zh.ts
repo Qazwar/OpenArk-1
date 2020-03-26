@@ -4,24 +4,29 @@
 <context>
     <name>ModuleView</name>
     <message>
-        <location filename="ModuleView.cpp" line="19"/>
+        <location filename="ModuleView.cpp" line="20"/>
         <source>mod path</source>
-        <translation type="unfinished"></translation>
+        <translation>模块路径</translation>
     </message>
     <message>
-        <location filename="ModuleView.cpp" line="19"/>
+        <location filename="ModuleView.cpp" line="20"/>
         <source>base addr</source>
-        <translation type="unfinished"></translation>
+        <translation>基地址</translation>
     </message>
     <message>
-        <location filename="ModuleView.cpp" line="19"/>
+        <location filename="ModuleView.cpp" line="20"/>
         <source>mod size</source>
-        <translation type="unfinished"></translation>
+        <translation>大小</translation>
     </message>
     <message>
-        <location filename="ModuleView.cpp" line="19"/>
+        <location filename="ModuleView.cpp" line="20"/>
         <source>company</source>
-        <translation type="unfinished"></translation>
+        <translation>文件厂商</translation>
+    </message>
+    <message>
+        <location filename="ModuleView.cpp" line="74"/>
+        <source>[%1],Processes mods: %2</source>
+        <translation>[%1],进程模块:%2</translation>
     </message>
 </context>
 <context>
@@ -75,37 +80,37 @@
         <translation>进程：%1，隐藏进程：%d,应用层不可访问进程：%d</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>Process</source>
         <translation>进程</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>PID</source>
         <translation>进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>PPID</source>
         <translation>父进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>Path</source>
         <translation>映像路径</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>Eprocess</source>
         <translation>EPROCESS</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>Access</source>
         <translation>应用层访问状态</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="296"/>
+        <location filename="processmgr.cpp" line="301"/>
         <source>Company Name</source>
         <translation>文件厂商</translation>
     </message>

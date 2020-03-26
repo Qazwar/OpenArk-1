@@ -76,6 +76,9 @@
     <QtMoc Include="stdtable.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="ModuleView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\openark_zh.qm">
@@ -117,9 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModuleView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdDialog.h">

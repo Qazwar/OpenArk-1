@@ -1,6 +1,6 @@
 #pragma once
 #include "openark.h"
-
+#include "processmgr.h"
 
 #ifdef ARKNAMESPACE
 #define EXTERN 
@@ -15,6 +15,7 @@ namespace Ark {
 	EXTERN HANDLE Device;
 	EXTERN OpenArk* Instance;
 	EXTERN ProcessMgr* Ps;
+	EXTERN char *Buffer;
 
 };
 

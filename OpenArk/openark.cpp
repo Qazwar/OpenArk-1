@@ -31,8 +31,12 @@ OpenArk::OpenArk(QWidget *parent)
 	CreateTabPage(objView, ui.tabObjDir,ui.tabWidget);
 	
 	
-	//初始化成员
-	Ark::Instance = this;
+	
+
+	if (InitArkNameSpace() == FALSE) {
+		qDebug() << "InitArkNameSpace";
+		exit(0);
+	}
 
 	//连接信号槽
 	connect(ui.tabWidget, &QTabWidget::currentChanged, this,&OpenArk::OnTabChanged);
@@ -123,6 +127,17 @@ bool OpenArk::InitTargetDev()
 	return result;
 }
 
+bool OpenArk::InitArkNameSpace()
+{
+	//初始化成员
+	Ark::Instance = this;
+	Ark::Buffer = new char[SIZE4M];
+	if (Ark::Buffer) {
+		return true;
+	}
+	return false;
+}
+
 
 
 void OpenArk::UnLoadTargetDev()
@@ -133,6 +148,8 @@ bool OpenArk::IoCallDriver(ParamInfo param)
 {
 
 	ULONG returnSize;
+
+	RtlZeroMemory((LPVOID)param.pOutData, param.cbOutData);
 
 	bool ret = DeviceIoControl(
 		Ark::Device,

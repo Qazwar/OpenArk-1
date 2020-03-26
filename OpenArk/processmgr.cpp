@@ -282,13 +282,15 @@ void ProcessMgr::OnHideProcess()
 	 qDebug() << "hide" << result;
 
 }
-#include <qdialog.h>
+
 void ProcessMgr::OnLookProcMod()
 {
-	
+	auto index = ui.tableView->currentIndex();
+	int row = index.row();
+	QModelIndex idIndex = mSortModel->index(row, PHI::Pid);
+	auto procId = mSortModel->data(idIndex).toLongLong();
 
-	ModuleView *modView = new ModuleView(this);
-	modView->setWindowTitle("dddddddd");
+	ModuleView *modView = new ModuleView(this, (LPVOID)procId, mSortModel->data(mSortModel->index(row, PHI::Name)).toString());
 	modView->show();
 
 }
