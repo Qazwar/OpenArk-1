@@ -46,12 +46,14 @@ public:
 	int ProcessProcInfo(StuProcInfo* procInfo, QVector<QProcInfo> &vprocInfo);
 	int GetHideProcessCnt(StuProcInfo* procInfo);
 	void SetContextMenu();
+
 	
 private slots:
 	void OnNouse();
 	void OnRefresh();
 	void OnHideProcess();
 	void OnLookProcMod();
+	void OnPrintTest();
 
 private:
 	void InitProcessView();

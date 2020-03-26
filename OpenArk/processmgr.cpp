@@ -187,6 +187,7 @@ void ProcessMgr::SetContextMenu()
 	mMenu.addAction(tr("refresh"), this,&ProcessMgr::OnRefresh);
 	mMenu.addAction(tr("hide process"), this,&ProcessMgr::OnHideProcess);
 	mMenu.addAction(tr("look process moudle"), this,&ProcessMgr::OnLookProcMod);
+	mMenu.addAction(tr("Print test"), this,&ProcessMgr::OnPrintTest);
 
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -231,7 +232,9 @@ void ProcessMgr::OnRefresh()
 	for (auto procInfo : vprocInfo)
 	{
 		 QStandardItem *nameItem = new  QStandardItem(procInfo.ProcName);
-		 nameItem->setIcon(GetFileIcon(procInfo.ProcPath));
+		 if (/* procInfo.ProcId.toULong() != 0 && procInfo.ProcId.toULong() != 4*/procInfo.ProcId != "0" && procInfo.ProcId != "4") {
+			 nameItem->setIcon(GetFileIcon(procInfo.ProcPath));
+		 }
 		 mSourceModel->setItem(row, PHI::Name, nameItem);
 		 mSourceModel->setItem(row, PHI::Pid, new QStandardItem(procInfo.ProcId));
 		 mSourceModel->setItem(row, PHI::PPid, new QStandardItem(procInfo.ParentProcId));
@@ -242,6 +245,7 @@ void ProcessMgr::OnRefresh()
 		 mSourceModel->setItem(row, PHI::Corp, new QStandardItem(procInfo.CorpName));
 		 row++;
 	}
+
 	mTableView->sortByColumn(PHI::Pid, Qt::SortOrder::AscendingOrder);
 	mTableView->resizeColumnToContents(PHI::Addr);
 
@@ -293,6 +297,23 @@ void ProcessMgr::OnLookProcMod()
 	ModuleView *modView = new ModuleView(this, (LPVOID)procId, mSortModel->data(mSortModel->index(row, PHI::Name)).toString());
 	modView->show();
 
+}
+
+void ProcessMgr::OnPrintTest()
+{
+	DWORD returnSize;
+	bool ret = DeviceIoControl(
+		Ark::Device,
+		IOCTRL_REC_FROM_APP,
+		0,
+		0,
+		NULL,
+		0,
+		&returnSize,
+		NULL);
+
+
+	
 }
 
 void ProcessMgr::InitProcessView()

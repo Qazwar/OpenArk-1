@@ -52,7 +52,7 @@
     <message>
         <location filename="processmgr.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="processmgr.cpp" line="135"/>
@@ -75,42 +75,47 @@
         <translation>查看进程模块</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="256"/>
-        <source>Processes: %1, Hidden Processes: %2, Ring3 Inaccessible Processes: %3</source>
-        <translation>进程：%1，隐藏进程：%d,应用层不可访问进程：%d</translation>
+        <location filename="processmgr.cpp" line="190"/>
+        <source>Print test</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="257"/>
+        <source>Processes: %1, Hidden Processes: %2, Ring3 Inaccessible Processes: %3</source>
+        <translation>进程：%1，隐藏进程：%2,应用层不可访问进程：%3</translation>
+    </message>
+    <message>
+        <location filename="processmgr.cpp" line="319"/>
         <source>Process</source>
         <translation>进程</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="319"/>
         <source>PID</source>
         <translation>进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="319"/>
         <source>PPID</source>
         <translation>父进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="319"/>
         <source>Path</source>
         <translation>映像路径</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="319"/>
         <source>Eprocess</source>
         <translation>EPROCESS</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="319"/>
         <source>Access</source>
         <translation>应用层访问状态</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="301"/>
+        <location filename="processmgr.cpp" line="319"/>
         <source>Company Name</source>
         <translation>文件厂商</translation>
     </message>

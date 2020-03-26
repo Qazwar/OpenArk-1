@@ -46,7 +46,7 @@ OpenArk::OpenArk(QWidget *parent)
 	InitTargetDev();
 
 	//œ‘ æ ”Õº
-	OnTabChanged(false);
+	//OnTabChanged(false);
 }
 
 void OpenArk::OnTabChanged(bool checked)
