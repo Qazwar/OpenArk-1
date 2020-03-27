@@ -9,7 +9,8 @@ public:
 	enum Col{
 		Path,
 		RegionBase,
-		RegionSize
+		RegionSize,
+		Company
 	};
 
 

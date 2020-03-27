@@ -46,6 +46,9 @@ bool MySortModel::SortBy::AsInt(const QString & a, const QString & b)
 	return (&a) < (&b);
 }
 
+
+
+
 bool MySortModel::SortBy::AsHex(const QString & a, const QString & b)
 {
 	if (a.toLongLong(0, 16) < b.toLongLong(0, 16))
