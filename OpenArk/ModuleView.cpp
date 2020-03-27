@@ -59,19 +59,23 @@ void ModuleView::OnRefresh()
 	int numberOfmod = modInfo->NumberOfMods;
 	for(int i = 0;i< numberOfmod;i++)
 	{
+		if (wcsicmp(modInfo[i].Path, L"C:\Windows\System32\apisetschema.dll") == 0) {
+			modInfo->NumberOfMods--;
+			continue;
+		}
 		QStandardItem *nameItem = new  QStandardItem( QString::fromWCharArray(modInfo[i].Path));
 		mSourceModel->setItem(i, Col::Path, nameItem);
-		QStandardItem *modbaseItem = new  QStandardItem(QString::number(modInfo->RegionBase,16));
+		QStandardItem *modbaseItem = new  QStandardItem(QString::number(modInfo[i].RegionBase,16));
 		mSourceModel->setItem(i, Col::RegionBase, modbaseItem);
-		QStandardItem *modsizeItem = new  QStandardItem(QString::number(modInfo->RegionSize,16));
+		QStandardItem *modsizeItem = new  QStandardItem(QString::number(modInfo[i].RegionSize,16));
 		mSourceModel->setItem(i, Col::RegionSize, modsizeItem);
-		numberOfmod++;
+		
 	}
 	mTableView->sortByColumn(Col::RegionBase, Qt::SortOrder::AscendingOrder);
 	mTableView->resizeColumnToContents(Col::RegionBase);
 
 
-	QString title = QString(tr("[%1],Processes mods: %2")).arg(mProcName).arg(numberOfmod);
+	QString title = QString(tr("[%1],Processes mods: %2")).arg(mProcName).arg(modInfo->NumberOfMods);
 	this->setWindowTitle(title);
 }
 
