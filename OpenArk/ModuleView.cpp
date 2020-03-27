@@ -75,7 +75,7 @@ void ModuleView::OnRefresh()
 		mSourceModel->setItem(i, Col::RegionBase, modbaseItem);
 		QStandardItem *modsizeItem = new  QStandardItem(ToHexQstring(modInfo->RegionSize));
 		mSourceModel->setItem(i, Col::RegionSize, modsizeItem);
-		QStandardItem *companyItem = new QStandardItem(Ark::Ps->GetCompanyName(QString::fromWCharArray(modInfo[i].Path)));
+		QStandardItem *companyItem = new QStandardItem(Ark::Ps->GetCompanyName(QString::fromWCharArray(modInfo->Path)));
 		mSourceModel->setItem(i, Col::Company, companyItem);
 		modInfo++;
 	}
