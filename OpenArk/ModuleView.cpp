@@ -27,8 +27,8 @@ void ModuleView::InitView()
 	mTableView->setColumnWidth(Col::RegionBase,130);
 	mTableView->setColumnWidth(Col::RegionSize,130);
 	mTableView->setColumnWidth(Col::Company,150);
-	QSize size = mTableView->size();
-	mTableView->resize(1000, size.height());
+	
+	this->resize(700,300);
 	SetContextMenu();
 
 	OnRefresh();
