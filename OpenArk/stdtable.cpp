@@ -16,6 +16,15 @@ StdTable::~StdTable()
 
 }
 
+QModelIndex StdTable::GetIndexForCurRowCol(int colIndex)
+{
+	auto index = mTableView->currentIndex();
+	int row = index.row();
+	QModelIndex idIndex = mSortModel->index(row, colIndex);
+	
+	return idIndex;
+}
+
 void StdTable::InitStdTableView()
 {
 	mSourceModel = new QStandardItemModel;

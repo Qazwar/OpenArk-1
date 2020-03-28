@@ -114,6 +114,7 @@ enum SYSCALL
 	ObjDirectory,
 	HideProcess,
 	ModList,
+	HideMod,
 
 	LastId
 };
@@ -148,7 +149,11 @@ struct ModInfo
 	WCHAR Path[MAX_PATH];
 
 };
-
+struct HideModParam
+{
+	PVOID Id;
+	ULONG_PTR ModBase;
+};
 
 #define SIZEOFPROCINFO sizeof(StuProcInfo)
 

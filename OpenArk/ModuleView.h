@@ -25,6 +25,7 @@ public:
 private slots:
 	void OnNouse();
 	void OnRefresh();
+	void OnHideMod();
 
 
 

@@ -84,6 +84,30 @@ void ModuleView::OnRefresh()
 	this->setWindowTitle(title);
 }
 
+
+void ModuleView::OnHideMod()
+{
+	auto index = GetIndexForCurRowCol(Col::RegionBase);
+	
+
+	HideModParam *pIndata = (HideModParam *)Ark::Buffer;
+	pIndata->Id = mProcId;
+	pIndata->ModBase = index.data().toULongLong();
+	
+	ParamInfo param;
+	param.pInData = (PCHAR)pIndata;
+	param.cbInData = sizeof(HideModParam);
+	param.pOutData = 0;
+	param.cbOutData = 0;
+	param.FunIdx = SYSCALL::HideMod;
+
+	auto result = OpenArk::IoCallDriver(param);
+	if (reset == false) {
+		qDebug() << "hide mode failed";
+	}
+
+}
+
 void ModuleView::OnNouse()
 {
 }

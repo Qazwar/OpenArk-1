@@ -11,7 +11,7 @@ class StdTable : public QWidget
 public:
 	StdTable(QWidget *parent = Q_NULLPTR);
 	~StdTable();
-
+	QModelIndex GetIndexForCurRowCol(int colIndex);
 private:
 	void InitStdTableView();
 
