@@ -95,16 +95,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="objdirectory.ui">
+    <QtUic Include="ui\objdirectory.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="openark.ui">
+    <QtUic Include="ui\openark.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="processmgr.ui">
+    <QtUic Include="ui\processmgr.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="stdtable.ui">
+    <QtUic Include="ui\stdtable.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -37,6 +37,18 @@ void ModuleView::InitView()
 
 void ModuleView::SetContextMenu()
 {
+	mMenu.addAction(tr("refresh"), this, &ModuleView::OnRefresh);
+	mMenu.addAction(tr("hide moudle"), this, &ModuleView::OnHideMod);
+
+	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+	connect(this, &ProcessMgr::customContextMenuRequested, this, [=](const QPoint &pos)
+		{
+			mMenu.exec(QCursor::pos());
+
+		}
+	);
+
+
 }
 
 void ModuleView::OnRefresh()
@@ -68,6 +80,8 @@ void ModuleView::OnRefresh()
 		{
 			modInfo++;
 			numberOfmod--;
+			if (i >= numberOfmod)
+				break;
 		}
 		QStandardItem *nameItem = new  QStandardItem( QString::fromWCharArray(modInfo->Path));
 		mSourceModel->setItem(i, Col::Path, nameItem);
@@ -82,6 +96,30 @@ void ModuleView::OnRefresh()
 	mTableView->sortByColumn(Col::RegionBase, Qt::SortOrder::AscendingOrder);
 	QString title = QString(tr("[%1],Processes mods: %2")).arg(mProcName).arg(numberOfmod);
 	this->setWindowTitle(title);
+}
+
+
+void ModuleView::OnHideMod()
+{
+	auto index = GetIndexForCurRowCol(Col::RegionBase);
+	
+
+	HideModParam *pIndata = (HideModParam *)Ark::Buffer;
+	pIndata->Id = mProcId;
+	pIndata->ModBase = index.data().toULongLong();
+	
+	ParamInfo param;
+	param.pInData = (PCHAR)pIndata;
+	param.cbInData = sizeof(HideModParam);
+	param.pOutData = 0;
+	param.cbOutData = 0;
+	param.FunIdx = SYSCALL::HideMod;
+
+	auto result = OpenArk::IoCallDriver(param);
+	if (reset == false) {
+		qDebug() << "hide mode failed";
+	}
+
 }
 
 void ModuleView::OnNouse()

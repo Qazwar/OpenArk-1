@@ -187,7 +187,7 @@ void ProcessMgr::SetContextMenu()
 	mMenu.addAction(tr("refresh"), this,&ProcessMgr::OnRefresh);
 	mMenu.addAction(tr("hide process"), this,&ProcessMgr::OnHideProcess);
 	mMenu.addAction(tr("look process moudle"), this,&ProcessMgr::OnLookProcMod);
-	mMenu.addAction(tr("Print test"), this,&ProcessMgr::OnPrintTest);
+	//mMenu.addAction(tr("Print test"), this,&ProcessMgr::OnPrintTest);
 
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
