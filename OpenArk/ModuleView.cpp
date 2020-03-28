@@ -76,7 +76,7 @@ void ModuleView::OnRefresh()
 	int numberOfmod = modInfo->NumberOfMods;
 	for(int i = 0;i< numberOfmod;i++)
 	{
-		if (wcsicmp(modInfo[i].Path, L"C:\\Windows\\System32\\apisetschema.dll") == 0) 
+		if (wcsicmp(modInfo->Path, L"C:\\Windows\\System32\\apisetschema.dll") == 0) 
 		{
 			modInfo++;
 			numberOfmod--;
