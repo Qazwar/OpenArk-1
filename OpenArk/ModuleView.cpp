@@ -76,7 +76,7 @@ void ModuleView::OnRefresh()
 	int numberOfmod = modInfo->NumberOfMods;
 	for(int i = 0;i< numberOfmod;i++)
 	{
-		if (wcsicmp(modInfo[i].Path, L"C:\\Windows\\System32\\apisetschema.dll") == 0) 
+		if (wcsicmp(modInfo->Path, L"C:\\Windows\\System32\\apisetschema.dll") == 0) 
 		{
 			modInfo++;
 			numberOfmod--;
@@ -89,7 +89,7 @@ void ModuleView::OnRefresh()
 		mSourceModel->setItem(i, Col::RegionBase, modbaseItem);
 		QStandardItem *modsizeItem = new  QStandardItem(ToHexQstring(modInfo->RegionSize));
 		mSourceModel->setItem(i, Col::RegionSize, modsizeItem);
-		QStandardItem *companyItem = new QStandardItem(Ark::Ps->GetCompanyName(QString::fromWCharArray(modInfo[i].Path)));
+		QStandardItem *companyItem = new QStandardItem(Ark::Ps->GetCompanyName(QString::fromWCharArray(modInfo->Path)));
 		mSourceModel->setItem(i, Col::Company, companyItem);
 		modInfo++;
 	}
