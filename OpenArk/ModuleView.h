@@ -30,7 +30,8 @@ private slots:
 
 
 
-
+private:
+	QMenu mMenu;
 
 
 };

@@ -37,6 +37,18 @@ void ModuleView::InitView()
 
 void ModuleView::SetContextMenu()
 {
+	mMenu.addAction(tr("refresh"), this, &ModuleView::OnRefresh);
+	mMenu.addAction(tr("hide moudle"), this, &ModuleView::OnHideMod);
+
+	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+	connect(this, &ProcessMgr::customContextMenuRequested, this, [=](const QPoint &pos)
+		{
+			mMenu.exec(QCursor::pos());
+
+		}
+	);
+
+
 }
 
 void ModuleView::OnRefresh()
@@ -68,6 +80,8 @@ void ModuleView::OnRefresh()
 		{
 			modInfo++;
 			numberOfmod--;
+			if (i >= numberOfmod)
+				break;
 		}
 		QStandardItem *nameItem = new  QStandardItem( QString::fromWCharArray(modInfo->Path));
 		mSourceModel->setItem(i, Col::Path, nameItem);
