@@ -106,7 +106,7 @@ void ModuleView::OnHideMod()
 
 	HideModParam *pIndata = (HideModParam *)Ark::Buffer;
 	pIndata->Id = mProcId;
-	pIndata->ModBase = index.data().toULongLong();
+	pIndata->ModBase = index.data().toString().toULongLong(0, 16);;
 	
 	ParamInfo param;
 	param.pInData = (PCHAR)pIndata;
