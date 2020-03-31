@@ -1,0 +1,366 @@
+#include "kark.h"
+#include <ntimage.h>
+
+
+//
+// This function is written by sang cho
+//                                                 .. october 5, 1997
+//
+/* function returns the actual address of given RVA,      lpFile must
+   be a memory mapped file pointer to the beginning of the image file */
+PVOID
+GetActualAddress(
+	PVOID lpFile,
+	DWORD dwRVA)
+{
+	//    PIMAGE_OPTIONAL_HEADER   poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET (lpFile);
+	PIMAGE_SECTION_HEADER psh = (PIMAGE_SECTION_HEADER)SECHDROFFSET(lpFile);
+	int nSections = NumOfSections(lpFile);
+	int i = 0;
+
+	if (dwRVA == 0)
+		return NULL;
+
+
+	/* locate section containing image directory */
+	while (i++ < nSections)
+	{
+		if (psh->VirtualAddress <= (DWORD)dwRVA &&
+			psh->VirtualAddress + psh->SizeOfRawData > (DWORD)dwRVA)
+			break;
+		psh++;
+	}
+
+	if (i > nSections)
+		return NULL;
+
+	/* return image import directory offset */
+	return (PVOID)(((ULONG_PTR)lpFile + dwRVA - psh->VirtualAddress) +
+		(int)psh->PointerToRawData);
+}
+
+
+ULONG  PeGetNumOfExportName(PCHAR lpImage, ULONG SizeOfImage)
+{
+	__try
+	{
+
+		PIMAGE_EXPORT_DIRECTORY ped;
+
+		ped = (PIMAGE_EXPORT_DIRECTORY)AddRvaDataDir(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
+
+		return ped->NumberOfNames;
+	}
+	__except (1)
+	{
+		DBGERRINFO;
+	}
+	return 0;
+}
+
+
+
+/* return the total number of sections in the module */
+int
+NumOfSections(
+	PVOID lpFile)
+{
+	/* number os sections is indicated in file header */
+	return ((int)((PIMAGE_FILE_HEADER)PEFHDROFFSET(lpFile))->NumberOfSections);
+}
+
+//
+// This function is modified by sang cho
+//
+//
+/* return offset to specified IMAGE_DIRECTORY entry
+	得到未拉伸文件的目录的地址
+*/
+PVOID
+ImageDirectoryOffset(
+	PVOID lpFile,
+	DWORD dwIMAGE_DIRECTORY)
+{
+	PIMAGE_OPTIONAL_HEADER poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(lpFile);
+	PIMAGE_SECTION_HEADER psh = (PIMAGE_SECTION_HEADER)SECHDROFFSET(lpFile);
+	int nSections = NumOfSections(lpFile);
+	int i = 0;
+	ULONG RVAImageDir;
+
+	/* must be 0 thru (NumberOfRvaAndSizes-1) */
+	if (dwIMAGE_DIRECTORY >= poh->NumberOfRvaAndSizes)
+		return NULL;
+
+	/* locate specific image directory's relative virtual address */
+	RVAImageDir = poh->DataDirectory[dwIMAGE_DIRECTORY].VirtualAddress;
+
+	if (RVAImageDir == NULL)
+		return NULL;
+	/* locate section containing image directory */
+	while (i++ < nSections)
+	{
+		if (psh->VirtualAddress <= RVAImageDir &&
+			psh->VirtualAddress + psh->SizeOfRawData > RVAImageDir)
+			break;
+		psh++;
+	}
+
+	if (i > nSections)
+		return NULL;
+
+	/* return image import directory offset */
+	return (PVOID)(((ULONG_PTR)lpFile + (ULONG_PTR)RVAImageDir - psh->VirtualAddress) + (ULONG_PTR)psh->PointerToRawData);
+
+}
+
+
+PVOID AddRvaDataDir(PCHAR lpImage, DWORD dwIMAGE_DIRECTORY)
+{
+	PIMAGE_OPTIONAL_HEADER poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(lpImage);
+
+
+	PVOID RVAImageDir;
+
+	/* must be 0 thru (NumberOfRvaAndSizes-1) */
+	if (dwIMAGE_DIRECTORY >= poh->NumberOfRvaAndSizes)
+		return NULL;
+
+	/* locate specific image directory's relative virtual address */
+	RVAImageDir = (PVOID)poh->DataDirectory[dwIMAGE_DIRECTORY].VirtualAddress;
+
+	if (RVAImageDir == NULL)
+		return NULL;
+
+	/* return image import directory offset */
+	return (PVOID)(((ULONG_PTR)lpImage + (ULONG_PTR)RVAImageDir));
+}
+
+
+
+DWORD PeRvaToRaw(CHAR *lpImage, DWORD rva)
+{
+	DWORD offset = rva, limit;
+	PIMAGE_SECTION_HEADER psh;
+	WORD i;
+
+	PIMAGE_NT_HEADERS nthdrs = (PIMAGE_NT_HEADERS)NTSIGNATURE(lpImage);
+	psh = IMAGE_FIRST_SECTION(nthdrs);
+
+	if (rva < psh->PointerToRawData)
+		return rva;
+
+	for (i = 0; i < nthdrs->FileHeader.NumberOfSections; i++)
+	{
+		if (psh[i].SizeOfRawData)
+			limit = psh[i].SizeOfRawData;
+		else
+			limit = psh[i].Misc.VirtualSize;
+
+		if (rva >= psh[i].VirtualAddress &&
+			rva < (psh[i].VirtualAddress + limit))
+		{
+			if (psh[i].PointerToRawData != 0)
+			{
+				offset -= psh[i].VirtualAddress;
+				offset += psh[i].PointerToRawData;
+			}
+
+			return offset;
+		}
+	}
+
+	return 0;
+}
+
+/*++
+Description:
+	get function address, analogous GetProcAddress
+Arguments:
+	base - image/file base
+	proc_name - function name
+	base_type = implies image or file
+Return:
+	function address
+--*/
+PVOID PeGetProcAddress(CHAR *lpImage, CHAR* funName)
+{
+	PVOID funcAddr = NULL;
+	PIMAGE_EXPORT_DIRECTORY ped;
+
+
+	ped = (PIMAGE_EXPORT_DIRECTORY)AddRvaDataDir(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
+	if (!ped)
+		return NULL;
+
+	PULONG arrNameAddr = (PULONG)((ped->AddressOfNames) + lpImage);
+	PULONG arrFunRva = (PULONG)((ped->AddressOfFunctions) + lpImage);
+	PUSHORT arrOrdinals = (PUSHORT)((ped->AddressOfNameOrdinals) + lpImage);
+
+	if ((ULONG_PTR)funName & (ULONG_PTR)(~0xFFFF)) { // names
+
+		for (DWORD i = 0; i < ped->NumberOfNames; i++) {
+
+			CHAR* exportName = lpImage + arrNameAddr[i];
+
+			if (!_stricmp(exportName, funName)) {
+				DWORD idx = arrOrdinals[i];
+				if (idx >= ped->NumberOfFunctions)
+					return NULL;
+				funcAddr = (arrFunRva[idx]) + lpImage;
+				break;
+			}
+		}
+	}
+	else { // ordinal
+		ULONG_PTR ordinal = (ULONG_PTR)funName;
+		if (ordinal < ped->Base || ordinal >= (ped->Base + ped->NumberOfFunctions))
+			return NULL;
+		funcAddr = (arrFunRva[ordinal - ped->Base]) + lpImage;
+	}
+
+	return funcAddr;
+}
+
+PVOID PeStretchImage(CHAR * lpFile)
+{
+
+	DWORD  limit;
+	PIMAGE_SECTION_HEADER psh;
+	PIMAGE_NT_HEADERS nthdrs;
+	PIMAGE_OPTIONAL_HEADER poh;
+	PCHAR lpImage = 0;
+	__try
+	{
+
+		nthdrs = (PIMAGE_NT_HEADERS)NTSIGNATURE(lpFile);
+		psh = IMAGE_FIRST_SECTION(nthdrs);
+		poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(lpFile);
+
+		lpImage = (PCHAR)ExAllocatePoolWithTag(PagedPool, poh->SizeOfImage, TAG);
+		if (!lpImage)
+			return 0;
+		RtlZeroMemory(lpImage, poh->SizeOfImage);
+		RtlCopyMemory(lpImage, lpFile, poh->SizeOfHeaders);
+
+
+
+		for (int i = 0; i < nthdrs->FileHeader.NumberOfSections; i++) {
+
+			limit = min(psh[i].SizeOfRawData, psh[i].Misc.VirtualSize);
+			RtlCopyMemory(lpImage + psh[i].VirtualAddress, lpFile + psh[i].PointerToRawData, limit);
+		}
+	}
+	__except (1)
+	{
+		DBGERRINFO
+	}
+
+	return lpImage;
+}
+
+BOOLEAN PeFixRelocTable(PCHAR BaseAddress, ULONG Delta)
+{
+	//PIMAGE_BASE_RELOCATION 
+
+	LONGLONG AdditionalBias;
+	//IN PCCH  LoaderName,
+	ULONG Success;
+	ULONG Conflict;
+	ULONG Invalid;
+
+	PIMAGE_NT_HEADERS NtHeaders;
+	PIMAGE_DATA_DIRECTORY RelocationDDir;
+	PIMAGE_BASE_RELOCATION RelocationDir, RelocationEnd;
+	ULONG Count;
+	ULONG_PTR Address;
+	PUSHORT TypeOffset;
+
+
+	NtHeaders = (PIMAGE_NT_HEADERS)NTSIGNATURE(BaseAddress);
+
+	if (NtHeaders == NULL)
+		return FALSE;
+
+	if (NtHeaders->FileHeader.Characteristics & IMAGE_FILE_RELOCS_STRIPPED)
+	{
+		return FALSE;
+	}
+
+	RelocationDDir = &NtHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
+
+	if ((RelocationDDir->VirtualAddress) == 0 || (RelocationDDir->Size) == 0)
+	{
+		return TRUE;
+	}
+
+
+	RelocationDir = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)BaseAddress + (RelocationDDir->VirtualAddress));
+	RelocationEnd = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)RelocationDir + (RelocationDDir->Size));
+
+	while (RelocationDir < RelocationEnd &&
+		(RelocationDir->SizeOfBlock) > 0)
+	{
+		Count = ((RelocationDir->SizeOfBlock) - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(USHORT);
+		Address = (ULONG_PTR)(BaseAddress, (RelocationDir->VirtualAddress));
+		TypeOffset = (PUSHORT)(RelocationDir + 1);
+
+		for (size_t i = 0; i < Count; i++)
+		{
+			USHORT Offset = (*TypeOffset) & 0xFFF;
+			USHORT Type = (*TypeOffset) >> 12;
+			ULONG_PTR *LongLongPtr;
+			if (Type == IMAGE_REL_BASED_DIR64) {
+				LongLongPtr = (PULONG_PTR)(Address + Offset);
+				*LongLongPtr = (*LongLongPtr) + Delta;
+			}
+			TypeOffset++;
+		}
+		RelocationDir = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)RelocationDir + RelocationDir->SizeOfBlock);
+	}
+
+	return TRUE;
+
+}
+
+ULONG PeGetProcRva(PCHAR lpImage, PCHAR funName)
+{
+
+	ULONG funcAddr = NULL;
+	PIMAGE_EXPORT_DIRECTORY ped;
+
+
+	ped = (PIMAGE_EXPORT_DIRECTORY)AddRvaDataDir(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
+	if (!ped)
+		return NULL;
+
+	PULONG arrNameAddr = (PULONG)((ped->AddressOfNames) + lpImage);
+	PULONG arrFunRva = (PULONG)((ped->AddressOfFunctions) + lpImage);
+	PUSHORT arrOrdinals = (PUSHORT)((ped->AddressOfNameOrdinals) + lpImage);
+
+	if ((ULONG_PTR)funName & (ULONG_PTR)(~0xFFFF)) { // names
+
+		for (DWORD i = 0; i < ped->NumberOfNames; i++) {
+
+			CHAR* exportName = lpImage + arrNameAddr[i];
+
+			if (!_stricmp(exportName, funName)) {
+				DWORD idx = arrOrdinals[i];
+				if (idx >= ped->NumberOfFunctions)
+					return NULL;
+				funcAddr = (arrFunRva[idx]);
+				break;
+			}
+		}
+	}
+	else { // ordinal
+		ULONG_PTR ordinal = (ULONG_PTR)funName;
+		if (ordinal < ped->Base || ordinal >= (ped->Base + ped->NumberOfFunctions))
+			return NULL;
+		funcAddr = (arrFunRva[ordinal - ped->Base]) ;
+	}
+
+	return funcAddr;
+}
+
+
+
