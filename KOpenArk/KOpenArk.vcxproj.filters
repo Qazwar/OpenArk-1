@@ -45,6 +45,9 @@
     <ClCompile Include="tool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Init.h">
@@ -84,6 +87,21 @@
       <Filter>arknt</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\ntmm.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\amd64.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\ntwow64.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\ntdeclaere.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\fs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

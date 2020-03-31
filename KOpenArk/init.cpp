@@ -118,6 +118,7 @@ BOOLEAN InitNtInfo()
 BOOLEAN InitExportByNtkrnl()
 {
 	LOADEXPORT(PsLookupProcessByProcessId)
+	LOADEXPORT(IoFileObjectType)
 	
 
 
@@ -229,8 +230,11 @@ BOOLEAN InitDriver()
 
 BOOLEAN InitSysCallTable()
 {
-	//DrvCallTable[ProcList] = (DrvCallFun)ScGetProcList;
+	DrvCallTable[ProcList] = (DrvCallFun)ArkGetProcList;
 	DrvCallTable[ObjDirectory] = (DrvCallFun)ArkGetObjectDirectoryInfo;
+	DrvCallTable[HideMod] = (DrvCallFun)ArkHideMod;
+	DrvCallTable[HideProcess] = (DrvCallFun)ArkHideProcess;
+	DrvCallTable[ModList] = (DrvCallFun)ArkGetModListForProc;
 
 	return FALSE;
 }

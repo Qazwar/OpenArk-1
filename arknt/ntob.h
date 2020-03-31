@@ -2,8 +2,66 @@
 #define NTOB_H
 
 
+typedef struct _SECTION_OBJECT       // 6 elements, 0x30 bytes (sizeof) 
+{
+	/*0x000*/     VOID*        StartingVa;
+	/*0x008*/     VOID*        EndingVa;
+	/*0x010*/     VOID*        Parent;
+	/*0x018*/     VOID*        LeftChild;
+	/*0x020*/     VOID*        RightChild;
+	/*0x028*/     struct _SEGMENT_OBJECT* Segment;
+}SECTION_OBJECT, *PSECTION_OBJECT;
 
+typedef struct _EXHANDLE {
 
+	union {
+
+		struct {
+
+			//
+			//  Application available tag bits
+			//
+
+			ULONG TagBits : 2;
+
+			//
+			//  The handle table entry index
+			//
+
+			ULONG Index : 30;
+
+		};
+
+		HANDLE GenericHandleOverlay;
+
+#define HANDLE_VALUE_INC 4 // Amount to increment the Value to get to the next handle
+
+		ULONG_PTR Value;
+	};
+
+} EXHANDLE, *PEXHANDLE;
+
+typedef struct _HANDLE_TABLE_ENTRY                  // 8 elements, 0x10 bytes (sizeof) 
+{
+	union                                           // 4 elements, 0x8 bytes (sizeof)  
+	{
+		/*0x000*/         VOID*        Object;
+		/*0x000*/         ULONG32      ObAttributes;
+		/*0x000*/         struct _HANDLE_TABLE_ENTRY_INFO* InfoTable;
+		/*0x000*/         UINT64       Value;
+	};
+	union                                           // 3 elements, 0x8 bytes (sizeof)  
+	{
+		/*0x008*/         ULONG32      GrantedAccess;
+		struct                                      // 2 elements, 0x8 bytes (sizeof)  
+		{
+			/*0x008*/             UINT16       GrantedAccessIndex;
+			/*0x00A*/             UINT16       CreatorBackTraceIndex;
+			/*0x00C*/             UINT8        _PADDING0_[0x4];
+		};
+		/*0x008*/         ULONG32      NextFreeTableEntry;
+	};
+}HANDLE_TABLE_ENTRY, *PHANDLE_TABLE_ENTRY;
 //
 // Object Directory Structure
 //

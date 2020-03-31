@@ -15,6 +15,8 @@
 #include "ob.h"
 #include "dyndata.h"
 #include "tool.h"
+#include "fs.h"
+#include "process.h"
 
 
 

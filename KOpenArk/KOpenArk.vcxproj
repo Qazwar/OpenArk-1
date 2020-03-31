@@ -170,13 +170,19 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ob.cpp" />
     <ClCompile Include="pe.cpp" />
+    <ClCompile Include="process.cpp" />
     <ClCompile Include="tool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\arknt\amd64.h" />
     <ClInclude Include="..\arknt\arknt.h" />
+    <ClInclude Include="..\arknt\fs.h" />
+    <ClInclude Include="..\arknt\ntdeclaere.h" />
     <ClInclude Include="..\arknt\ntex.h" />
     <ClInclude Include="..\arknt\ntldr.h" />
+    <ClInclude Include="..\arknt\ntmm.h" />
     <ClInclude Include="..\arknt\ntob.h" />
+    <ClInclude Include="..\arknt\ntwow64.h" />
     <ClInclude Include="kark.h" />
     <ClInclude Include="Init.h" />
     <ClInclude Include="main.h" />

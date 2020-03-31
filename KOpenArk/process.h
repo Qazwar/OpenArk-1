@@ -1,7 +1,5 @@
 #pragma once
-#include "ntkrnl.h"
-#include "common.h"
-#include "struct.h"
+
 
 //函数声明
 //进程
