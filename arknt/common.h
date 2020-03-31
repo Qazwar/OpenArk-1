@@ -5,15 +5,16 @@
 
 
 
-#if (ARK_MODE != ARK_MODE_KERNEL)
+#ifdef ARK_MODE_USER
 #include "qt_windows.h"
+
 
 
 #else
 #define MAX_PATH 260
 
 
-#endif // OPENARK
+#endif // ARK_MODE_USER
 
 //#######################################################################################
 // D E F I N E S

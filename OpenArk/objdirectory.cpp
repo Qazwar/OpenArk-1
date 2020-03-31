@@ -90,7 +90,7 @@ void ObjectView::OnRefresh()
 		temp.cbInData = 0;
 		temp.pOutData = pBuf;
 		temp.cbOutData = SIZE4M;
-		temp.FunIdx = SYSCALL::ObjDirectory;
+		temp.FunIdx = DrvCall::ObjDirectory;
 
 		 auto result =  OpenArk::IoCallDriver(temp);
 

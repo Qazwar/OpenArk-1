@@ -64,7 +64,7 @@ void ModuleView::OnRefresh()
 	param.cbInData = sizeof(mProcId);
 	param.pOutData = (PCHAR)modInfo;
 	param.cbOutData = SIZE4M;
-	param.FunIdx = SYSCALL::ModList;
+	param.FunIdx = DrvCall::ModList;
 
 	auto result = OpenArk::IoCallDriver(param);
 	if (reset == false) {
@@ -113,7 +113,7 @@ void ModuleView::OnHideMod()
 	param.cbInData = sizeof(HideModParam);
 	param.pOutData = 0;
 	param.cbOutData = 0;
-	param.FunIdx = SYSCALL::HideMod;
+	param.FunIdx = DrvCall::HideMod;
 
 	auto result = OpenArk::IoCallDriver(param);
 	if (reset == false) {

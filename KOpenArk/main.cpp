@@ -243,6 +243,7 @@ DispatchDeviceControl(IN PDEVICE_OBJECT pDevObj, IN PIRP pIrp)
 		RtlZeroMemory(pParem->pOutData, pParem->cbOutData);
 		__try
 		{
+			
 
 		status = DrvCallTable[pParem->FunIdx](pParem->pInData, pParem->cbInData, pParem->pOutData, pParem->cbOutData);
 		}

@@ -11,13 +11,6 @@
 #define NUMBER_HASH_BUCKETS 37
 #define OBJ_INVALID_SESSION_ID 0xFFFFFFFF
 
-typedef struct _OBJECT_DIRECTORY {
-	struct _OBJECT_DIRECTORY_ENTRY *HashBuckets[NUMBER_HASH_BUCKETS];
-	EX_PUSH_LOCK Lock;
-	struct _DEVICE_MAP *DeviceMap;
-	ULONG SessionId;
-} OBJECT_DIRECTORY, *POBJECT_DIRECTORY;
-// end_ntosp
 
 //
 // Object Directory Entry Structure

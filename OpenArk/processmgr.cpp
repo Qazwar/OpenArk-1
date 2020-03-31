@@ -216,7 +216,7 @@ void ProcessMgr::OnRefresh()
 	param.cbInData = 0;
 	param.pOutData = (PCHAR)buffer;
 	param.cbOutData = SIZE4M;
-	param.FunIdx = SYSCALL::ProcList;
+	param.FunIdx = DrvCall::ProcList;
 
 	auto result = OpenArk::IoCallDriver(param);
 	if (reset == false) {
@@ -280,7 +280,7 @@ void ProcessMgr::OnHideProcess()
 	 param.cbInData = 8;
 	 param.pOutData = 0;
 	 param.cbOutData = 0;
-	 param.FunIdx = SYSCALL::HideProcess;
+	 param.FunIdx = DrvCall::HideProcess;
 
 	 auto result = OpenArk::IoCallDriver(param);
 	 qDebug() << "hide" << result;

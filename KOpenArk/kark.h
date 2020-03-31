@@ -6,9 +6,8 @@
 
 #include <ntifs.h>
 #include <ntintsafe.h>
-#define ARK_MODE_KERNEL  0
-#define ARK_MODE_USER	1
-#define ARK_MODE ARK_MODE_KERNEL
+#define ARK_MODE_KERNEL  
+
 #include <arknt.h>
 #include "ntfill.h"
 #include "common.h"
