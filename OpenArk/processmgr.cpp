@@ -5,6 +5,7 @@
 #include "ModuleView.h"
 #include <qvector.h>
 #include <TlHelp32.h>
+#include "HandleView.h"
 
 #pragma comment (lib,"Version.lib")
 ProcessMgr::ProcessMgr(QWidget *parent)
@@ -296,6 +297,17 @@ void ProcessMgr::OnLookProcMod()
 	ModuleView *modView = new ModuleView(this, (LPVOID)procId, mSortModel->data(mSortModel->index(row, PHI::Name)).toString());
 	modView->show();
 
+}
+
+void ProcessMgr::OnLookProcHandle()
+{
+	auto Idindex = GetIndexForCurRowCol(Col::Pid);
+	auto nameIndex = GetIndexForCurRowCol(Col::Name);
+	QString procName;
+	auto procId = mSortModel->data(Idindex).toLongLong();
+	procName = mSortModel->data(nameIndex).toString();
+	HandleView *handleView = new HandleView(this, (LPVOID)procId, procName);
+	handleView->show();
 }
 
 void ProcessMgr::OnPrintTest()

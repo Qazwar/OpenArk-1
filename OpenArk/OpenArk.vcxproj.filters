@@ -62,24 +62,12 @@
     <ClCompile Include="qtwrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HandleView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="openark.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="mysortmodel.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="objdirectory.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="processmgr.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="stdtable.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="ModuleView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -119,13 +107,7 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="arknamespace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="qtwrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\arknt\common.h">

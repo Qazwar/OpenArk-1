@@ -17,7 +17,7 @@ class ProcessMgr : public StdTable
 
 public:
 
-	typedef enum  ProcHdeaderIdx {
+	typedef enum  Col {
 		Name,
 		Pid,
 		PPid,
@@ -53,6 +53,7 @@ private slots:
 	void OnRefresh();
 	void OnHideProcess();
 	void OnLookProcMod();
+	void OnLookProcHandle();
 	void OnPrintTest();
 
 private:
