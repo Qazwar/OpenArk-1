@@ -165,6 +165,7 @@
     <MASM Include="kasm.asm" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ex.cpp" />
     <ClCompile Include="fs.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="main.cpp" />
@@ -176,6 +177,7 @@
   <ItemGroup>
     <ClInclude Include="..\arknt\amd64.h" />
     <ClInclude Include="..\arknt\arknt.h" />
+    <ClInclude Include="..\arknt\common.h" />
     <ClInclude Include="..\arknt\fs.h" />
     <ClInclude Include="..\arknt\ntdeclaere.h" />
     <ClInclude Include="..\arknt\ntex.h" />
@@ -183,6 +185,7 @@
     <ClInclude Include="..\arknt\ntmm.h" />
     <ClInclude Include="..\arknt\ntob.h" />
     <ClInclude Include="..\arknt\ntwow64.h" />
+    <ClInclude Include="ex.h" />
     <ClInclude Include="kark.h" />
     <ClInclude Include="Init.h" />
     <ClInclude Include="main.h" />

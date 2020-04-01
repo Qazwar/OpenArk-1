@@ -4,7 +4,7 @@
 //函数声明
 //进程
 
-void ExEnumHandleTable(PHANDLE_TABLE pHandleTable, StuProcInfo *pOutData, ULONG cbOutData, EX_ENUMERATE_HANDLE_ROUTINE funEnumHandleProcedure, PVOID enumParam);
+void ArkEnumHandleTable(PHANDLE_TABLE pHandleTable, StuProcInfo *pOutData, ULONG cbOutData, ArkEX_ENUMERATE_HANDLE_ROUTINE funEnumHandleProcedure, PVOID enumParam);
 ULONG_PTR  PsGetProcessIdFromHandleTable(ULONG_PTR pEprocess);
 NTSTATUS  PsGetAllProcessInfomation(StuProcInfo *pOutData, ULONG cbOutData);
 void  PsGetProcessInfo(ULONG_PTR pObjectBody, StuProcInfo *pOutData, ULONG cbOutData, PVOID param);
@@ -17,6 +17,7 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path,_Inout
 
 void GetModInfoByAvlNode(PMMVAD vadNode,ModInfo *modInfo);
 void TraverseAvlMid(PMMVAD vadNode,ModInfo *modInfo);
+
 
 //调用函数
 BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);

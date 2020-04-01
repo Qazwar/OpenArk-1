@@ -93,7 +93,10 @@ BOOLEAN  ArkGetObjectDirectoryInfo(PCHAR pIndata, ULONG cbInData, PObInfo pOutDa
 	return true;
 
 }
-
+ PVOID ObpDecodeObject(PVOID Object)
+{
+	return (PVOID)((ULONG_PTR)Object & ~OBJ_HANDLE_ATTRIBUTES);
+}
 
 /**
  * Queries the name of a file object.

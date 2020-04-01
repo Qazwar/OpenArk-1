@@ -56,7 +56,7 @@ typedef BOOLEAN(*FunSysCall)(PCHAR pIndata, ULONG cbInData, PCHAR pOutData, ULON
 typedef PEPROCESS(*FunIoGetCurrentProcess)(VOID);
 typedef NTSTATUS(*FunPsLookupProcessByProcessId)(__in HANDLE ProcessId, __deref_out PEPROCESS *Process);
 typedef NTSTATUS(*FunPsAcquireProcessExitSynchronization)(__in  PEPROCESS Process);
-typedef void (*EX_ENUMERATE_HANDLE_ROUTINE)(ULONG_PTR pObject, StuProcInfo *pOutData, ULONG cbOutData, PVOID uEnumParam);
+typedef void (*ArkEX_ENUMERATE_HANDLE_ROUTINE)(ULONG_PTR pObject, StuProcInfo *pOutData, ULONG cbOutData, PVOID uEnumParam);
 	
 
 

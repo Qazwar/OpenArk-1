@@ -1,6 +1,6 @@
 #ifndef ARKNT_H
 #define ARKNT_H
-#include <ntdeclaere.h>
+//#include <ntdeclaere.h>
 #include <ntwow64.h>
 #include <ntldr.h>
 #include <ntex.h>

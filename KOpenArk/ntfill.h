@@ -38,6 +38,8 @@ ObReferenceObjectByName(
 );
 
 
+
+
 NTKERNELAPI
 NTSTATUS
 NTAPI
@@ -52,6 +54,20 @@ PsReleaseProcessExitSynchronization(
 	_In_ PEPROCESS Process
 );
 
+typedef BOOLEAN(*EX_ENUMERATE_HANDLE_ROUTINE)(
+	IN PHANDLE_TABLE_ENTRY HandleTableEntry,
+	IN HANDLE Handle,
+	IN PVOID EnumParameter
+	);
+
+NTKERNELAPI
+BOOLEAN
+ExEnumHandleTable(
+	__in PHANDLE_TABLE HandleTable,
+	__in EX_ENUMERATE_HANDLE_ROUTINE EnumHandleProcedure,
+	__in PVOID EnumParameter,
+	__out_opt PHANDLE Handle
+);
 
 #ifdef __cplusplus
 }

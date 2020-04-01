@@ -74,6 +74,7 @@ enum DrvCall
 	HideProcess,
 	ModList,
 	HideMod,
+	ProcHandleList,
 
 	LastId
 };
@@ -113,6 +114,17 @@ struct HideModParam
 	PVOID Id;
 	ULONG_PTR ModBase;
 };
+
+typedef struct ArkHandleInfo
+{
+	ULONG HandleCnt;
+	PVOID Object;
+	HANDLE Handle;
+	ULONG TypeIndex;
+	INT64 RefreceCount;
+	WCHAR HandleName[MAX_PATH];
+	WCHAR TypeName[MAX_PATH];
+}*PArkHandleInfo;
 
 
 

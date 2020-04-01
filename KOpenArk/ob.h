@@ -3,6 +3,7 @@
 
 
 
+PVOID ObpDecodeObject(PVOID Object);
 
 
 BOOLEAN  ArkGetObjectDirectoryInfo(PCHAR pIndata, ULONG cbInData, PObInfo pOutData, ULONG cbOutData);

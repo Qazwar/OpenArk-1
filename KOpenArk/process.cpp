@@ -250,9 +250,27 @@ BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, UL
 
 BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
 {
-	
+	PVOID procId = *(PVOID*)pIndata;
+	NTSTATUS st = STATUS_UNSUCCESSFUL;
+	PEPROCESS process;
+	PHANDLE_TABLE handleTable;
+	HANDLE handle;
 
-	return BOOLEAN();
+	ProbeForRead(pIndata, cbInData, 1);
+	st = PsLookupProcessByProcessId(procId, &process);
+	if (NT_SUCCESS(st))
+	{
+		ProbeForWrite(pOutData, cbOutData, 1);
+		handleTable = *(PHANDLE_TABLE*)PTR_ADD_OFFSET(process, NT::EPROCESS::ObjectTableOffset);
+		ExEnumHandleTable(handleTable, (EX_ENUMERATE_HANDLE_ROUTINE)ExEnumHandleCallBack, pOutData, &handle);
+	}
+
+	if (NT_SUCCESS(st))
+	{
+		ObDereferenceObject(process);
+	}
+
+	return true;
 }
 
 void GetModInfoByAvlNode(PMMVAD VadNode, ModInfo * ModInfo)
@@ -313,7 +331,7 @@ NTSTATUS  PsGetAllProcessInfomation(StuProcInfo *pOutData, ULONG cbOutData)
 	if (NT::PPspCidTable)
 	{
 		PspCidTable = *(PHANDLE_TABLE*)NT::PPspCidTable;
-		ExEnumHandleTable(PspCidTable, pOutData, cbOutData, PsGetProcessInfo, 0);
+		ArkEnumHandleTable(PspCidTable, pOutData, cbOutData, PsGetProcessInfo, 0);
 	}
 	if (pOutData->ProcessCnt)
 		return true;
@@ -373,7 +391,7 @@ ULONG_PTR  PsGetProcessIdFromHandleTable(ULONG_PTR pEprocess)
 	return GETQWORD(pHandleTable + NT::EPROCESS::HANDLE_TABLE::UniqueProcessIdOffset);
 }
 
-void ExEnumHandleTable(PHANDLE_TABLE pHandleTable, StuProcInfo *pOutData, ULONG cbOutData, EX_ENUMERATE_HANDLE_ROUTINE funEnumHandleProcedure, PVOID enumParam)
+void ArkEnumHandleTable(PHANDLE_TABLE pHandleTable, StuProcInfo *pOutData, ULONG cbOutData, ArkEX_ENUMERATE_HANDLE_ROUTINE funEnumHandleProcedure, PVOID enumParam)
 {
 
 	BOOLEAN ResultValue;

@@ -1,6 +1,9 @@
 #pragma once
 #pragma warning(disable:4091)
+
 typedef struct _ACCESS_REASONS;
+typedef struct PHANDLE_TABLE_ENTRY;
+typedef struct PHANDLE_TABLE;
 typedef struct _ACCESS_STATE;
 typedef struct _ACL;
 typedef struct _ACTIVATION_CONTEXT;

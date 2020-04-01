@@ -5,6 +5,16 @@
 //
 //  This is the sign low bit used to lock handle table entries
 //
+
+// OB
+
+// These definitions are no longer correct, but they produce correct results.
+
+#define OBJ_PROTECT_CLOSE		0x00000001
+#define OBJ_AUDIT_OBJECT_CLOSE  0x00000004
+#define OBJ_HANDLE_ATTRIBUTES (OBJ_PROTECT_CLOSE | OBJ_INHERIT | OBJ_AUDIT_OBJECT_CLOSE)
+
+
 #define MIDLEVEL_COUNT (PAGE_SIZE / sizeof(PHANDLE_TABLE_ENTRY))
 #define TABLE_PAGE_SIZE PAGE_SIZE
 #define LEVEL_CODE_MASK 3

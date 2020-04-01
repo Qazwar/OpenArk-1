@@ -48,6 +48,9 @@
     <ClCompile Include="process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Init.h">
@@ -103,6 +106,12 @@
     </ClInclude>
     <ClInclude Include="..\arknt\fs.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\common.h">
+      <Filter>arknt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

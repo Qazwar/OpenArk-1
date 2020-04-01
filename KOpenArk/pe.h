@@ -39,13 +39,13 @@ enum Pe
 			 sizeof (IMAGE_OPTIONAL_HEADER)))
 
 
-PVOID PeGetDataDirTable(PCHAR lpImage, DWORD dwIMAGE_DIRECTORY);
+PVOID PeGetDataDirTable(PCHAR lpImage, ULONG dwIMAGE_DIRECTORY);
 
 int
 NumOfSections(PVOID lpFile);
 	
 
-DWORD PeRvaToRaw(CHAR *lpImage, DWORD rva);
+ULONG PeRvaToRaw(CHAR *lpImage, ULONG rva);
 
 PVOID PeGetProcAddress(CHAR *lpImage, CHAR* funName);
 

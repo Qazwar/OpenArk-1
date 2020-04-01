@@ -17,6 +17,7 @@
 #include "tool.h"
 #include "fs.h"
 #include "process.h"
+#include "ex.h"
 
 
 
