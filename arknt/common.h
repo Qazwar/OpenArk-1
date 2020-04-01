@@ -28,7 +28,7 @@
 #define DEVICE_NAME                  L"\\Device\\devhunter"             // Driver Name
 #define SYMBOLIC_LINK_NAME           L"\\DosDevices\\hunter"            // Symbolic Link Name
 #define WIN32_LINK_NAME              "\\\\.\\hunter"                    // Win32 Link Name
-#define SERVICE_ANME                 "Qhunter"
+#define SERVICE_ANME                 "KOpenArk"
 
 //支持符号链接用户相关性
 #define SYMBOLIC_LINK_GLOBAL_NAME    L"\\DosDevices\\Global\\hunter"    // Symbolic Link Name

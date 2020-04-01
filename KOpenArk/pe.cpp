@@ -47,7 +47,7 @@ ULONG  PeGetNumOfExportName(PCHAR lpImage, ULONG SizeOfImage)
 
 		PIMAGE_EXPORT_DIRECTORY ped;
 
-		ped = (PIMAGE_EXPORT_DIRECTORY)AddRvaDataDir(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
+		ped = (PIMAGE_EXPORT_DIRECTORY)PeGetDataDirTable(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
 
 		return ped->NumberOfNames;
 	}
@@ -114,25 +114,25 @@ ImageDirectoryOffset(
 }
 
 
-PVOID AddRvaDataDir(PCHAR lpImage, DWORD dwIMAGE_DIRECTORY)
+PVOID PeGetDataDirTable(PCHAR lpImage, DWORD dirIndex)
 {
 	PIMAGE_OPTIONAL_HEADER poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(lpImage);
 
 
-	PVOID RVAImageDir;
+	ULONG dirRva;
 
 	/* must be 0 thru (NumberOfRvaAndSizes-1) */
-	if (dwIMAGE_DIRECTORY >= poh->NumberOfRvaAndSizes)
+	if (dirIndex >= poh->NumberOfRvaAndSizes)
 		return NULL;
 
 	/* locate specific image directory's relative virtual address */
-	RVAImageDir = (PVOID)poh->DataDirectory[dwIMAGE_DIRECTORY].VirtualAddress;
+	dirRva = poh->DataDirectory[dirIndex].VirtualAddress;
 
-	if (RVAImageDir == NULL)
+	if (dirRva == NULL)
 		return NULL;
 
 	/* return image import directory offset */
-	return (PVOID)(((ULONG_PTR)lpImage + (ULONG_PTR)RVAImageDir));
+	return (PVOID)(lpImage + dirRva);
 }
 
 
@@ -188,7 +188,7 @@ PVOID PeGetProcAddress(CHAR *lpImage, CHAR* funName)
 	PIMAGE_EXPORT_DIRECTORY ped;
 
 
-	ped = (PIMAGE_EXPORT_DIRECTORY)AddRvaDataDir(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
+	ped = (PIMAGE_EXPORT_DIRECTORY)PeGetDataDirTable(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
 	if (!ped)
 		return NULL;
 
@@ -221,7 +221,7 @@ PVOID PeGetProcAddress(CHAR *lpImage, CHAR* funName)
 	return funcAddr;
 }
 
-PVOID PeStretchImage(CHAR * lpFile)
+PCHAR PeStretchImage(PCHAR lpFile)
 {
 
 	DWORD  limit;
@@ -229,96 +229,80 @@ PVOID PeStretchImage(CHAR * lpFile)
 	PIMAGE_NT_HEADERS nthdrs;
 	PIMAGE_OPTIONAL_HEADER poh;
 	PCHAR lpImage = 0;
-	__try
+
+	nthdrs = (PIMAGE_NT_HEADERS)NTSIGNATURE(lpFile);
+	psh = IMAGE_FIRST_SECTION(nthdrs);
+	poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(lpFile);
+
+	lpImage = (PCHAR)ExAllocatePool(PagedPool, poh->SizeOfImage);
+	if (!lpImage)
+		return 0;
+	RtlZeroMemory(lpImage, poh->SizeOfImage);
+	memcpy(lpImage, lpFile, poh->SizeOfHeaders);
+
+	for (int i = 0; i < nthdrs->FileHeader.NumberOfSections; i++)
 	{
-
-		nthdrs = (PIMAGE_NT_HEADERS)NTSIGNATURE(lpFile);
-		psh = IMAGE_FIRST_SECTION(nthdrs);
-		poh = (PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(lpFile);
-
-		lpImage = (PCHAR)ExAllocatePoolWithTag(PagedPool, poh->SizeOfImage, TAG);
-		if (!lpImage)
-			return 0;
-		RtlZeroMemory(lpImage, poh->SizeOfImage);
-		RtlCopyMemory(lpImage, lpFile, poh->SizeOfHeaders);
-
-
-
-		for (int i = 0; i < nthdrs->FileHeader.NumberOfSections; i++) {
-
-			limit = min(psh[i].SizeOfRawData, psh[i].Misc.VirtualSize);
-			RtlCopyMemory(lpImage + psh[i].VirtualAddress, lpFile + psh[i].PointerToRawData, limit);
-		}
+		limit = min(psh[i].SizeOfRawData, psh[i].Misc.VirtualSize);
+		RtlCopyMemory(lpImage + psh[i].VirtualAddress, lpFile + psh[i].PointerToRawData, limit);
 	}
-	__except (1)
-	{
-		DBGERRINFO
-	}
-
 	return lpImage;
 }
 
-BOOLEAN PeFixRelocTable(PCHAR BaseAddress, ULONG Delta)
+BOOLEAN PeFixRelocTable(PCHAR baseAddress, ULONG delta)
 {
-	//PIMAGE_BASE_RELOCATION 
 
-	LONGLONG AdditionalBias;
-	//IN PCCH  LoaderName,
-	ULONG Success;
-	ULONG Conflict;
-	ULONG Invalid;
-
-	PIMAGE_NT_HEADERS NtHeaders;
-	PIMAGE_DATA_DIRECTORY RelocationDDir;
-	PIMAGE_BASE_RELOCATION RelocationDir, RelocationEnd;
-	ULONG Count;
-	ULONG_PTR Address;
-	PUSHORT TypeOffset;
+	
+	PIMAGE_NT_HEADERS ntHeaders;
+	PIMAGE_DATA_DIRECTORY relocationDDir;
+	PIMAGE_BASE_RELOCATION relocationDir, relocationEnd;
+	ULONG count;
+	ULONG_PTR address;
+	PUSHORT typeOffset;
 
 
-	NtHeaders = (PIMAGE_NT_HEADERS)NTSIGNATURE(BaseAddress);
+	ntHeaders = (PIMAGE_NT_HEADERS)NTSIGNATURE(baseAddress);
 
-	if (NtHeaders == NULL)
-		return FALSE;
+	if (ntHeaders == NULL)
+		return false;
 
-	if (NtHeaders->FileHeader.Characteristics & IMAGE_FILE_RELOCS_STRIPPED)
+	if (ntHeaders->FileHeader.Characteristics & IMAGE_FILE_RELOCS_STRIPPED)
 	{
-		return FALSE;
+		return false;
 	}
 
-	RelocationDDir = &NtHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
+	relocationDDir = &ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC];
 
-	if ((RelocationDDir->VirtualAddress) == 0 || (RelocationDDir->Size) == 0)
+	if ((relocationDDir->VirtualAddress) == 0 || (relocationDDir->Size) == 0)
 	{
-		return TRUE;
+		return false;
 	}
 
 
-	RelocationDir = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)BaseAddress + (RelocationDDir->VirtualAddress));
-	RelocationEnd = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)RelocationDir + (RelocationDDir->Size));
+	relocationDir = (PIMAGE_BASE_RELOCATION)(baseAddress + relocationDDir->VirtualAddress);
+	relocationEnd = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)relocationDir + (relocationDDir->Size));
 
-	while (RelocationDir < RelocationEnd &&
-		(RelocationDir->SizeOfBlock) > 0)
+	while (relocationDir < relocationEnd &&(relocationDir->SizeOfBlock) > 0)
 	{
-		Count = ((RelocationDir->SizeOfBlock) - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(USHORT);
-		Address = (ULONG_PTR)(BaseAddress, (RelocationDir->VirtualAddress));
-		TypeOffset = (PUSHORT)(RelocationDir + 1);
+		count = ((relocationDir->SizeOfBlock) - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(USHORT);
+		address = (ULONG_PTR)baseAddress + relocationDir->VirtualAddress;
+		typeOffset = (PUSHORT)(relocationDir + 1);
 
-		for (size_t i = 0; i < Count; i++)
+		for (size_t i = 0; i < count; i++)
 		{
-			USHORT Offset = (*TypeOffset) & 0xFFF;
-			USHORT Type = (*TypeOffset) >> 12;
-			ULONG_PTR *LongLongPtr;
-			if (Type == IMAGE_REL_BASED_DIR64) {
-				LongLongPtr = (PULONG_PTR)(Address + Offset);
-				*LongLongPtr = (*LongLongPtr) + Delta;
+			USHORT offset = (*typeOffset) & 0xFFF;
+			USHORT type = (*typeOffset) >> 12;
+			ULONG_PTR *longLongPtr;
+			if (type == IMAGE_REL_BASED_DIR64)
+			{
+				longLongPtr = (PULONG_PTR)(address + offset);
+				*longLongPtr = (*longLongPtr) + delta;
 			}
-			TypeOffset++;
+			typeOffset++;
 		}
-		RelocationDir = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)RelocationDir + RelocationDir->SizeOfBlock);
+		relocationDir = (PIMAGE_BASE_RELOCATION)((ULONG_PTR)relocationDir + relocationDir->SizeOfBlock);
 	}
 
-	return TRUE;
+	return true;
 
 }
 
@@ -329,26 +313,28 @@ ULONG PeGetProcRva(PCHAR lpImage, PCHAR funName)
 	PIMAGE_EXPORT_DIRECTORY ped;
 
 
-	ped = (PIMAGE_EXPORT_DIRECTORY)AddRvaDataDir(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
+	ped = (PIMAGE_EXPORT_DIRECTORY)PeGetDataDirTable(lpImage, IMAGE_DIRECTORY_ENTRY_EXPORT);
 	if (!ped)
 		return NULL;
 
-	PULONG arrNameAddr = (PULONG)((ped->AddressOfNames) + lpImage);
-	PULONG arrFunRva = (PULONG)((ped->AddressOfFunctions) + lpImage);
-	PUSHORT arrOrdinals = (PUSHORT)((ped->AddressOfNameOrdinals) + lpImage);
+	PULONG nameRva = (PULONG)((ped->AddressOfNames) + lpImage);
+	PULONG funRva = (PULONG)((ped->AddressOfFunctions) + lpImage);
+	PUSHORT ordinals = (PUSHORT)((ped->AddressOfNameOrdinals) + lpImage);
 
-	if ((ULONG_PTR)funName & (ULONG_PTR)(~0xFFFF)) { // names
+	if ((ULONG_PTR)funName & (ULONG_PTR)(~0xFFFF)) 
+	{ // names
 
-		for (DWORD i = 0; i < ped->NumberOfNames; i++) {
+		for (DWORD i = 0; i < ped->NumberOfNames; i++) 
+		{
 
-			CHAR* exportName = lpImage + arrNameAddr[i];
+			PCHAR exportName = lpImage + nameRva[i];
 
-			if (!_stricmp(exportName, funName)) {
-				DWORD idx = arrOrdinals[i];
+			if (!_stricmp(exportName, funName))
+			{
+				DWORD idx = ordinals[i];
 				if (idx >= ped->NumberOfFunctions)
 					return NULL;
-				funcAddr = (arrFunRva[idx]);
-				break;
+				return funRva[idx];
 			}
 		}
 	}
@@ -356,10 +342,10 @@ ULONG PeGetProcRva(PCHAR lpImage, PCHAR funName)
 		ULONG_PTR ordinal = (ULONG_PTR)funName;
 		if (ordinal < ped->Base || ordinal >= (ped->Base + ped->NumberOfFunctions))
 			return NULL;
-		funcAddr = (arrFunRva[ordinal - ped->Base]) ;
+		return funRva[ordinal - ped->Base];
 	}
 
-	return funcAddr;
+	return 0;
 }
 
 

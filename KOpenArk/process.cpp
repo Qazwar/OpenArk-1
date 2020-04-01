@@ -4,24 +4,12 @@
 #pragma warning (disable : 4302)
 
 
-//
-//  This is the sign low bit used to lock handle table entries
-//
-#define MIDLEVEL_COUNT (PAGE_SIZE / sizeof(PHANDLE_TABLE_ENTRY))
-#define TABLE_PAGE_SIZE PAGE_SIZE
-#define LEVEL_CODE_MASK 3
-#define EXHANDLE_TABLE_ENTRY_LOCK_BIT    1
-
-#define LOWLEVEL_COUNT (TABLE_PAGE_SIZE / sizeof(HANDLE_TABLE_ENTRY))
-#define EX_ADDITIONAL_INFO_SIGNATURE (-2)
-#define ExpIsValidObjectEntry(Entry) \
-    ( (Entry != NULL) && (Entry->Object != NULL) && (Entry->NextFreeTableEntry != EX_ADDITIONAL_INFO_SIGNATURE) )
 
 
 
 BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData)
 {
-	char result = FALSE;
+	char result = false;
 	ULONG_PTR u_pOutData = (ULONG_PTR)pOutData;
 
 	__try
@@ -32,7 +20,7 @@ BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, UL
 			PsGetAllProcessInfomation(pOutData, cbOutData);
 			GetIdlelProcessInfomatio(pOutData, cbOutData);
 			if (pOutData->ProcessCnt)
-				result = TRUE;
+				result = true;
 		}
 	}
 	__except (1)
@@ -44,7 +32,7 @@ BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, UL
 
 BOOLEAN ArkHideProcess(PCHAR pIndata, ULONG cbInData, StuProcInfo * pOutData, ULONG cbOutData)
 {
-	char result = FALSE;
+	char result = false;
 
 	__try
 	{
@@ -56,7 +44,7 @@ BOOLEAN ArkHideProcess(PCHAR pIndata, ULONG cbInData, StuProcInfo * pOutData, UL
 		if (NT_SUCCESS(st) && NT::EPROCESS::ActiveProcessLinksOffset) {
 
 			if (NULL == RemoveEntryList((PLIST_ENTRY)((ULONG_PTR)process + NT::EPROCESS::ActiveProcessLinksOffset))) {
-				result = TRUE;
+				result = true;
 			}
 		}
 	}
@@ -101,10 +89,10 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path, int *
 				if (ldrEntry) {
 					if (*pathLen >= ldrEntry->FullDllName.Length) {
 						RtlCopyMemory(path, ldrEntry->FullDllName.Buffer, ldrEntry->FullDllName.Length);
-						result = TRUE;
+						result = true;
 					}
 					else {
-						result = FALSE;
+						result = false;
 					}
 
 					*pathLen = ldrEntry->FullDllName.Length;
@@ -152,11 +140,11 @@ BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, 
 	}
 	__except (1)
 	{
-		return FALSE;
+		return false;
 	}
 
 
-	return TRUE;
+	return true;
 }
 
 BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
@@ -219,7 +207,7 @@ BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, UL
 						Blink = (PLIST_ENTRY32)Entry->Blink;
 						Blink->Flink = (ULONG)Flink;
 						Flink->Blink = (ULONG)Blink;
-						result = TRUE;
+						result = true;
 						break;
 					}
 					next = (PLDR_DATA_TABLE_ENTRY32)next->InLoadOrderLinks.Flink;
@@ -238,7 +226,7 @@ BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, UL
 					if ((ULONG_PTR)next->DllBase == modBase)
 					{
 						RemoveEntryList((PLIST_ENTRY)next);
-						result = TRUE;
+						result = true;
 						break;
 					}
 					next = (PLDR_DATA_TABLE_ENTRY)next->InLoadOrderLinks.Flink;
@@ -293,18 +281,16 @@ void GetModInfoByAvlNode(PMMVAD vadNode, ModInfo * modInfo)
 
 	{
 		filePointer = (PFILE_OBJECT)(controlArea->FilePointer.Value & 0xFFFFFFFFFFFFFFF0);
-		if (filePointer->Size == 0xd8 || filePointer->Size == 0xb8) {
+		if (filePointer->Size == 0xd8 || filePointer->Size == 0xb8) 
+		{
 
-			PWSTR imagePath;
-			ULONG len;
 			BOOLEAN sucess;
+			ULONG pathLen;
 
-			sucess = FsGetFilePathByFileObject(filePointer, &imagePath, &len);
-			if (sucess) {
-
-				memmove(modInfo[modInfo->NumberOfMods].Path, imagePath, len);
-				modInfo[modInfo->NumberOfMods].Path[len / 2 + 1] = 0;
-				ExFreePool(imagePath);
+			sucess = ObQueryNameFileObject(filePointer, modInfo[modInfo->NumberOfMods].Path, MAX_PATH,&pathLen);
+			if (sucess) 
+			{
+				modInfo[modInfo->NumberOfMods].Path[pathLen / 2 + 1] = 0;
 			}
 
 			modInfo[modInfo->NumberOfMods].RegionBase = vadNode->StartingVpn << 12;
@@ -343,10 +329,10 @@ NTSTATUS  PsGetAllProcessInfomation(StuProcInfo *pOutData, ULONG cbOutData)
 		ExEnumHandleTable(PspCidTable, pOutData, cbOutData, PsGetProcessInfo, 0);
 	}
 	if (pOutData->ProcessCnt)
-		return TRUE;
+		return true;
 
 
-	return FALSE;
+	return false;
 }
 
 
@@ -395,8 +381,7 @@ ULONG_PTR  PsGetProcessIdFromHandleTable(ULONG_PTR pEprocess)
 
 
 	pHandleTable = GETQWORD(ObjectTableOffset + pEprocess);
-	if (NT::MmIsAddressValid(pHandleTable) != TRUE)
-		return FALSE;
+	
 
 	return GETQWORD(pHandleTable + NT::EPROCESS::HANDLE_TABLE::UniqueProcessIdOffset);
 }
@@ -624,7 +609,7 @@ int  GetIdlelProcessInfomatio(StuProcInfo *pOutData, ULONG cbOutData)
 	pOutData->ProcessCnt++;
 
 
-	return TRUE;
+	return true;
 }
 
 
@@ -675,11 +660,11 @@ void  FillProcessInfo(ULONG_PTR process, StuProcInfo *pOutData, ULONG cbOutData)
 				pStuProcInfo[nProcessNum].ProcessId = GETQWORD(process + UniqueProcessIdOffset);// 从eprocess得到进程id
 			pStuProcInfo[nProcessNum].ParentProcessId = GETQWORD(process + InheritedFromUniqueProcessIdOffset);// 填充父进程id
 
-			bIsWow64 = FALSE;
+			bIsWow64 = false;
 			if (WoW64processOffset)
 			{
 				if (GETQWORD(WoW64processOffset + process))// WoW64process
-					bIsWow64 = TRUE;
+					bIsWow64 = true;
 			}
 			pStuProcInfo[nProcessNum].IsWoW64Process = bIsWow64;// 填充wow64进程标志
 
@@ -690,12 +675,11 @@ void  FillProcessInfo(ULONG_PTR process, StuProcInfo *pOutData, ULONG cbOutData)
 
 
 			if (pStuProcInfo[nProcessNum].ProcessId != 0 && pStuProcInfo[nProcessNum].ProcessId != 4) {
-				result = PsGetProcessPath((PEPROCESS)process, (PVOID)pStuProcInfo[nProcessNum].ProcessId, &pwStrProcPath, 0);// 接受一个进程路径的缓冲区地址
-				if (result)
-				{
-					wcscpy(pStuProcInfo[nProcessNum].wStrProcessPath, pwStrProcPath);
-					ExFreePoolWithTag(pwStrProcPath, TAG);
-				}
+				ULONG returnLength;
+
+				result = PsGetProcessPath((PEPROCESS)process, (PVOID)pStuProcInfo[nProcessNum].ProcessId,
+					pStuProcInfo[nProcessNum].wStrProcessPath,MAX_PATH,
+					 &returnLength);
 			}
 			pOutData->ProcessCnt = nProcessNum + 1;
 		}
@@ -705,53 +689,47 @@ void  FillProcessInfo(ULONG_PTR process, StuProcInfo *pOutData, ULONG cbOutData)
 
 
 
-BOOLEAN  PsGetProcessPath(PEPROCESS process, PVOID procId, OUT PWSTR *pStrProcPath, ULONG *pathLen)
+BOOLEAN  PsGetProcessPath(PEPROCESS Process, PVOID ProcId, OUT PWSTR Buffer,IN ULONG BufferLength, PULONG ReturnLength)
 {
 	using namespace NT::EPROCESS;
-	ULONG ntstatus = STATUS_UNSUCCESSFUL;
+	ULONG status = STATUS_UNSUCCESSFUL;
 	PSECTION_OBJECT sectionObject;
-	BOOLEAN result = FALSE;
+	BOOLEAN result = false;
 
 
 	if (!SectionObjectOffset)
-		return FALSE;
+		return false;
 
-	if (NULL == process) {
-		ntstatus = PsLookupProcessByProcessId(procId, (PEPROCESS*)&process);
+	if (NULL == Process) 
+	{
+		status = PsLookupProcessByProcessId(ProcId, &Process);
 	}
 
-	if (process && process > MmSystemRangeStart) {
+	if (Process > MmSystemRangeStart)
+	{
 
-		sectionObject = (PSECTION_OBJECT)GETQWORD((ULONG_PTR)process + SectionObjectOffset);
-		if (sectionObject) 
+		sectionObject = *(PSECTION_OBJECT*)PTR_ADD_OFFSET(Process, SectionObjectOffset);
+		if (sectionObject)
 		{
-			result = FsGetFilePathBySection(sectionObject, pStrProcPath, pathLen);
-			if (FALSE == result) 
-			{
+			PSEGMENT      segment;
+			PCONTROL_AREA controlArea;
+			PFILE_OBJECT	fileObject;
 
-				WCHAR path[MAX_PATH];
-				int returnLen = MAX_PATH - 2;
-				result = PsGetProcessPathByPeb(process, procId, path, &returnLen);
-				if (result) 
-				{
+			segment = (PSEGMENT)sectionObject->Segment;
+			controlArea = segment->ControlArea;
+			fileObject = (PFILE_OBJECT)controlArea->FilePointer.Object;
+			//check version
+			if (NT::OsVersion >= Windows_Vista)
+				fileObject = (PFILE_OBJECT)((ULONG_PTR)fileObject & 0xFFFFFFFFFFFFFFF0);
 
-					*pStrProcPath = (PWSTR)ExAllocatePool(PagedPool, MAX_PATH);
-					RtlZeroMemory(*pStrProcPath, MAX_PATH);
-					if (*pStrProcPath) 
-					{
-
-						RtlCopyMemory(*pStrProcPath, path, returnLen);
-						if (pathLen) 
-						{
-							*pathLen = returnLen;
-						}
-					}
-				}
-			}
+			return ObQueryNameFileObject(fileObject, Buffer, BufferLength, ReturnLength);
 		}
 	}
-	if (NT_SUCCESS(ntstatus))
-		ObfDereferenceObject((PVOID)process);
+
+	if (NT_SUCCESS(status))
+	{
+		ObDereferenceObject(Process);
+	}
 
 	return result;
 }

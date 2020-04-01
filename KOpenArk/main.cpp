@@ -53,6 +53,10 @@ DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING pRegistryString)
 		int i = 0;
 		BOOLEAN bResult;
 
+		char buffrt[0x300];
+		ObQueryNameFileObject((PFILE_OBJECT)0xfffffa801b259f20, (PWSTR)buffrt, 0x300, (PULONG)&status);
+
+
 		NT::DriverObject = pDriverObj;//保存驱动对象
 		bResult = InitDriver();
 
@@ -90,7 +94,7 @@ DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING pRegistryString)
 			&ustrDevName,
 			FILE_DEVICE_UNKNOWN,
 			0,
-			FALSE,
+			false,
 			&pDevObj);
 
 		if (!NT_SUCCESS(status))
@@ -142,7 +146,7 @@ DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING pRegistryString)
 	__except (1)
 	{
 		DBGERRINFO;
-		return FALSE;
+		return false;
 	}
 
 

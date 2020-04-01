@@ -3,8 +3,8 @@
 
 
 typedef BOOLEAN(*DrvCallFun)(PCHAR pIndata, ULONG cbInData, PCHAR pOutData, ULONG cbOutData);
-extern DrvCallFun  DrvCallTable[DrvCall::LastId];
-BOOLEAN InitSysCallTable();//调用表
+extern DrvCallFun  DrvCallTable[DrvCall::LastId];//调用表
+BOOLEAN InitDrvCallTable();
 
 BOOLEAN InitVarible();
 BOOLEAN CheckVersion();
@@ -21,14 +21,15 @@ BOOLEAN InitOffset();
 BOOLEAN InitPspCidTable();
 BOOLEAN InitObTypeIndexTable();
 
+#define NTKROSPATH  L"\\??\\c:\\windows\\system32\\ntoskrnl.exe"
  #define LOADEXPORT(name) \
     *((void**)&NT::##name)=PeGetProcRva(NT::ImageBaseCopyNt, #name) + NT::ImageBaseRunNt; \
     if(!NT::##name) \
     { \
         DbgPrint("Export %s could not be found!", #name); \
-		return FALSE;		\
+		return false;		\
     }
 
-#define LOADUNEXPORT(name)   if(!name())  return FALSE;
+#define LOADUNEXPORT(name)   if(!name())  return false;
 		
 #endif // !INIT_H

@@ -39,7 +39,7 @@ enum Pe
 			 sizeof (IMAGE_OPTIONAL_HEADER)))
 
 
-PVOID AddRvaDataDir(PCHAR lpImage, DWORD dwIMAGE_DIRECTORY);
+PVOID PeGetDataDirTable(PCHAR lpImage, DWORD dwIMAGE_DIRECTORY);
 
 int
 NumOfSections(PVOID lpFile);
@@ -49,7 +49,7 @@ DWORD PeRvaToRaw(CHAR *lpImage, DWORD rva);
 
 PVOID PeGetProcAddress(CHAR *lpImage, CHAR* funName);
 
-PVOID PeStretchImage(CHAR *lpFile);
+PCHAR PeStretchImage(PCHAR lpFile);
 
 BOOLEAN PeFixRelocTable(PCHAR BaseAddress, ULONG Delta);
 

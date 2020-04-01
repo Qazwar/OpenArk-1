@@ -21,17 +21,16 @@ BOOLEAN InitVarible()
 {
 	//........................................................................................................................................初始化ntkrnl导出
 	if (!InitExportByNtkrnl())
-		return FALSE;
+		return false;
 
 	//........................................................................................................................................//初始化未导出变量
 	if (!InitUnExportByNtkrnl())
-		return FALSE;
+		return false;
 
 	//........................................................................................................................................初始化Eprocess相关数据
-	if (!NT::OsVersion)
-		return FALSE;
+	
 
-	return TRUE;
+	return true;
 }
 
 BOOLEAN CheckVersion()
@@ -55,64 +54,66 @@ BOOLEAN InitNtInfo()
 	__try
 	{
 		PLDR_DATA_TABLE_ENTRY  pFlink;
-		PVOID pNtBuildNumber = &NtBuildNumber;
+		PVOID vaNtBuildNumber = &NtBuildNumber;
 		NT::OsVersion = (USHORT)NtBuildNumber;
 		pFlink = (PLDR_DATA_TABLE_ENTRY)((PLDR_DATA_TABLE_ENTRY)NT::DriverObject->DriverSection)->InLoadOrderLinks.Flink;
 
 		while (pFlink != (PLDR_DATA_TABLE_ENTRY)NT::DriverObject->DriverSection)
 		{
-			if (pNtBuildNumber > pFlink->DllBase && (ULONG_PTR)pNtBuildNumber < (ULONG_PTR)pFlink->DllBase + pFlink->SizeOfImage)
+			if (vaNtBuildNumber > pFlink->DllBase && (ULONG_PTR)vaNtBuildNumber < (ULONG_PTR)pFlink->DllBase + pFlink->SizeOfImage)
 			{
 				NT::ImageBaseRunNt = (PCHAR)pFlink->DllBase;
 				NT::SizeOfNtImage = pFlink->SizeOfImage;
 				memmove(NT::NtFullName, pFlink->FullDllName.Buffer, pFlink->FullDllName.Length);
 
-				HANDLE hfile;
+				HANDLE fileHandle;
 				OBJECT_ATTRIBUTES objAttribute;
 				UNICODE_STRING objName;
-				NTSTATUS ntstatu;
+				NTSTATUS status;
 
-				RtlInitUnicodeString(&objName, L"\\??\\c:/windows/system32/ntoskrnl.exe");
-				IO_STATUS_BLOCK ioStatuBlock;
+				RtlInitUnicodeString(&objName, NTKROSPATH);
+				IO_STATUS_BLOCK iosb;
 				/* Initialize the object attributes */
-				InitializeObjectAttributes(&objAttribute,
-					&objName,
-					OBJ_CASE_INSENSITIVE,
-					NULL,
-					NULL);
-				ntstatu = ZwCreateFile(&hfile, GENERIC_READ, &objAttribute, &ioStatuBlock, 0, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ, FILE_OPEN, 0, 0, 0);
-				if (NT_SUCCESS(ntstatu)) {
-					FILE_STANDARD_INFORMATION fileInfo;
+				InitializeObjectAttributes(&objAttribute,&objName,OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,NULL,NULL);
+					
+					
+				status = ZwCreateFile(&fileHandle, GENERIC_READ, &objAttribute, &iosb, 0, 
+					FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ, FILE_OPEN,
+					FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT, 0, 0);
+				if (NT_SUCCESS(status)) {
+					FILE_STANDARD_INFORMATION standardInfo;
 
-					if (NT_SUCCESS(ntstatu)) {
-						ZwQueryInformationFile(hfile, &ioStatuBlock, &fileInfo, sizeof(fileInfo), FileStandardInformation);
+					if (NT_SUCCESS(status)) 
+					{
+						ZwQueryInformationFile(fileHandle, &iosb, &standardInfo,sizeof(standardInfo), FileStandardInformation);
+							
 
-						PCHAR pbuf = (PCHAR)ExAllocatePool(PagedPool, fileInfo.AllocationSize.QuadPart);
-						if (pbuf) {
-							ntstatu = ZwReadFile(hfile, 0, 0, 0, &ioStatuBlock, pbuf, fileInfo.AllocationSize.LowPart, 0, 0);
-							if (NT_SUCCESS(ntstatu)) {
+						PCHAR buffer = (PCHAR)ExAllocatePool(PagedPool, standardInfo.AllocationSize.QuadPart);
+						if (buffer) 
+						{
+							status = ZwReadFile(fileHandle, 0, 0, 0, &iosb, buffer, standardInfo.AllocationSize.LowPart, 0, 0);
+							if (NT_SUCCESS(status)) 
+							{
+								NT::ImageBaseCopyNt = PeStretchImage(buffer);
 								ULONG_PTR ImageBase = ((PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(NT::ImageBaseCopyNt))->ImageBase;
-								PeFixRelocTable(pbuf, (ULONG)((ULONG_PTR)NT::ImageBaseRunNt - ImageBase));
-
-								NT::ImageBaseCopyNt = pbuf;
+								PeFixRelocTable(NT::ImageBaseCopyNt, (ULONG)((ULONG_PTR)NT::ImageBaseRunNt - ImageBase));
 							}
-							else {
-								ExFreePool(pbuf);
-							}
+							ExFreePool(buffer);
 						}
 					}
 				}
-				break;
+				ZwClose(fileHandle);
+				return true;
 			}
+			pFlink = (PLDR_DATA_TABLE_ENTRY)pFlink->InLoadOrderLinks.Flink;
 		}
 	}
 	__except (1)
 	{
 		DBGERRINFO;
+	
 	}
-
-
-	return BOOLEAN();
+	return false;
 }
 
 BOOLEAN InitExportByNtkrnl()
@@ -123,14 +124,14 @@ BOOLEAN InitExportByNtkrnl()
 
 
 
-	return TRUE;
+	return true;
 }
 BOOLEAN InitUnExportByNtkrnl()
 {
 	LOADUNEXPORT(InitPspCidTable);
 	LOADUNEXPORT(InitObTypeIndexTable);
 
-	return TRUE;
+	return true;
 }
 BOOLEAN InitOffset()
 {
@@ -150,18 +151,18 @@ BOOLEAN InitOffset()
 		EPROCESS::SectionObjectOffset = 0x268;
 
 		KTHREAD::ProcessOffset = 0x210;
+		break;
 	}
 
 	default:
 		return  0;
-		break;
 	}
 
 
 
 
 
-	return FALSE;
+	return true;
 }
 BOOLEAN InitPspCidTable()
 {
@@ -180,7 +181,7 @@ BOOLEAN InitPspCidTable()
 		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
 			break;
 
-
+		
 		if ((GETDWORD(curDisAddr) & 0xFFFFFF) == 0xD8B48 && instruction.length == 7)
 		{
 			ULONG offset = GETDWORD(curDisAddr + 3);
@@ -191,12 +192,12 @@ BOOLEAN InitPspCidTable()
 
 
 			NT::PPspCidTable = (PHANDLE_TABLE*)dstAddr.QuadPart;
-			return TRUE;
+			return true;
 		}
 		curDisAddr += instruction.length;
 	}
 
-	return FALSE;
+	return false;
 }
 /*
 1.初始化顺序
@@ -207,28 +208,34 @@ BOOLEAN InitPspCidTable()
 	*/
 BOOLEAN InitDriver()
 {
-	BOOLEAN result = FALSE;
+
+	BOOLEAN result = false;
+
 	result = InitNtInfo();
 	if (!result)
-		return FALSE;
+		return false;
+
+	result = CheckVersion();
+	if (!result)
+		return false;
 
 	result = InitVarible();
 	if (!result)
-		return FALSE;
+		return false;
 
 	result = InitOffset();
 	if (!result)
-		return FALSE;
+		return false;
 
 
-	result = InitSysCallTable();
+	result = InitDrvCallTable();
 	if (!result)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
-BOOLEAN InitSysCallTable()
+BOOLEAN InitDrvCallTable()
 {
 	DrvCallTable[ProcList] = (DrvCallFun)ArkGetProcList;
 	DrvCallTable[ObjDirectory] = (DrvCallFun)ArkGetObjectDirectoryInfo;
@@ -236,7 +243,7 @@ BOOLEAN InitSysCallTable()
 	DrvCallTable[HideProcess] = (DrvCallFun)ArkHideProcess;
 	DrvCallTable[ModList] = (DrvCallFun)ArkGetModListForProc;
 
-	return FALSE;
+	return true;
 }
 
 
@@ -301,10 +308,10 @@ BOOLEAN InitObTypeIndexTable()
 	RtlInitUnicodeString(&dst, L"\\");
 	NTSTATUS ntsta = ObReferenceObjectByName(&dst, 0, 0, 0, dirType, 0, 0, (PVOID*)&NT::ObpRootDirectoryObject);
 	if (!NT_SUCCESS(ntsta))
-		return FALSE;
+		return false;
 	ObDereferenceObject(NT::ObpRootDirectoryObject);
 
-	return TRUE;
+	return true;
 }
 
 

@@ -14,9 +14,9 @@ void GetObInfo(PVOID pObject)
 		ProbeForWrite(ObpInfo, sizeof(ObInfo), 1);
 
 		if (pObHdr->TypeIndex == NT::ArrObjectType[ObjectType::DirectoryType].TypeIndex)
-			ObpInfo->IsDirectory = TRUE;
+			ObpInfo->IsDirectory = true;
 		else if (pObHdr->TypeIndex == NT::ArrObjectType[ObjectType::SymbolinkType].TypeIndex) {
-			ObpInfo->IsSymLink = TRUE;
+			ObpInfo->IsSymLink = true;
 			UNICODE_STRING symbolName;
 
 			symbolName = ((POBJECT_SYMBOLIC_LINK)pObject)->LinkTarget;
@@ -77,7 +77,7 @@ BOOLEAN  ArkGetObjectDirectoryInfo(PCHAR pIndata, ULONG cbInData, PObInfo pOutDa
 	{
 		ProbeForWrite(pOutData, cbOutData, 1);
 		if (!NT::ObpRootDirectoryObject || !NT::ArrObjectType[ObjectType::DirectoryType].TypeIndex || !NT::ArrObjectType[ObjectType::SymbolinkType].TypeIndex)
-			return FALSE;
+			return false;
 		RtlZeroMemory(pOutData, cbOutData);
 		
 		ObpInfo = pOutData;
@@ -87,9 +87,105 @@ BOOLEAN  ArkGetObjectDirectoryInfo(PCHAR pIndata, ULONG cbInData, PObInfo pOutDa
 	__except (1)
 	{
 		DBGERRINFO;
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 
+}
+
+
+/**
+ * Queries the name of a file object.
+ *
+ * \param FileObject A pointer to a file object.
+ * \param Buffer The buffer in which the object name will be stored.
+ * \param BufferLength The number of bytes available in \a Buffer.
+ * \param ReturnLength A variable which receives the number of bytes required to be available in
+ * \a Buffer.
+ */
+BOOLEAN ObQueryNameFileObject(
+	_In_ PFILE_OBJECT FileObject,
+	_Out_ PWSTR Buffer,
+	_In_ ULONG BufferLength,
+	_Out_ PULONG ReturnLength
+)
+{
+	NTSTATUS status = STATUS_SUCCESS;
+	ULONG returnLength;
+	PCHAR objectName;
+	ULONG usedLength;
+	ULONG subNameLength;
+	PFILE_OBJECT relatedFileObject;
+	UNICODE_STRING dosName;
+	PAGED_CODE();
+
+	objectName = (PCHAR)Buffer;
+	usedLength = 0;
+
+	if (FileObject->DeviceObject
+		&& KeAreAllApcsDisabled() == false
+		)
+	{
+		/*
+		IoVolumeDeviceToDosName -> "c:"
+		*/
+		if (NT_SUCCESS(IoVolumeDeviceToDosName(FileObject->DeviceObject, &dosName))
+			&& dosName.Buffer)
+		{
+			memcpy(objectName, dosName.Buffer, dosName.Length);
+			ExFreePool(dosName.Buffer);
+			usedLength += dosName.Length;
+		}
+		else
+		{
+			*ReturnLength = 0;
+			return false;
+		}
+
+		objectName += dosName.Length;
+		
+	}
+	relatedFileObject = FileObject;
+	subNameLength = 0;
+
+	do
+	{
+		subNameLength += relatedFileObject->FileName.Length;
+
+		// Avoid infinite loops.
+		if (relatedFileObject == relatedFileObject->RelatedFileObject)
+			break;
+
+		relatedFileObject = relatedFileObject->RelatedFileObject;
+	} while (relatedFileObject);
+
+	usedLength += subNameLength;
+
+	// Check if we have enough space to write the whole thing.
+	if (usedLength > BufferLength)
+	{
+		*ReturnLength = usedLength;
+		return false;
+	}
+	objectName += subNameLength;
+	relatedFileObject = FileObject;
+
+	do
+	{
+		objectName -= relatedFileObject->FileName.Length;
+		memcpy(objectName, relatedFileObject->FileName.Buffer, relatedFileObject->FileName.Length);
+
+		// Avoid infinite loops.
+		if (relatedFileObject == relatedFileObject->RelatedFileObject)
+			break;
+
+		relatedFileObject = relatedFileObject->RelatedFileObject;
+	} while (relatedFileObject);
+
+	// Pass the return length back.
+	Buffer[usedLength / 2] = 0;
+	*ReturnLength = usedLength;
+
+	return true;
 }

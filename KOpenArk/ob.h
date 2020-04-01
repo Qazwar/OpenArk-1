@@ -7,7 +7,12 @@
 
 BOOLEAN  ArkGetObjectDirectoryInfo(PCHAR pIndata, ULONG cbInData, PObInfo pOutData, ULONG cbOutData);
 
-
+BOOLEAN ObQueryNameFileObject(
+	_In_ PFILE_OBJECT FileObject,
+	_Out_ PWSTR Buffer,
+	_In_ ULONG BufferLength,
+	_Out_ PULONG ReturnLength
+);
 
 struct ObjectType
 {

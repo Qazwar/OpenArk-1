@@ -2,6 +2,18 @@
 #define NTOB_H
 
 
+//
+//  This is the sign low bit used to lock handle table entries
+//
+#define MIDLEVEL_COUNT (PAGE_SIZE / sizeof(PHANDLE_TABLE_ENTRY))
+#define TABLE_PAGE_SIZE PAGE_SIZE
+#define LEVEL_CODE_MASK 3
+#define EXHANDLE_TABLE_ENTRY_LOCK_BIT    1
+
+#define LOWLEVEL_COUNT (TABLE_PAGE_SIZE / sizeof(HANDLE_TABLE_ENTRY))
+#define EX_ADDITIONAL_INFO_SIGNATURE (-2)
+#define ExpIsValidObjectEntry(Entry) \
+    ( (Entry != NULL) && (Entry->Object != NULL) && (Entry->NextFreeTableEntry != EX_ADDITIONAL_INFO_SIGNATURE) )
 typedef struct _SECTION_OBJECT       // 6 elements, 0x30 bytes (sizeof) 
 {
 	/*0x000*/     VOID*        StartingVa;
