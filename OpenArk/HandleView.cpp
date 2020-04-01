@@ -8,6 +8,7 @@ HandleView::HandleView(QWidget *parent, LPVOID procId, QString procName) :StdDia
 	mProcId = procId;
 	mProcName = procName;
 	InitView();
+	OnRefresh();
 }
 
 
@@ -24,13 +25,7 @@ void HandleView::InitView()
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsHex);
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsInt);
 	mSortModel->AddColSortFun(MySortModel::SortBy::AsInt);
-
-	
-
 	SetContextMenu();
-
-	OnRefresh();
-
 }
 
 void HandleView::SetContextMenu()

@@ -27,6 +27,7 @@ BOOLEAN ExEnumHandleCallBack(IN PHANDLE_TABLE_ENTRY HandleTableEntry, IN HANDLE 
 		memcpy(HandleInfo[handleCnt].HandleName,
 			((POBJECT_NAME_INFORMATION)&HandleInfo[handleCnt].HandleName)->Name.Buffer,
 			((POBJECT_NAME_INFORMATION)&HandleInfo[handleCnt].HandleName)->Name.Length);
+		HandleInfo->HandleCnt++;
 	}
 
 	return false;

@@ -297,7 +297,8 @@ void GetModInfoByAvlNode(PMMVAD VadNode, ModInfo * ModInfo)
 			BOOLEAN sucess;
 			ULONG pathLen;
 
-			sucess = ObQueryNameFileObject(filePointer, ModInfo[ModInfo->NumberOfMods].Path, MAX_PATH,&pathLen);
+			sucess = ObQueryNameFileObject(filePointer, ModInfo[ModInfo->NumberOfMods].Path,
+				sizeof(ModInfo[ModInfo->NumberOfMods].Path),&pathLen);
 			if (sucess) 
 			{
 				ModInfo[ModInfo->NumberOfMods].Path[pathLen / 2 + 1] = 0;
@@ -683,7 +684,7 @@ void  FillProcessInfo(ULONG_PTR process, StuProcInfo *pOutData, ULONG cbOutData)
 				ULONG returnLength;
 
 				result = PsGetProcessPath((PEPROCESS)process, (PVOID)pStuProcInfo[nProcessNum].ProcessId,
-					pStuProcInfo[nProcessNum].wStrProcessPath,MAX_PATH,
+					pStuProcInfo[nProcessNum].wStrProcessPath,sizeof(pStuProcInfo[nProcessNum].wStrProcessPath),
 					 &returnLength);
 			}
 			pOutData->ProcessCnt = nProcessNum + 1;
