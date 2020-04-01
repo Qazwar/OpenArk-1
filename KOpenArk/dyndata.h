@@ -87,12 +87,7 @@ namespace NT
 
 	//ntkrnlµ¼³ö
 	EXTERN POBJECT_TYPE						IoFileObjectType;
-	EXTERN FunIoGetCurrentProcess 			IoGetCurrentProcess;
-	EXTERN FunIoThreadToProcess				IoThreadToProcess;
-	EXTERN FunMmIsAddressValid				MmIsAddressValid;
 	EXTERN FunPsLookupProcessByProcessId	PsLookupProcessByProcessId;
-	EXTERN FunPsAcquireProcessExitSynchronization	PsAcquireProcessExitSynchronization;
-	EXTERN FunPsAcquireProcessExitSynchronization	PsReleaseProcessExitSynchronization;
 
 
 	extern FunObQueryNameString ObQueryNameString;

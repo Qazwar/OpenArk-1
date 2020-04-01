@@ -149,6 +149,10 @@ BOOLEAN InitOffset()
 		EPROCESS::WoW64processOffset = 0x320;
 		EPROCESS::CreateTimeOffset = 0x168;
 		EPROCESS::SectionObjectOffset = 0x268;
+		EPROCESS::ImageFileNameOffset = 0x2E0;
+		EPROCESS::PebOffset = 0x338;
+		EPROCESS::ActiveProcessLinksOffset = 0x188;
+		EPROCESS::VadRootOffset = 0x448;
 
 		KTHREAD::ProcessOffset = 0x210;
 		break;

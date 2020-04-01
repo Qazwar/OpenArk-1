@@ -178,8 +178,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\arknt\common.h" />
     <ClInclude Include="arknamespace.h" />
-    <ClInclude Include="common.h" />
     <QtMoc Include="ModuleView.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Qt_INCLUDEPATH_);.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>

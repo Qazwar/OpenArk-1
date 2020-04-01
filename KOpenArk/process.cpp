@@ -76,7 +76,7 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path, int *
 				}
 			}
 
-			stLock = NT::PsAcquireProcessExitSynchronization(process);
+			stLock = PsAcquireProcessExitSynchronization(process);
 			KeStackAttachProcess(process, &kapc);
 			peb = *(PPEB*)((ULONG_PTR)process + PebOffset);
 			if (peb && peb < MmSystemRangeStart) {
@@ -100,7 +100,7 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path, int *
 			}
 			KeUnstackDetachProcess(&kapc);
 			if (NT_SUCCESS(stLock)) {
-				NT::PsReleaseProcessExitSynchronization(process);
+				PsReleaseProcessExitSynchronization(process);
 			}
 			if (NT_SUCCESS(statu)) {
 				ObDereferenceObject(process);
@@ -118,33 +118,31 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path, int *
 
 BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
 {
-	BOOLEAN result = 0;
+	BOOLEAN result = true;
 	PVOID psId = *(PVOID*)pIndata;
 	PEPROCESS process = 0;
-	NTSTATUS st;
+	NTSTATUS st = STATUS_SUCCESS;
 	PMM_AVL_TABLE vadRoot;
 
-	__try
+
+	st = PsLookupProcessByProcessId(psId, &process);
+	if (NT_SUCCESS(st))
 	{
-
-		st = PsLookupProcessByProcessId(psId, &process);
-		if (NT_SUCCESS(st)) {
-
-			ProbeForWrite(pOutData, cbOutData, 1);
-			ProbeForRead(pIndata, cbInData, 1);
-			vadRoot = (PMM_AVL_TABLE)((ULONG_PTR)process + NT::EPROCESS::VadRootOffset);
-			if (MmIsAddressValid(vadRoot->BalancedRoot.RightChild)) {
-				TraverseAvlMid((PMMVAD)vadRoot->BalancedRoot.RightChild, pOutData);
-			}
+		ProbeForWrite(pOutData, cbOutData, 1);
+		ProbeForRead(pIndata, cbInData, 1);
+		vadRoot = (PMM_AVL_TABLE)PTR_ADD_OFFSET(process, NT::EPROCESS::VadRootOffset);
+		if (vadRoot->BalancedRoot.RightChild)
+		{
+			TraverseAvlMid((PMMVAD)vadRoot->BalancedRoot.RightChild, pOutData);
 		}
 	}
-	__except (1)
+
+	if (NT_SUCCESS(st))
 	{
-		return false;
+		ObDereferenceObject(process);
 	}
 
-
-	return true;
+	return result;
 }
 
 BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
@@ -257,63 +255,52 @@ BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, 
 	return BOOLEAN();
 }
 
-void GetModInfoByAvlNode(PMMVAD vadNode, ModInfo * modInfo)
+void GetModInfoByAvlNode(PMMVAD VadNode, ModInfo * ModInfo)
 {
-
 	PCONTROL_AREA controlArea;
 	PSEGMENT segment;
 	PFILE_OBJECT filePointer;
 
 
-	if (MmIsAddressValid(vadNode->Subsection)) {
-		controlArea = vadNode->Subsection->ControlArea;
-	}
-	else {
+	if ( VadNode->u.VadFlags.VadType == MI_VAD_TYPE::VadImageMap
+		 && VadNode->Subsection)
+		controlArea = VadNode->Subsection->ControlArea;
+	else 
 		return;
-	}
 
-
-
-
-	if (controlArea && MmIsAddressValid(controlArea)
+	if (controlArea 
 		&& (controlArea->u.Flags.Image && controlArea->u.Flags.File)
-		&& (vadNode->u.VadFlags.Protection == MM_EXECUTE_WRITECOPY))
+		&& (VadNode->u.VadFlags.Protection == MM_EXECUTE_WRITECOPY))
 
 	{
 		filePointer = (PFILE_OBJECT)(controlArea->FilePointer.Value & 0xFFFFFFFFFFFFFFF0);
 		if (filePointer->Size == 0xd8 || filePointer->Size == 0xb8) 
 		{
-
 			BOOLEAN sucess;
 			ULONG pathLen;
 
-			sucess = ObQueryNameFileObject(filePointer, modInfo[modInfo->NumberOfMods].Path, MAX_PATH,&pathLen);
+			sucess = ObQueryNameFileObject(filePointer, ModInfo[ModInfo->NumberOfMods].Path, MAX_PATH,&pathLen);
 			if (sucess) 
 			{
-				modInfo[modInfo->NumberOfMods].Path[pathLen / 2 + 1] = 0;
+				ModInfo[ModInfo->NumberOfMods].Path[pathLen / 2 + 1] = 0;
 			}
 
-			modInfo[modInfo->NumberOfMods].RegionBase = vadNode->StartingVpn << 12;
-			modInfo[modInfo->NumberOfMods].RegionSize = (vadNode->EndingVpn - vadNode->StartingVpn + 1) << 12;
-			modInfo->NumberOfMods++;
+			ModInfo[ModInfo->NumberOfMods].RegionBase = VadNode->StartingVpn << 12;
+			ModInfo[ModInfo->NumberOfMods].RegionSize = (VadNode->EndingVpn - VadNode->StartingVpn + 1) << 12;
+			ModInfo->NumberOfMods++;
 		}
 	}
 }
 
-void TraverseAvlMid(PMMVAD vadNode, ModInfo *modInfo)
+void TraverseAvlMid(PMMVAD VadNode, ModInfo *ModInfo)
 {
-	while (vadNode)
+	while (VadNode)
 	{
-		if (MmIsAddressValid(vadNode)) {
-			TraverseAvlMid(vadNode->LeftChild, modInfo);
-		}
-		else {
-			break;
-		}
-		GetModInfoByAvlNode(vadNode, modInfo);
+		TraverseAvlMid(VadNode->LeftChild, ModInfo);
+		GetModInfoByAvlNode(VadNode, ModInfo);
 
 		//到这里此节点的左节点为null
-		vadNode = vadNode->RightChild;
+		VadNode = VadNode->RightChild;
 	}
 }
 

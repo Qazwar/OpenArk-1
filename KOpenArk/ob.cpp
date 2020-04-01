@@ -146,45 +146,18 @@ BOOLEAN ObQueryNameFileObject(
 		objectName += dosName.Length;
 		
 	}
-	relatedFileObject = FileObject;
-	subNameLength = 0;
 
-	do
-	{
-		subNameLength += relatedFileObject->FileName.Length;
-
-		// Avoid infinite loops.
-		if (relatedFileObject == relatedFileObject->RelatedFileObject)
-			break;
-
-		relatedFileObject = relatedFileObject->RelatedFileObject;
-	} while (relatedFileObject);
-
-	usedLength += subNameLength;
-
+	usedLength += FileObject->FileName.Length;
 	// Check if we have enough space to write the whole thing.
 	if (usedLength > BufferLength)
 	{
 		*ReturnLength = usedLength;
 		return false;
 	}
-	objectName += subNameLength;
-	relatedFileObject = FileObject;
-
-	do
-	{
-		objectName -= relatedFileObject->FileName.Length;
-		memcpy(objectName, relatedFileObject->FileName.Buffer, relatedFileObject->FileName.Length);
-
-		// Avoid infinite loops.
-		if (relatedFileObject == relatedFileObject->RelatedFileObject)
-			break;
-
-		relatedFileObject = relatedFileObject->RelatedFileObject;
-	} while (relatedFileObject);
-
+	memcpy(objectName, FileObject->FileName.Buffer, FileObject->FileName.Length);
 	// Pass the return length back.
 	Buffer[usedLength / 2] = 0;
+
 	*ReturnLength = usedLength;
 
 	return true;

@@ -122,13 +122,13 @@
     <ClInclude Include="arknamespace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qtwrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,7 +10,16 @@
 #define MM_EXECUTE_WRITECOPY   7
 
 
-
+typedef enum _MI_VAD_TYPE {
+	VadNone,
+	VadDevicePhysicalMemory,
+	VadImageMap,
+	VadAwe,
+	VadWriteWatch,
+	VadLargePages,
+	VadRotatePhysical,
+	VadLargePageSection
+} MI_VAD_TYPE, *PMI_VAD_TYPE;
 
 
 typedef struct _MMVAD_FLAGS         // 7 elements, 0x8 bytes (sizeof) 
