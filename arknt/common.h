@@ -6,7 +6,7 @@
 
 
 #ifdef ARK_MODE_USER
-#include "qt_windows.h"
+#include <Windows.h>
 
 
 

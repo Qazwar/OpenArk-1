@@ -59,11 +59,6 @@ private slots:
 private:
 	void InitProcessView();
 
-
-	
 	QMenu mMenu;
-	
-
-	
 	
 };

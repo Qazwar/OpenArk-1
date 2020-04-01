@@ -70,6 +70,21 @@
     <QtMoc Include="stdtable.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="HandleView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ModuleView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="mysortmodel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="objdirectory.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="openark.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\openark_zh.qm">
@@ -111,6 +126,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\arknt\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="arknamespace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qtwrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
