@@ -131,6 +131,7 @@ namespace NT
 	namespace KTHREAD
 	{
 		EXTERN ULONG   ProcessOffset;
+		EXTERN ULONG   PreviousModeOffset;
 	}
 
 	namespace KPRCB

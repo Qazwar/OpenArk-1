@@ -18,9 +18,14 @@ NTSTATUS ArkEnumHandles(
 	NTSTATUS status;
 	PVOID buffer;
 	ULONG bufferSize;
+	PKTHREAD thread;
+	char previousMode;
 
 	bufferSize = initialBufferSize;
 	buffer = ExAllocatePool(PagedPool,bufferSize);
+
+	thread = KeGetCurrentThread();
+	previousMode = KeToKernekModel(thread);
 
 	while ((status = NtQuerySystemInformation(
 		SystemHandleInformation,
@@ -43,6 +48,6 @@ NTSTATUS ArkEnumHandles(
 	}
 	
 	*Handles = (PSYSTEM_HANDLE_INFORMATION)buffer;
-
+	KeResumePreviousMode(thread, previousMode);
 	return status;
 }

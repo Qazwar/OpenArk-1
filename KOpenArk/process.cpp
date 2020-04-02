@@ -289,41 +289,38 @@ BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo * pOutDat
 	nameInfo = (POBJECT_NAME_INFORMATION)ExAllocatePool(PagedPool, 0x1000);
 
 
+	ProbeForWrite(pOutData, cbOutData, 1);
+
+	st = ArkEnumHandles(&handles);
 	if (NT_SUCCESS(st))
 	{
-		ProbeForWrite(pOutData, cbOutData, 1);
+		handleEntry = handles->Handles;
+		for (ULONG i = 0; i < handles->NumberOfHandles; i++,
+			handleEntry++)
+		{
+			if (handleEntry->UniqueProcessId == (USHORT)procId)
+			{
+				pOutData[pOutData->HandleCnt].Handle = (HANDLE)handleEntry->HandleValue;
+				pOutData[pOutData->HandleCnt].Object = handleEntry->Object;
+				pOutData[pOutData->HandleCnt].TypeIndex = handleEntry->ObjectTypeIndex;
+				pOutData[pOutData->HandleCnt].RefreceCount =
+					OBJECT_TO_OBJECT_HEADER(handleEntry->Object)->PointerCount;
 
-		 st = ArkEnumHandles(&handles);
-		 if (NT_SUCCESS(st))
-		 {
-			 handleEntry = handles->Handles;
-			 for (ULONG i = 0; i < handles->NumberOfHandles; i++)
-			 {
-				 if (handleEntry->UniqueProcessId = (USHORT)procId)
-				 {
-					 pOutData[i].Handle = (HANDLE)handleEntry->HandleValue;
-					 pOutData[i].Object = handleEntry->Object;
-					 pOutData[i].TypeIndex = handleEntry->ObjectTypeIndex;
-					 pOutData[i].RefreceCount =
-						 OBJECT_TO_OBJECT_HEADER(handleEntry->Object)->PointerCount;
-
-					st = ZwQueryObject(pOutData[i].Handle, ObjectTypeInformation, typeInfo, PAGE_SIZE, 0);
-					if (NT_SUCCESS(st))
-					{
-						memcpy(pOutData[i].TypeName, typeInfo->TypeName.Buffer,
-							typeInfo->TypeName.Length);
-					}
-					st = ZwQueryObject(pOutData[i].Handle, (OBJECT_INFORMATION_CLASS)ObjectNameInformation, nameInfo, PAGE_SIZE, 0);
-					if (NT_SUCCESS(st))
-					{
-						memcpy(pOutData[i].HandleName, nameInfo->Name.Buffer,
-							nameInfo->Name.Length);
-					}
-					pOutData->HandleCnt++;
-				 }
-			 }
-			
-		 }
+				st = ZwQueryObject(pOutData[pOutData->HandleCnt].Handle, ObjectTypeInformation, typeInfo, PAGE_SIZE, 0);
+				if (NT_SUCCESS(st))
+				{
+					memcpy(pOutData[pOutData->HandleCnt].TypeName, typeInfo->TypeName.Buffer,
+						typeInfo->TypeName.Length);
+				}
+				st = ZwQueryObject(pOutData[pOutData->HandleCnt].Handle, (OBJECT_INFORMATION_CLASS)ObjectNameInformation, nameInfo, PAGE_SIZE, 0);
+				if (NT_SUCCESS(st))
+				{
+					memcpy(pOutData[pOutData->HandleCnt].HandleName, nameInfo->Name.Buffer,
+						nameInfo->Name.Length);
+				}
+				pOutData->HandleCnt++;
+			}
+		}
 	}
 
 	ExFreePool(typeInfo);

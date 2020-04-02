@@ -173,6 +173,7 @@
     <ClCompile Include="ob.cpp" />
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="process.cpp" />
+    <ClCompile Include="thread.cpp" />
     <ClCompile Include="tool.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +197,7 @@
     <ClInclude Include="pe.h" />
     <ClInclude Include="process.h" />
     <ClInclude Include="dyndata.h" />
+    <ClInclude Include="thread.h" />
     <ClInclude Include="tool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

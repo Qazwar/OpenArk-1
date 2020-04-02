@@ -155,6 +155,7 @@ BOOLEAN InitOffset()
 		EPROCESS::VadRootOffset = 0x448;
 
 		KTHREAD::ProcessOffset = 0x210;
+		KTHREAD::PreviousModeOffset = 0x1F6;
 		break;
 	}
 

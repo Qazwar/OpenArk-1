@@ -54,6 +54,9 @@
     <ClCompile Include="native.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="thread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Init.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="..\arknt\ntobapi.h">
       <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="thread.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

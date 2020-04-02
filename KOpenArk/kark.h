@@ -19,6 +19,7 @@
 #include "process.h"
 #include "ex.h"
 #include "native.h"
+#include "thread.h"
 
 
 
