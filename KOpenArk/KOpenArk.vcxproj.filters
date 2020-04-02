@@ -51,6 +51,9 @@
     <ClCompile Include="ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="native.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Init.h">
@@ -83,9 +86,6 @@
     <ClInclude Include="ntfill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\arknt\ntob.h">
-      <Filter>arknt</Filter>
-    </ClInclude>
     <ClInclude Include="..\arknt\ntex.h">
       <Filter>arknt</Filter>
     </ClInclude>
@@ -111,6 +111,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\arknt\common.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="native.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\ntobapi.h">
       <Filter>arknt</Filter>
     </ClInclude>
   </ItemGroup>

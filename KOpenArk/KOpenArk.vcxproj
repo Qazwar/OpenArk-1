@@ -169,6 +169,7 @@
     <ClCompile Include="fs.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="native.cpp" />
     <ClCompile Include="ob.cpp" />
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="process.cpp" />
@@ -183,12 +184,13 @@
     <ClInclude Include="..\arknt\ntex.h" />
     <ClInclude Include="..\arknt\ntldr.h" />
     <ClInclude Include="..\arknt\ntmm.h" />
-    <ClInclude Include="..\arknt\ntob.h" />
+    <ClInclude Include="..\arknt\ntobapi.h" />
     <ClInclude Include="..\arknt\ntwow64.h" />
     <ClInclude Include="ex.h" />
     <ClInclude Include="kark.h" />
     <ClInclude Include="Init.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="native.h" />
     <ClInclude Include="ntfill.h" />
     <ClInclude Include="ob.h" />
     <ClInclude Include="pe.h" />

@@ -21,6 +21,9 @@
 #ifndef _NTLDR_H
 #define _NTLDR_H
 
+
+
+
 typedef struct _LDR_DATA_TABLE_ENTRY32 {
 	LIST_ENTRY32 InLoadOrderLinks;
 	LIST_ENTRY32 InMemoryOrderLinks;

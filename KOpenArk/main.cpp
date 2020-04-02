@@ -161,7 +161,10 @@ DriverUnload(IN PDRIVER_OBJECT pDriverObj)
 	//
 	// TODO: Add uninstall code here.
 	//
-
+	if (NT::ImageBaseCopyNt)
+	{
+		ExFreePool(NT::ImageBaseCopyNt);
+	}
 	// Delete the symbolic link
 	RtlInitUnicodeString(&strLink, SYMBOLIC_LINK_NAME);
 	IoDeleteSymbolicLink(&strLink);

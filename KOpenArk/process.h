@@ -19,12 +19,21 @@ void GetModInfoByAvlNode(PMMVAD vadNode,ModInfo *modInfo);
 void TraverseAvlMid(PMMVAD vadNode,ModInfo *modInfo);
 
 
+/*
+
+
+
+*/
+
+
+
 //µ÷ÓÃº¯Êý
 BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);
 BOOLEAN  ArkHideProcess(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo *pOutData, ULONG cbOutData);
-BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ModInfo *pOutData, ULONG cbOutData);
+BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
+BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 
 
 

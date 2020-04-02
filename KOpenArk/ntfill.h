@@ -69,6 +69,34 @@ ExEnumHandleTable(
 	__out_opt PHANDLE Handle
 );
 
+
+NTSYSCALLAPI
+NTSTATUS
+NTAPI
+ZwQuerySystemInformation(
+	_In_ SYSTEM_INFORMATION_CLASS SystemInformationClass,
+	_Out_writes_bytes_opt_(SystemInformationLength) PVOID SystemInformation,
+	_In_ ULONG SystemInformationLength,
+	_Out_opt_ PULONG ReturnLength
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
