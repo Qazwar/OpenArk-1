@@ -168,7 +168,7 @@ BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, UL
 	ULONG_PTR modBase;
 	KAPC_STATE apcSt;
 	BOOLEAN result = 0;
-	
+
 
 	ProbeForRead(pIndata, cbInData, 1);
 
@@ -283,49 +283,93 @@ BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo * pOutDat
 	PSYSTEM_HANDLE_TABLE_ENTRY_INFO handleEntry;
 	POBJECT_TYPE_INFORMATION typeInfo = 0;
 	POBJECT_NAME_INFORMATION nameInfo = 0;
-	
+	KAPC_STATE apcSt;
+	BOOLEAN isDstProcess;
+	NTSTATUS syncFlag = STATUS_UNSUCCESSFUL;
+	ArkHandleInfo tempHandleInfo;
+	ULONG handleCnt = 0;
+	HANDLE handleQuery = 0;
+
+
 	ProbeForRead(pIndata, cbInData, 1);
+	ProbeForWrite(pOutData, cbOutData, 1);
+
+
+	st = PsLookupProcessByProcessId(procId, &process);
+	if (!NT_SUCCESS(st))
+		return false;
+
 	typeInfo = (POBJECT_TYPE_INFORMATION)ExAllocatePool(PagedPool, 0x1000);
 	nameInfo = (POBJECT_NAME_INFORMATION)ExAllocatePool(PagedPool, 0x1000);
 
-
-	ProbeForWrite(pOutData, cbOutData, 1);
+	isDstProcess = IoGetCurrentProcess() == process;
 
 	st = ArkEnumHandles(&handles);
 	if (NT_SUCCESS(st))
 	{
 		handleEntry = handles->Handles;
-		for (ULONG i = 0; i < handles->NumberOfHandles; i++,
-			handleEntry++)
+		if (typeInfo && nameInfo)
 		{
-			if (handleEntry->UniqueProcessId == (USHORT)procId)
+			for (ULONG i = 0; i < handles->NumberOfHandles; i++, handleEntry++)
 			{
-				pOutData[pOutData->HandleCnt].Handle = (HANDLE)handleEntry->HandleValue;
-				pOutData[pOutData->HandleCnt].Object = handleEntry->Object;
-				pOutData[pOutData->HandleCnt].TypeIndex = handleEntry->ObjectTypeIndex;
-				pOutData[pOutData->HandleCnt].RefreceCount =
-					OBJECT_TO_OBJECT_HEADER(handleEntry->Object)->PointerCount;
+				if (handleEntry->UniqueProcessId == (USHORT)procId)
+				{
+					tempHandleInfo.Handle = (HANDLE)handleEntry->HandleValue;
+					tempHandleInfo.Object = handleEntry->Object;
+					tempHandleInfo.TypeIndex = handleEntry->ObjectTypeIndex;
+					tempHandleInfo.RefreceCount =
+						OBJECT_TO_OBJECT_HEADER(handleEntry->Object)->PointerCount;
+					/*
 
-				st = ZwQueryObject(pOutData[pOutData->HandleCnt].Handle, ObjectTypeInformation, typeInfo, PAGE_SIZE, 0);
-				if (NT_SUCCESS(st))
-				{
-					memcpy(pOutData[pOutData->HandleCnt].TypeName, typeInfo->TypeName.Buffer,
-						typeInfo->TypeName.Length);
+					通过句柄查询信息，附加到目标进程
+					*/
+					if (!isDstProcess)
+					{
+						syncFlag = PsAcquireProcessExitSynchronization(process);
+						KeStackAttachProcess(process, &apcSt);
+					}
+
+					handleQuery = tempHandleInfo.Handle;
+					if (process == NT::SystemProcess)
+					{
+						handleQuery = (HANDLE)((ULONG_PTR)tempHandleInfo.Handle | (ULONG_PTR)SYSTEM_HANDLE);
+					}
+
+					st = ZwQueryObject(handleQuery, ObjectTypeInformation, typeInfo, PAGE_SIZE, 0);
+					if (NT_SUCCESS(st))
+					{
+						memcpy(tempHandleInfo.TypeName, typeInfo->TypeName.Buffer,typeInfo->TypeName.Length);
+						tempHandleInfo.TypeName[typeInfo->TypeName.Length / 2] = 0;
+					}
+					st = ZwQueryObject(handleQuery, (OBJECT_INFORMATION_CLASS)ObjectNameInformation, nameInfo, PAGE_SIZE, 0);
+					if (NT_SUCCESS(st))
+					{
+						memcpy(tempHandleInfo.HandleName, nameInfo->Name.Buffer, nameInfo->Name.Length);
+						tempHandleInfo.HandleName[nameInfo->Name.Length / 2] = 0;
+					}
+					if (!isDstProcess)
+					{
+						PsReleaseProcessExitSynchronization(process);
+						KeUnstackDetachProcess(&apcSt);
+					}
+					memcpy(&pOutData[handleCnt], &tempHandleInfo, sizeof(tempHandleInfo));
+					handleCnt++;
 				}
-				st = ZwQueryObject(pOutData[pOutData->HandleCnt].Handle, (OBJECT_INFORMATION_CLASS)ObjectNameInformation, nameInfo, PAGE_SIZE, 0);
-				if (NT_SUCCESS(st))
-				{
-					memcpy(pOutData[pOutData->HandleCnt].HandleName, nameInfo->Name.Buffer,
-						nameInfo->Name.Length);
-				}
-				pOutData->HandleCnt++;
+
 			}
+			pOutData->HandleCnt = handleCnt;
+			ExFreePool(handles);
 		}
+		ExFreePool(typeInfo);
+		ExFreePool(nameInfo);
 	}
 
-	ExFreePool(typeInfo);
-	ExFreePool(nameInfo);
-	ExFreePool(handles);
+	if (process)
+	{
+		ObDereferenceObject(process);
+	}
+
+	dprintf("ArkGetProcHandles:leveing");
 	return true;
 }
 
@@ -336,26 +380,26 @@ void GetModInfoByAvlNode(PMMVAD VadNode, ModInfo * ModInfo)
 	PFILE_OBJECT filePointer;
 
 
-	if ( VadNode->u.VadFlags.VadType == MI_VAD_TYPE::VadImageMap
-		 && VadNode->Subsection)
+	if (VadNode->u.VadFlags.VadType == MI_VAD_TYPE::VadImageMap
+		&& VadNode->Subsection)
 		controlArea = VadNode->Subsection->ControlArea;
-	else 
+	else
 		return;
 
-	if (controlArea 
+	if (controlArea
 		&& (controlArea->u.Flags.Image && controlArea->u.Flags.File)
 		&& (VadNode->u.VadFlags.Protection == MM_EXECUTE_WRITECOPY))
 
 	{
 		filePointer = (PFILE_OBJECT)(controlArea->FilePointer.Value & 0xFFFFFFFFFFFFFFF0);
-		if (filePointer->Size == 0xd8 || filePointer->Size == 0xb8) 
+		if (filePointer->Size == 0xd8 || filePointer->Size == 0xb8)
 		{
 			BOOLEAN sucess;
 			ULONG pathLen;
 
 			sucess = ObQueryNameFileObject(filePointer, ModInfo[ModInfo->NumberOfMods].Path,
-				sizeof(ModInfo[ModInfo->NumberOfMods].Path),&pathLen);
-			if (sucess) 
+				sizeof(ModInfo[ModInfo->NumberOfMods].Path), &pathLen);
+			if (sucess)
 			{
 				ModInfo[ModInfo->NumberOfMods].Path[pathLen / 2 + 1] = 0;
 			}
@@ -443,7 +487,7 @@ ULONG_PTR  PsGetProcessIdFromHandleTable(ULONG_PTR pEprocess)
 
 
 	pHandleTable = GETQWORD(ObjectTableOffset + pEprocess);
-	
+
 
 	return GETQWORD(pHandleTable + NT::EPROCESS::HANDLE_TABLE::UniqueProcessIdOffset);
 }
@@ -740,8 +784,8 @@ void  FillProcessInfo(ULONG_PTR process, StuProcInfo *pOutData, ULONG cbOutData)
 				ULONG returnLength;
 
 				result = PsGetProcessPath((PEPROCESS)process, (PVOID)pStuProcInfo[nProcessNum].ProcessId,
-					pStuProcInfo[nProcessNum].wStrProcessPath,sizeof(pStuProcInfo[nProcessNum].wStrProcessPath),
-					 &returnLength);
+					pStuProcInfo[nProcessNum].wStrProcessPath, sizeof(pStuProcInfo[nProcessNum].wStrProcessPath),
+					&returnLength);
 			}
 			pOutData->ProcessCnt = nProcessNum + 1;
 		}
@@ -751,7 +795,7 @@ void  FillProcessInfo(ULONG_PTR process, StuProcInfo *pOutData, ULONG cbOutData)
 
 
 
-BOOLEAN  PsGetProcessPath(PEPROCESS Process, PVOID ProcId, OUT PWSTR Buffer,IN ULONG BufferLength, PULONG ReturnLength)
+BOOLEAN  PsGetProcessPath(PEPROCESS Process, PVOID ProcId, OUT PWSTR Buffer, IN ULONG BufferLength, PULONG ReturnLength)
 {
 	using namespace NT::EPROCESS;
 	ULONG status = STATUS_UNSUCCESSFUL;
@@ -762,7 +806,7 @@ BOOLEAN  PsGetProcessPath(PEPROCESS Process, PVOID ProcId, OUT PWSTR Buffer,IN U
 	if (!SectionObjectOffset)
 		return false;
 
-	if (NULL == Process) 
+	if (NULL == Process)
 	{
 		status = PsLookupProcessByProcessId(ProcId, &Process);
 	}

@@ -10,7 +10,6 @@
 extern "C" {
 #endif
 
-
 	//
 	//  This is the sign low bit used to lock handle table entries
 	//
@@ -19,6 +18,7 @@ extern "C" {
 
 	// These definitions are no longer correct, but they produce correct results.
 
+#define SYSTEM_HANDLE				0xffffffff80000000
 #define OBJ_PROTECT_CLOSE		0x00000001
 #define OBJ_AUDIT_OBJECT_CLOSE  0x00000004
 #define OBJ_HANDLE_ATTRIBUTES (OBJ_PROTECT_CLOSE | OBJ_INHERIT | OBJ_AUDIT_OBJECT_CLOSE)

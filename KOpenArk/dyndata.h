@@ -73,6 +73,7 @@ typedef void (*ArkEX_ENUMERATE_HANDLE_ROUTINE)(ULONG_PTR pObject, StuProcInfo *p
 namespace NT
 {
 	//ntoskrnl–≈œ¢
+	EXTERN PEPROCESS			SystemProcess;
 	EXTERN PCHAR				ImageBaseCopyNt;
 	EXTERN PCHAR				ImageBaseRunNt;
 	EXTERN ULONG				SizeOfNtImage;

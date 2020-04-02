@@ -56,6 +56,7 @@ BOOLEAN InitNtInfo()
 		PLDR_DATA_TABLE_ENTRY  pFlink;
 		PVOID vaNtBuildNumber = &NtBuildNumber;
 		NT::OsVersion = (USHORT)NtBuildNumber;
+		NT::SystemProcess = IoGetCurrentProcess();
 		pFlink = (PLDR_DATA_TABLE_ENTRY)((PLDR_DATA_TABLE_ENTRY)NT::DriverObject->DriverSection)->InLoadOrderLinks.Flink;
 
 		while (pFlink != (PLDR_DATA_TABLE_ENTRY)NT::DriverObject->DriverSection)
