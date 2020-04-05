@@ -183,9 +183,11 @@
     <ClInclude Include="..\arknt\fs.h" />
     <ClInclude Include="..\arknt\ntdeclaere.h" />
     <ClInclude Include="..\arknt\ntex.h" />
+    <ClInclude Include="..\arknt\ntke.h" />
     <ClInclude Include="..\arknt\ntldr.h" />
     <ClInclude Include="..\arknt\ntmm.h" />
     <ClInclude Include="..\arknt\ntobapi.h" />
+    <ClInclude Include="..\arknt\ntps.h" />
     <ClInclude Include="..\arknt\ntwow64.h" />
     <ClInclude Include="ex.h" />
     <ClInclude Include="kark.h" />

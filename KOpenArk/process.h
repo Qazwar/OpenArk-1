@@ -18,13 +18,24 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path,_Inout
 void GetModInfoByAvlNode(PMMVAD vadNode,ModInfo *modInfo);
 void TraverseAvlMid(PMMVAD vadNode,ModInfo *modInfo);
 
-
+typedef void(*ENUM_THREAD_CALLBACK)(PETHREAD Thread, PVOID ThreadInfo);
 /*
-
-
+	枚举指定进程的所有线程
+	参数1 进程的id
+	参数2 触发的回调函数
+	参数3 穿给回调的缓冲区
+	InfoSize ： 缓冲区大小
 
 */
+void EnumProcessThreads(PVOID ProcId, ENUM_THREAD_CALLBACK CallBackFun, ArkThreadInfo *ThreadInfo, ULONG InfoSize);
 
+
+/*
+根据线程对象得到线程信息
+参数1 线程对象
+参数2 输出缓冲区
+*/
+void CallbackGetThreadInfo(PETHREAD Thread, PVOID *ThreadInfo);
 
 
 //调用函数
@@ -34,7 +45,7 @@ BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo *pOutData, U
 BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
-
+BOOLEAN ArkGetProcThreads(PCHAR pIndata, ULONG cbInData, ArkThreadInfo *pOutData, ULONG cbOutData);//得到进程的所有线程信息
 
 
 

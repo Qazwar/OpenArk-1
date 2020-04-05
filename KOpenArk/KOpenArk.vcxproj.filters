@@ -125,6 +125,12 @@
     <ClInclude Include="thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\arknt\ntke.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\arknt\ntps.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="kasm.asm">

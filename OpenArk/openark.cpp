@@ -135,7 +135,7 @@ bool OpenArk::InitArkNameSpace()
 	if (Ark::Buffer) {
 		return true;
 	}
-	return false;
+	exit(0);
 }
 
 

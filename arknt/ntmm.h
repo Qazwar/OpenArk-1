@@ -429,3 +429,56 @@ typedef struct _MMVAD                          // 15 elements, 0x78 bytes (sizeo
 	/*0x060*/     struct _LIST_ENTRY ViewLinks;              // 2 elements, 0x10 bytes (sizeof)  
 	/*0x070*/     struct _EPROCESS* VadsProcess;
 }MMVAD, *PMMVAD;
+
+typedef struct _MMSUPPORT_FLAGS                 // 15 elements, 0x4 bytes (sizeof) 
+{
+	struct                                      // 6 elements, 0x1 bytes (sizeof)  
+	{
+		/*0x000*/         UINT8        WorkingSetType : 3;        // 0 BitPosition                   
+		/*0x000*/         UINT8        ModwriterAttached : 1;     // 3 BitPosition                   
+		/*0x000*/         UINT8        TrimHard : 1;              // 4 BitPosition                   
+		/*0x000*/         UINT8        MaximumWorkingSetHard : 1; // 5 BitPosition                   
+		/*0x000*/         UINT8        ForceTrim : 1;             // 6 BitPosition                   
+		/*0x000*/         UINT8        MinimumWorkingSetHard : 1; // 7 BitPosition                   
+	};
+	struct                                      // 4 elements, 0x1 bytes (sizeof)  
+	{
+		/*0x001*/         UINT8        SessionMaster : 1;         // 0 BitPosition                   
+		/*0x001*/         UINT8        TrimmerState : 2;          // 1 BitPosition                   
+		/*0x001*/         UINT8        Reserved : 1;              // 3 BitPosition                   
+		/*0x001*/         UINT8        PageStealers : 4;          // 4 BitPosition                   
+	};
+	/*0x002*/     UINT8        MemoryPriority : 8;            // 0 BitPosition                   
+	struct                                      // 4 elements, 0x1 bytes (sizeof)  
+	{
+		/*0x003*/         UINT8        WsleDeleted : 1;           // 0 BitPosition                   
+		/*0x003*/         UINT8        VmExiting : 1;             // 1 BitPosition                   
+		/*0x003*/         UINT8        ExpansionFailed : 1;       // 2 BitPosition                   
+		/*0x003*/         UINT8        Available : 5;             // 3 BitPosition                   
+	};
+}MMSUPPORT_FLAGS, *PMMSUPPORT_FLAGS;
+
+typedef struct _MMSUPPORT                        // 21 elements, 0x88 bytes (sizeof) 
+{
+	/*0x000*/     struct _EX_PUSH_LOCK WorkingSetMutex;        // 7 elements, 0x8 bytes (sizeof)   
+	/*0x008*/     struct _KGATE* ExitGate;
+	/*0x010*/     VOID*        AccessLog;
+	/*0x018*/     struct _LIST_ENTRY WorkingSetExpansionLinks; // 2 elements, 0x10 bytes (sizeof)  
+	/*0x028*/     ULONG32      AgeDistribution[7];
+	/*0x044*/     ULONG32      MinimumWorkingSetSize;
+	/*0x048*/     ULONG32      WorkingSetSize;
+	/*0x04C*/     ULONG32      WorkingSetPrivateSize;
+	/*0x050*/     ULONG32      MaximumWorkingSetSize;
+	/*0x054*/     ULONG32      ChargedWslePages;
+	/*0x058*/     ULONG32      ActualWslePages;
+	/*0x05C*/     ULONG32      WorkingSetSizeOverhead;
+	/*0x060*/     ULONG32      PeakWorkingSetSize;
+	/*0x064*/     ULONG32      HardFaultCount;
+	/*0x068*/     struct _MMWSL* VmWorkingSetList;
+	/*0x070*/     UINT16       NextPageColor;
+	/*0x072*/     UINT16       LastTrimStamp;
+	/*0x074*/     ULONG32      PageFaultCount;
+	/*0x078*/     ULONG32      RepurposeCount;
+	/*0x07C*/     ULONG32      Spare[2];
+	/*0x084*/     struct _MMSUPPORT_FLAGS Flags;               // 15 elements, 0x4 bytes (sizeof)  
+}MMSUPPORT, *PMMSUPPORT;

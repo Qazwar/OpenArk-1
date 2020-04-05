@@ -249,6 +249,7 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[HideProcess] = (DrvCallFun)ArkHideProcess;
 	DrvCallTable[ModList] = (DrvCallFun)ArkGetModListForProc;
 	DrvCallTable[ProcHandleList] = (DrvCallFun)ArkGetProcHandles;
+	DrvCallTable[ProcThreadList] = (DrvCallFun)ArkGetProcThreads;
 
 	return true;
 }

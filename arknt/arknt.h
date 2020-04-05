@@ -7,6 +7,8 @@
 #include <ntobapi.h>
 #include <ntmm.h>
 #include <amd64.h>
+#include <ntke.h>
+#include <ntps.h>
 
 
 

@@ -7,6 +7,59 @@
 
 
 
+
+
+void EnumProcessThreads(PVOID ProcId, ENUM_THREAD_CALLBACK CallBackFun, ArkThreadInfo * ThreadInfo, ULONG InformationLength)
+{
+	NTSTATUS st;
+	PEPROCESS process;
+	PLIST_ENTRY nextThread;
+	ULONG totalSize = 0;
+	PETHREAD thread;
+	ArkThreadInfoEntry *threadInfoEntry = ThreadInfo->Threads;
+
+	st = PsLookupProcessByProcessId((HANDLE)ProcId, &process);
+	if (NT_SUCCESS(st))
+	{
+		nextThread = process->ThreadListHead.Flink;
+		while (nextThread != &process->Pcb.ThreadListHead)
+		{
+			totalSize += sizeof(ArkThreadInfoEntry);
+
+			if (totalSize > InformationLength) 
+			{
+				dprintf("EnumProcessThreads£º¿Õ¼ä²»×ã");
+				return;
+			}
+			else 
+			{
+				thread = (PETHREAD)(CONTAINING_RECORD(nextThread,ETHREAD,ThreadListEntry));
+				CallBackFun(thread, (PVOID)threadInfoEntry);
+				ThreadInfo->ThreadCnt += 1;
+				
+				threadInfoEntry++;
+			}
+
+			nextThread = nextThread->Flink;
+		}
+
+		ObDereferenceObject(process);
+	}
+
+}
+
+void CallbackGetThreadInfo(PETHREAD Thread, PVOID  ThreadInfoBuffer)
+{
+	ArkThreadInfoEntry *threadInfo = (ArkThreadInfoEntry *)ThreadInfoBuffer;
+
+	threadInfo->State = Thread->Tcb.State;
+	threadInfo->Priority = Thread->Tcb.Priority;
+	threadInfo->ContextSwitches = Thread->Tcb.ContextSwitches;
+	threadInfo->StartAddress = Thread->StartAddress;
+	threadInfo->Win32StartAddress = Thread->Win32StartAddress;
+	
+}
+
 BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData)
 {
 	char result = false;
@@ -77,7 +130,7 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path, int *
 			}
 
 			stLock = PsAcquireProcessExitSynchronization(process);
-			KeStackAttachProcess(process, &kapc);
+			KeStackAttachProcess((PRKPROCESS)process, &kapc);
 			peb = *(PPEB*)((ULONG_PTR)process + PebOffset);
 			if (peb && peb < MmSystemRangeStart) {
 
@@ -370,6 +423,25 @@ BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo * pOutDat
 	}
 
 	dprintf("ArkGetProcHandles:leveing");
+	return true;
+}
+
+BOOLEAN ArkGetProcThreads(PCHAR pIndata, ULONG cbInData, ArkThreadInfo * pOutData, ULONG cbOutData)
+{
+	PVOID ProcId = *(PVOID*)pIndata;
+	__try
+	{
+		ProbeForWrite(pOutData, cbOutData, 1);
+		ProbeForRead(pIndata, 4, 1);
+	}
+	__except(1)
+	{
+		dprintf("AekGetProcThreads");
+	}
+
+
+	EnumProcessThreads(ProcId, CallbackGetThreadInfo, pOutData, cbOutData);
+
 	return true;
 }
 

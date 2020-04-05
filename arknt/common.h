@@ -75,6 +75,7 @@ enum DrvCall
 	ModList,
 	HideMod,
 	ProcHandleList,
+	ProcThreadList,
 
 	LastId
 };
@@ -126,6 +127,23 @@ typedef struct ArkHandleInfo
 	WCHAR TypeName[MAX_PATH];
 }*PArkHandleInfo;
 
+//得到线程信息
+ struct ArkThreadInfoEntry
+{
+	 PVOID ThreadId;
+	 PVOID Ethread;
+	 PVOID Teb;
+	 PVOID StartAddress;
+	 PVOID Win32StartAddress;
+	 LONGLONG ContextSwitches;
+	 char Priority;
+	 char State;
+};
+struct ArkThreadInfo
+{
+	ULONG ThreadCnt;
+	ArkThreadInfoEntry Threads[1];
+};
 
 
 
