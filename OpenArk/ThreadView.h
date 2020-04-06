@@ -27,6 +27,7 @@ public:
 		Transition,
 		DeferredReady,
 		GateWait
+
 	} KTHREAD_STATE;
 
 	ThreadView(QWidget *parent, LPVOID procId, QString procName);
