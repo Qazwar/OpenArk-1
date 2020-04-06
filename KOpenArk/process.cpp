@@ -22,7 +22,7 @@ void EnumProcessThreads(PVOID ProcId, ENUM_THREAD_CALLBACK CallBackFun, ArkThrea
 	if (NT_SUCCESS(st))
 	{
 		nextThread = process->ThreadListHead.Flink;
-		while (nextThread != &process->Pcb.ThreadListHead)
+		while (nextThread != &process->ThreadListHead)
 		{
 			totalSize += sizeof(ArkThreadInfoEntry);
 

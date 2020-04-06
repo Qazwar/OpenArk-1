@@ -67,7 +67,7 @@ void ModuleView::OnRefresh()
 	param.FunIdx = DrvCall::ModList;
 
 	auto result = OpenArk::IoCallDriver(param);
-	if (reset == false) {
+	if (result == false) {
 		return;
 	}
 

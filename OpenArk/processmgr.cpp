@@ -6,6 +6,7 @@
 #include <qvector.h>
 #include <TlHelp32.h>
 #include "HandleView.h"
+#include "ThreadView.h"
 
 #pragma comment (lib,"Version.lib")
 ProcessMgr::ProcessMgr(QWidget *parent)
@@ -189,6 +190,7 @@ void ProcessMgr::SetContextMenu()
 	mMenu.addAction(tr("hide process"), this,&ProcessMgr::OnHideProcess);
 	mMenu.addAction(tr("look process moudle"), this,&ProcessMgr::OnLookProcMod);
 	mMenu.addAction(tr("look process handle"), this,&ProcessMgr::OnLookProcHandle);
+	mMenu.addAction(tr("look process threads"), this,&ProcessMgr::OnLookProcThreads);
 
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -290,25 +292,76 @@ void ProcessMgr::OnHideProcess()
 
 void ProcessMgr::OnLookProcMod()
 {
+	static ModuleView *modView = 0;
+
+
 	auto index = ui.tableView->currentIndex();
 	int row = index.row();
 	QModelIndex idIndex = mSortModel->index(row, PHI::Pid);
 	auto procId = mSortModel->data(idIndex).toLongLong();
 
-	ModuleView *modView = new ModuleView(this, (LPVOID)procId, mSortModel->data(mSortModel->index(row, PHI::Name)).toString());
+	if (!modView)
+	{
+		modView = new ModuleView(this, (LPVOID)procId, mSortModel->data(mSortModel->index(row, PHI::Name)).toString());
+	}
+	else
+	{
+		modView->mProcId = (LPVOID)procId;
+		modView->mProcName = mSortModel->data(mSortModel->index(row, PHI::Name)).toString();
+		modView->OnRefresh();
+	}
 	modView->show();
-
+	
+	
 }
 
 void ProcessMgr::OnLookProcHandle()
 {
+	static HandleView *handleView = 0;
+
 	auto Idindex = GetIndexForCurRowCol(Col::Pid);
 	auto nameIndex = GetIndexForCurRowCol(Col::Name);
 	QString procName;
 	auto procId = mSortModel->data(Idindex).toLongLong();
 	procName = mSortModel->data(nameIndex).toString();
-	HandleView *handleView = new HandleView(this, (LPVOID)procId, procName);
+
+
+	if (!handleView)
+	{
+		handleView = new HandleView(this, (LPVOID)procId, procName);
+	}
+	else
+	{
+		handleView->mProcId = (LPVOID)procId;
+		handleView->mProcName = procName;
+		handleView->OnRefresh();
+	}
 	handleView->show();
+	
+	
+}
+
+void ProcessMgr::OnLookProcThreads()
+{
+	static ThreadView *threadView = 0;
+	auto Idindex = GetIndexForCurRowCol(Col::Pid);
+	auto nameIndex = GetIndexForCurRowCol(Col::Name);
+	QString procName;
+	auto procId = mSortModel->data(Idindex).toLongLong();
+	procName = mSortModel->data(nameIndex).toString();
+
+	if (!threadView)
+	{
+		threadView = new ThreadView(this, (LPVOID)procId, procName);
+	}
+	else
+	{
+		threadView->mProcId = (LPVOID)procId;
+		threadView->mProcName = procName;
+		threadView->OnRefresh();
+	}
+	threadView->show();
+
 }
 
 void ProcessMgr::OnPrintTest()

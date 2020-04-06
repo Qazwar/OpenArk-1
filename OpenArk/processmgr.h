@@ -54,6 +54,7 @@ private slots:
 	void OnHideProcess();
 	void OnLookProcMod();
 	void OnLookProcHandle();
+	void OnLookProcThreads();
 	void OnPrintTest();
 
 private:

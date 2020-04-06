@@ -10,6 +10,11 @@ QStandardItem * MakeItem(PWSTR text)
 	return new  QStandardItem(QString::fromWCharArray(text));
 
 }
+QStandardItem * MakeItem(QString text)
+{
+	return new  QStandardItem(text);
+
+}
 QStandardItem * MakeItem(PVOID num)
 {
 	return new  QStandardItem(ToHexQstring((qulonglong)num));

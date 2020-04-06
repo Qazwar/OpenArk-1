@@ -65,6 +65,9 @@
     <ClCompile Include="HandleView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="stdtable.h">
@@ -83,6 +86,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="openark.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="processmgr.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ThreadView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -126,9 +135,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\arknt\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ark.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="arknamespace.h">

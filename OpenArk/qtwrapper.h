@@ -10,3 +10,4 @@ QString ToHexQstring(qulonglong num);
 QStandardItem* MakeItem(PWSTR text);
 QStandardItem * MakeItem(PVOID num);
 QStandardItem * MakeItem(qulonglong num);
+QStandardItem * MakeItem(QString text);

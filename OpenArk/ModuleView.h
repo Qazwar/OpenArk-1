@@ -22,9 +22,9 @@ public:
 	LPVOID mProcId;
 	QString mProcName;
 
+	void OnRefresh();
 private slots:
 	void OnNouse();
-	void OnRefresh();
 	void OnHideMod();
 
 
