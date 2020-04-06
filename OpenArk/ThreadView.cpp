@@ -134,7 +134,16 @@ void ThreadView::OnRefresh()
 		mSourceModel->setItem(i, Col::ContextSwitchs, MakeItem(nextThreadInfo->ContextSwitches));
 		mSourceModel->setItem(i, Col::Mod, MakeItem(nextThreadInfo->InModName));
 		mSourceModel->setItem(i, Col::Priority, MakeItem(nextThreadInfo->Priority));
-		mSourceModel->setItem(i, Col::StartAddress, MakeItem(nextThreadInfo->StartAddress));
+		if (mProcId == (LPVOID)4)
+		{
+
+			mSourceModel->setItem(i, Col::StartAddress, MakeItem(nextThreadInfo->StartAddress));
+		}
+		else
+		{
+			mSourceModel->setItem(i, Col::StartAddress, MakeItem(nextThreadInfo->Win32StartAddress));
+
+		}
 		mSourceModel->setItem(i, Col::State, MakeItem(mStateTranslation[nextThreadInfo->State]));
 		
 	}
