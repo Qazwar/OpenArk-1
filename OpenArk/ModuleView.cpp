@@ -51,10 +51,32 @@ void ModuleView::SetContextMenu()
 
 }
 
+ArkModInfo * ModuleView::GetModInfo(PVOID ProcId)
+{
+	ArkModInfo *modInfo = (ArkModInfo *)new char[SIZE4M];
+
+	if (!modInfo) {
+		return 0;
+	}
+	ParamInfo param;
+	param.pInData = (PCHAR)&ProcId;
+	param.cbInData = sizeof(ProcId);
+	param.pOutData = (PCHAR)modInfo;
+	param.cbOutData = SIZE4M;
+	param.FunIdx = DrvCall::ModList;
+
+	auto result = OpenArk::IoCallDriver(param);
+	if (result == false) {
+		delete modInfo;
+		return 0;
+	}
+	return modInfo;
+}
+
 void ModuleView::OnRefresh()
 {
 
-	ModInfo *modInfo = (ModInfo *)Ark::Buffer;
+	ArkModInfo *modInfo = (ArkModInfo *)Ark::Buffer;
 
 	if (!modInfo) {
 		return;

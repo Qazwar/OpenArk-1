@@ -2,6 +2,7 @@
 #include "common.h"
 #include "arknamespace.h"
 #include "qtwrapper.h"
+#include "ModuleView.h"
 
 ThreadView::ThreadView(QWidget *parent, LPVOID procId, QString procName) :StdDialog(parent)
 {
@@ -64,6 +65,31 @@ void ThreadView::SetContextMenu()
 
 }
 
+void ThreadView::ProcessThreadInfo(ArkThreadInfo * ThreadInfo, ArkModInfo * ModInfo)
+{
+	int numOfThreads = ThreadInfo->ThreadCnt;
+
+	for (int i = 0; i < numOfThreads; i++)
+	{
+		ULONG_PTR cmpAddr = mProcId == (LPVOID)4 ? (ULONG_PTR)ThreadInfo->Threads[i].StartAddress : 
+			(ULONG_PTR)ThreadInfo->Threads[i].Win32StartAddress;
+		for (int j = 0; j < ModInfo->NumberOfMods; j++)
+		{
+			if (cmpAddr >= ModInfo[j].RegionBase  && cmpAddr < ModInfo[j].RegionBase + ModInfo[j].RegionSize)
+			{
+				auto p = wcsrchr(ModInfo[j].Path, L'\\');
+				if (p)
+				{
+					memcpy(ThreadInfo->Threads[i].InModName, p, wcslen(p));
+					break;
+				}
+			}
+		}
+	}
+
+
+}
+
 void ThreadView::OnRefresh()
 {
 
@@ -87,13 +113,26 @@ void ThreadView::OnRefresh()
 	mSourceModel->removeRows(0, mSourceModel->rowCount());
 	int numOfthreads = threadInfo->ThreadCnt;
 	ArkThreadInfoEntry *nextThreadInfo = threadInfo->Threads;
+	ArkModInfo *modInfo;
+	
+	modInfo = ModuleView::GetModInfo(mProcId);
+	if (modInfo)
+	{
+		ProcessThreadInfo(threadInfo, modInfo);
+		delete modInfo;
+	}
+	else
+	{
+		return;
+	}
+
 	for (int i = 0; i < numOfthreads; i++, nextThreadInfo++)
 	{
 		mSourceModel->setItem(i, Col::Tid, MakeItem(nextThreadInfo->ThreadId));
 		mSourceModel->setItem(i, Col::Ethread, MakeItem(nextThreadInfo->Ethread));
 		mSourceModel->setItem(i, Col::Teb, MakeItem(nextThreadInfo->Teb));
 		mSourceModel->setItem(i, Col::ContextSwitchs, MakeItem(nextThreadInfo->ContextSwitches));
-		mSourceModel->setItem(i, Col::Mod, MakeItem(2));
+		mSourceModel->setItem(i, Col::Mod, MakeItem(nextThreadInfo->InModName));
 		mSourceModel->setItem(i, Col::Priority, MakeItem(nextThreadInfo->Priority));
 		mSourceModel->setItem(i, Col::StartAddress, MakeItem(nextThreadInfo->StartAddress));
 		mSourceModel->setItem(i, Col::State, MakeItem(mStateTranslation[nextThreadInfo->State]));

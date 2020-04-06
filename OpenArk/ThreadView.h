@@ -1,5 +1,6 @@
 #pragma once
 #include "StdDialog.h"
+#include "common.h"
 
 class ThreadView :public StdDialog
 {
@@ -34,6 +35,7 @@ public:
 	~ThreadView();
 	void InitView();
 	void SetContextMenu();
+	void ProcessThreadInfo(ArkThreadInfo *ThreadInfo,ArkModInfo * ModInfo);
 
 	LPVOID mProcId;
 	QString mProcName;

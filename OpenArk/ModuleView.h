@@ -1,5 +1,6 @@
 #pragma once
 #include "StdDialog.h"
+#include "common.h"
 
 class ModuleView :public StdDialog
 {
@@ -18,6 +19,7 @@ public:
 	~ModuleView();
 	void InitView();
 	void SetContextMenu();
+	static ArkModInfo* GetModInfo(PVOID ProcId);
 
 	LPVOID mProcId;
 	QString mProcName;

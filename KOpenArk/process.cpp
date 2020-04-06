@@ -52,10 +52,13 @@ void CallbackGetThreadInfo(PETHREAD Thread, PVOID  ThreadInfoBuffer)
 {
 	ArkThreadInfoEntry *threadInfo = (ArkThreadInfoEntry *)ThreadInfoBuffer;
 
-	threadInfo->State = Thread->Tcb.State;
-	threadInfo->Priority = Thread->Tcb.Priority;
 	threadInfo->ContextSwitches = Thread->Tcb.ContextSwitches;
+	threadInfo->Ethread = Thread;
+	threadInfo->Priority = Thread->Tcb.Priority;
 	threadInfo->StartAddress = Thread->StartAddress;
+	threadInfo->State = Thread->Tcb.State;
+	threadInfo->Teb = Thread->Tcb.Teb;
+	threadInfo->ThreadId = Thread->Cid.UniqueThread;
 	threadInfo->Win32StartAddress = Thread->Win32StartAddress;
 	
 }
