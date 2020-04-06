@@ -80,7 +80,7 @@ void ThreadView::ProcessThreadInfo(ArkThreadInfo * ThreadInfo, ArkModInfo * ModI
 				auto p = wcsrchr(ModInfo[j].Path, L'\\');
 				if (p)
 				{
-					memcpy(ThreadInfo->Threads[i].InModName, p, wcslen(p));
+					memcpy(ThreadInfo->Threads[i].InModName, p+1, wcslen(p));
 					break;
 				}
 			}

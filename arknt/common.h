@@ -138,7 +138,7 @@ typedef struct ArkHandleInfo
 	 LONGLONG ContextSwitches;
 	 char Priority;
 	 char State;
-	 PWSTR InModName[MAX_PATH];
+	 WCHAR InModName[MAX_PATH];
 };
 struct ArkThreadInfo
 {
