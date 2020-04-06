@@ -172,7 +172,7 @@ BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path, int *
 	return result;
 }
 
-BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
+BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ArkModInfo * pOutData, ULONG cbOutData)
 {
 	BOOLEAN result = true;
 	PVOID psId = *(PVOID*)pIndata;
@@ -201,7 +201,7 @@ BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, 
 	return result;
 }
 
-BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
+BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ArkModInfo * pOutData, ULONG cbOutData)
 {
 
 	typedef struct _PEB32
@@ -304,7 +304,7 @@ BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo * pOutData, UL
 }
 
 
-BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ModInfo * pOutData, ULONG cbOutData)
+BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ArkModInfo * pOutData, ULONG cbOutData)
 {
 	PVOID procId = *(PVOID*)pIndata;
 	NTSTATUS st = STATUS_UNSUCCESSFUL;
@@ -448,7 +448,24 @@ BOOLEAN ArkGetProcThreads(PCHAR pIndata, ULONG cbInData, ArkThreadInfo * pOutDat
 	return true;
 }
 
-void GetModInfoByAvlNode(PMMVAD VadNode, ModInfo * ModInfo)
+BOOLEAN ArkGetSystemModInfo(PCHAR pIndata, ULONG cbInData, ArkModInfo * ModInfo, ULONG cbOutData)
+{
+	PLDR_DATA_TABLE_ENTRY nextMod = (PLDR_DATA_TABLE_ENTRY)NT::PsLoadedModuleList->Flink;
+	int numOfMod = 0;
+
+	while ((PLDR_DATA_TABLE_ENTRY)NT::PsLoadedModuleList != nextMod)
+	{
+		ModInfo->RegionBase = (ULONG_PTR)nextMod->DllBase;
+		ModInfo->RegionSize = nextMod->SizeOfImage;
+		memcpy( ModInfo->Path,nextMod->FullDllName.Buffer,  nextMod->FullDllName.Length);
+		numOfMod++;
+	}
+
+	ModInfo->NumberOfMods = numOfMod;
+	return true;
+}
+
+void GetModInfoByAvlNode(PMMVAD VadNode, ArkModInfo * ModInfo)
 {
 	PCONTROL_AREA controlArea;
 	PSEGMENT segment;
@@ -486,7 +503,7 @@ void GetModInfoByAvlNode(PMMVAD VadNode, ModInfo * ModInfo)
 	}
 }
 
-void TraverseAvlMid(PMMVAD VadNode, ModInfo *ModInfo)
+void TraverseAvlMid(PMMVAD VadNode, ArkModInfo *ModInfo)
 {
 	while (VadNode)
 	{

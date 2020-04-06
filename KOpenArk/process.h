@@ -15,8 +15,12 @@ int  GetIdlelProcessInfomatio(StuProcInfo *pOutData, ULONG cbOutData);
 PHANDLE_TABLE_ENTRY ExpLookupHandleTableEntry(IN PHANDLE_TABLE HandleTable,IN EXHANDLE tHandle);
 BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path,_Inout_ int *pathLen);
 
-void GetModInfoByAvlNode(PMMVAD vadNode,ModInfo *modInfo);
-void TraverseAvlMid(PMMVAD vadNode,ModInfo *modInfo);
+void GetModInfoByAvlNode(PMMVAD vadNode,ArkModInfo *modInfo);
+void TraverseAvlMid(PMMVAD vadNode, ArkModInfo *modInfo);
+
+
+
+
 
 typedef void(*ENUM_THREAD_CALLBACK)(PETHREAD Thread, PVOID ThreadInfo);
 /*
@@ -41,13 +45,23 @@ void CallbackGetThreadInfo(PETHREAD Thread, PVOID *ThreadInfo);
 //调用函数
 BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);
 BOOLEAN  ArkHideProcess(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);
-BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ModInfo *pOutData, ULONG cbOutData);
-BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ModInfo *pOutData, ULONG cbOutData);
+BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ArkModInfo *pOutData, ULONG cbOutData);
+BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ArkModInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcThreads(PCHAR pIndata, ULONG cbInData, ArkThreadInfo *pOutData, ULONG cbOutData);//得到进程的所有线程信息
 
-
+/*
+得到系统模块
+*/
+BOOLEAN 
+ArkGetSystemModInfo
+(
+	PCHAR pIndata,
+	ULONG cbInData,
+	ArkModInfo *pOutData,
+	ULONG cbOutData
+);
 
 
 

@@ -76,6 +76,7 @@ enum DrvCall
 	HideMod,
 	ProcHandleList,
 	ProcThreadList,
+	SystemMods,
 
 	LastId
 };

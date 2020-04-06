@@ -108,6 +108,10 @@ BOOLEAN InitNtInfo()
 			}
 			pFlink = (PLDR_DATA_TABLE_ENTRY)pFlink->InLoadOrderLinks.Flink;
 		}
+
+		
+
+
 	}
 	__except (1)
 	{
@@ -131,6 +135,7 @@ BOOLEAN InitUnExportByNtkrnl()
 {
 	LOADUNEXPORT(InitPspCidTable);
 	LOADUNEXPORT(InitObTypeIndexTable);
+	LOADUNEXPORT(InitPsLoadedModuleList);
 
 	return true;
 }
@@ -250,6 +255,7 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[ModList] = (DrvCallFun)ArkGetModListForProc;
 	DrvCallTable[ProcHandleList] = (DrvCallFun)ArkGetProcHandles;
 	DrvCallTable[ProcThreadList] = (DrvCallFun)ArkGetProcThreads;
+	DrvCallTable[SystemMods] = (DrvCallFun)ArkGetSystemModInfo;
 
 	return true;
 }
@@ -320,6 +326,27 @@ BOOLEAN InitObTypeIndexTable()
 	ObDereferenceObject(NT::ObpRootDirectoryObject);
 
 	return true;
+}
+
+BOOLEAN InitPsLoadedModuleList()
+{
+	PLIST_ENTRY start = (PLIST_ENTRY)NT::DriverObject->DriverSection;
+	PLIST_ENTRY next = start->Flink;
+
+	while (start != next)
+	{
+		if ((PVOID)next >= NT::ImageBaseRunNt && next < PTR_ADD_OFFSET(NT::ImageBaseRunNt, NT::SizeOfNtImage))
+		{
+			NT::PsLoadedModuleList = next;
+			return true;
+		}
+		next = next->Flink;
+	}
+
+
+
+
+	return BOOLEAN();
 }
 
 

@@ -79,6 +79,7 @@ namespace NT
 	EXTERN ULONG				SizeOfNtImage;
 	EXTERN WCHAR				NtFullName[];
 	EXTERN USHORT				OsVersion;
+	EXTERN PLIST_ENTRY			PsLoadedModuleList;
 
 	//Î´µ¼³ö
 	EXTERN POBJECT_TYPE			*ObTypeIndexTable;

@@ -20,6 +20,7 @@ BOOLEAN InitOffset();
 //初始化未导出变量
 BOOLEAN InitPspCidTable();
 BOOLEAN InitObTypeIndexTable();
+BOOLEAN InitPsLoadedModuleList();
 
 #define NTKROSPATH  L"\\??\\c:\\windows\\system32\\ntoskrnl.exe"
  #define LOADEXPORT(name) \

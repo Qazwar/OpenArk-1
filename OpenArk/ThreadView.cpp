@@ -80,8 +80,7 @@ void ThreadView::ProcessThreadInfo(ArkThreadInfo * ThreadInfo, ArkModInfo * ModI
 				auto p = wcsrchr(ModInfo[j].Path, L'\\');
 				if (p)
 				{
-					auto len = wcslen(p + 1);
-					memcpy(ThreadInfo->Threads[i].InModName, p+1, wcslen(p)*sizeof(WCHAR));
+					memcpy(ThreadInfo->Threads[i].InModName, p+1, wcslen(p+1)*sizeof(WCHAR));
 					break;
 				}
 			}
@@ -116,7 +115,14 @@ void ThreadView::OnRefresh()
 	ArkThreadInfoEntry *nextThreadInfo = threadInfo->Threads;
 	ArkModInfo *modInfo;
 	
-	modInfo = ModuleView::GetModInfo(mProcId);
+	if (mProcId == (PVOID)4)
+	{
+		modInfo = ModuleView::GetSystemModInfo();
+	}
+	else
+	{
+		modInfo = ModuleView::GetModInfo(mProcId);
+	}
 	if (modInfo)
 	{
 		ProcessThreadInfo(threadInfo, modInfo);

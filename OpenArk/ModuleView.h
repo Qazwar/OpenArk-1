@@ -20,6 +20,7 @@ public:
 	void InitView();
 	void SetContextMenu();
 	static ArkModInfo* GetModInfo(PVOID ProcId);
+	static ArkModInfo* GetSystemModInfo();
 
 	LPVOID mProcId;
 	QString mProcName;

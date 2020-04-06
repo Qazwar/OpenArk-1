@@ -73,6 +73,28 @@ ArkModInfo * ModuleView::GetModInfo(PVOID ProcId)
 	return modInfo;
 }
 
+ArkModInfo * ModuleView::GetSystemModInfo()
+{
+	ArkModInfo *modInfo = (ArkModInfo *)new char[SIZE4M];
+
+	if (!modInfo) {
+		return 0;
+	}
+	ParamInfo param;
+	param.pInData = 0;
+	param.cbInData = 0;
+	param.pOutData = (PCHAR)modInfo;
+	param.cbOutData = SIZE4M;
+	param.FunIdx = DrvCall::SystemMods;
+
+	auto result = OpenArk::IoCallDriver(param);
+	if (result == false) {
+		delete modInfo;
+		return 0;
+	}
+	return modInfo;
+}
+
 void ModuleView::OnRefresh()
 {
 
