@@ -80,7 +80,8 @@ void ThreadView::ProcessThreadInfo(ArkThreadInfo * ThreadInfo, ArkModInfo * ModI
 				auto p = wcsrchr(ModInfo[j].Path, L'\\');
 				if (p)
 				{
-					memcpy(ThreadInfo->Threads[i].InModName, p+1, wcslen(p));
+					auto len = wcslen(p + 1);
+					memcpy(ThreadInfo->Threads[i].InModName, p+1, wcslen(p)*sizeof(WCHAR));
 					break;
 				}
 			}
@@ -128,7 +129,7 @@ void ThreadView::OnRefresh()
 
 	for (int i = 0; i < numOfthreads; i++, nextThreadInfo++)
 	{
-		mSourceModel->setItem(i, Col::Tid, MakeItem(nextThreadInfo->ThreadId));
+		mSourceModel->setItem(i, Col::Tid, MakeItem((ULONG_PTR)nextThreadInfo->ThreadId));
 		mSourceModel->setItem(i, Col::Ethread, MakeItem(nextThreadInfo->Ethread));
 		mSourceModel->setItem(i, Col::Teb, MakeItem(nextThreadInfo->Teb));
 		mSourceModel->setItem(i, Col::ContextSwitchs, MakeItem(nextThreadInfo->ContextSwitches));
