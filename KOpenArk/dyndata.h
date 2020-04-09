@@ -38,7 +38,12 @@ enum {
 
 //#define  _FILE_OBJECT FILE_OBJECT 
 
-
+typedef struct _KSERVICE_TABLE_DESCRIPTOR {
+	PULONG_PTR Base;
+	PULONG Count;
+	ULONG Limit;
+	PUCHAR Number;
+} KSERVICE_TABLE_DESCRIPTOR, *PKSERVICE_TABLE_DESCRIPTOR;
 
 
 
@@ -57,7 +62,17 @@ typedef PEPROCESS(*FunIoGetCurrentProcess)(VOID);
 typedef NTSTATUS(*FunPsLookupProcessByProcessId)(__in HANDLE ProcessId, __deref_out PEPROCESS *Process);
 typedef NTSTATUS(*FunPsAcquireProcessExitSynchronization)(__in  PEPROCESS Process);
 typedef void (*ArkEX_ENUMERATE_HANDLE_ROUTINE)(ULONG_PTR pObject, StuProcInfo *pOutData, ULONG cbOutData, PVOID uEnumParam);
-	
+typedef NTSTATUS
+(*FunNtSuspendThread)(
+	__in HANDLE ThreadHandle,
+	__out_opt PULONG PreviousSuspendCount
+	);
+typedef NTSTATUS
+(*FunNtResumeThread)(
+	__in HANDLE ThreadHandle,
+	__out_opt PULONG PreviousSuspendCount
+);
+
 
 
 
@@ -85,12 +100,14 @@ namespace NT
 	EXTERN POBJECT_TYPE			*ObTypeIndexTable;
 	EXTERN POBJECT_DIRECTORY	ObpRootDirectoryObject;
 	EXTERN PHANDLE_TABLE		*PPspCidTable;
+	EXTERN PKSERVICE_TABLE_DESCRIPTOR		KeServiceDescriptorTable;
 	EXTERN ObjectType			ArrObjectType[ObjectType::LastObjectType];
 
 	//ntkrnlµ¼³ö
 	EXTERN POBJECT_TYPE						IoFileObjectType;
 	EXTERN FunPsLookupProcessByProcessId	PsLookupProcessByProcessId;
-
+	EXTERN FunNtSuspendThread				NtSuspendThread;
+	EXTERN FunNtResumeThread				NtResumeThread;
 
 	extern FunObQueryNameString ObQueryNameString;
 	extern FunObGetObjectType   ObGetObjectType;

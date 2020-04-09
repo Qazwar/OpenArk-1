@@ -44,6 +44,8 @@ public:
 	void OnRefresh();
 private slots:
 	void OnNouse();
+	void OnSuspendThread();
+	void OnResumeThread();
 
 private:
 	QMenu mMenu;

@@ -123,8 +123,10 @@ BOOLEAN InitNtInfo()
 
 BOOLEAN InitExportByNtkrnl()
 {
-	LOADEXPORT(PsLookupProcessByProcessId)
-	LOADEXPORT(IoFileObjectType)
+	ULONG rva = 0;
+
+	LOADEXPORT(PsLookupProcessByProcessId);
+	LOADEXPORT(IoFileObjectType);
 	
 
 
@@ -136,6 +138,7 @@ BOOLEAN InitUnExportByNtkrnl()
 	LOADUNEXPORT(InitPspCidTable);
 	LOADUNEXPORT(InitObTypeIndexTable);
 	LOADUNEXPORT(InitPsLoadedModuleList);
+	LOADUNEXPORT(InitKeServiceDescriptorTable);
 
 	return true;
 }
@@ -162,6 +165,9 @@ BOOLEAN InitOffset()
 
 		KTHREAD::ProcessOffset = 0x210;
 		KTHREAD::PreviousModeOffset = 0x1F6;
+
+
+
 		break;
 	}
 
@@ -238,6 +244,9 @@ BOOLEAN InitDriver()
 	if (!result)
 		return false;
 
+	result = InitNtServiceByIndex();
+	if (!result)
+		return false;
 
 	result = InitDrvCallTable();
 	if (!result)
@@ -256,6 +265,8 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[ProcHandleList] = (DrvCallFun)ArkGetProcHandles;
 	DrvCallTable[ProcThreadList] = (DrvCallFun)ArkGetProcThreads;
 	DrvCallTable[SystemMods] = (DrvCallFun)ArkGetSystemModInfo;
+	DrvCallTable[SusPendCount] = (DrvCallFun)ArkLookUpSuspendCount;
+	DrvCallTable[SuspendThreadEnum] = (DrvCallFun)ArkSusPendOrResumeThread;
 
 	return true;
 }
@@ -347,6 +358,64 @@ BOOLEAN InitPsLoadedModuleList()
 
 
 	return BOOLEAN();
+}
+
+BOOLEAN InitNtServiceByIndex()
+{
+	NT::NtSuspendThread = (FunNtSuspendThread)AekGetServiceAddressByIndex(0x17b);
+	NT::NtResumeThread = (FunNtSuspendThread)AekGetServiceAddressByIndex(79);
+
+
+
+
+
+
+
+	return true;
+}
+
+BOOLEAN InitKeServiceDescriptorTable()
+{
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 100;
+	ZydisDecodedInstruction instruction;
+
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"KeAddSystemServiceTable");
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if ((GETDWORD(curDisAddr) & 0xFFFFFF) == 0x1D8D4C && *(USHORT*)(curDisAddr + 11) == 0x834B)
+		{
+			ULONG offset = GETDWORD(curDisAddr + 15);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)NT::ImageBaseRunNt;
+			dstAddr.LowPart += offset;
+
+
+			NT::KeServiceDescriptorTable = (PKSERVICE_TABLE_DESCRIPTOR)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
 }
 
 

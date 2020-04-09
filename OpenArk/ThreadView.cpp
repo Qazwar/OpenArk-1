@@ -53,10 +53,50 @@ void ThreadView::InitView()
 void ThreadView::SetContextMenu()
 {
 	mMenu.addAction(tr("refresh"), this, &ThreadView::OnRefresh);
+	mMenu.addAction(tr("suspend thread"), this, &ThreadView::OnSuspendThread);
+	mMenu.addAction(tr("resume thread"), this, &ThreadView::OnResumeThread);
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-	connect(this, &ProcessMgr::customContextMenuRequested, this, [=](const QPoint &pos)
+	connect(this, &ProcessMgr::customContextMenuRequested, this, [&](const QPoint &pos)
 		{
+			ParamInfo param;
+			ulong suspendCount;
+			BOOLEAN result;
+			auto actList = mMenu.actions();
+
+			if (mTableView->currentIndex().isValid() == 0)
+			{
+				actList.at(1)->setEnabled(false);
+				actList.at(2)->setEnabled(false);
+			}
+			else
+			{
+
+				auto threadId = GetColDataFromInt(Col::Tid);
+				RtlZeroMemory(&param, sizeof(param));
+				param.pInData = (PCHAR)&threadId;
+				param.cbInData = sizeof(threadId);
+				param.pOutData = (PCHAR)&suspendCount;
+				param.cbOutData = sizeof(suspendCount);
+				param.FunIdx = DrvCall::SusPendCount;
+
+				result = OpenArk::IoCallDriver(param);
+				if (result)
+				{
+					if (suspendCount)
+					{
+						actList.at(1)->setEnabled(false);
+						actList.at(2)->setEnabled(true);
+					}
+					else
+					{
+						actList.at(1)->setEnabled(true);
+						actList.at(2)->setEnabled(false);
+					}
+				}
+			}
+
+
 			mMenu.exec(QCursor::pos());
 
 		}
@@ -157,6 +197,40 @@ void ThreadView::OnRefresh()
 
 	QString title = QString(tr("[%1],Processes threads: (%2)")).arg(mProcName).arg(numOfthreads);
 	this->setWindowTitle(title);
+}
+
+void ThreadView::OnSuspendThread()
+{
+	ParamInfo param;
+	ulong suspendCount;
+	BOOLEAN result;
+	ArkThreadSuspendParam temp;
+
+	temp.ThreadId = (PVOID)GetColDataFromInt(Col::Tid);
+	 temp.ToSuspend = true;
+	RtlZeroMemory(&param, sizeof(param));
+	param.pInData = (PCHAR)&temp;
+	param.cbInData = sizeof(temp);
+	param.FunIdx = DrvCall::SuspendThreadEnum;
+
+	result = OpenArk::IoCallDriver(param);
+}
+
+void ThreadView::OnResumeThread()
+{
+	ParamInfo param;
+	ulong suspendCount;
+	BOOLEAN result;
+	ArkThreadSuspendParam temp;
+
+	temp.ThreadId = (PVOID)GetColDataFromInt(Col::Tid);
+	temp.ToSuspend = false;
+	RtlZeroMemory(&param, sizeof(param));
+	param.pInData = (PCHAR)&temp;
+	param.cbInData = sizeof(temp);
+	param.FunIdx = DrvCall::SuspendThreadEnum;
+
+	result = OpenArk::IoCallDriver(param);
 }
 
 

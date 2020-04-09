@@ -22,7 +22,35 @@ QModelIndex StdTable::GetIndexForCurRowCol(int colIndex)
 	int row = index.row();
 	QModelIndex idIndex = mSortModel->index(row, colIndex);
 	
+	
 	return idIndex;
+}
+
+ULONG_PTR StdTable::GetColDataFromHex(int Col)
+{
+	ULONG_PTR retValue = 0;
+	auto modeIndex = GetIndexForCurRowCol(Col);
+	
+	retValue = mSortModel->data(modeIndex).toString().toULongLong(0,16);
+
+	return retValue;
+}
+
+ULONG_PTR StdTable::GetColDataFromInt(int Col)
+{
+	ULONG_PTR retValue = 0;
+	auto modeIndex = GetIndexForCurRowCol(Col);
+
+	retValue = mSortModel->data(modeIndex).toULongLong();
+
+	return retValue;
+}
+
+QString StdTable::GetColDataFromString(int Col)
+{
+	auto modeIndex = GetIndexForCurRowCol(Col);
+	return mSortModel->data(modeIndex).toString();
+
 }
 
 void StdTable::InitStdTableView()
@@ -46,6 +74,7 @@ void StdTable::InitStdTableView()
 	 mTableView->horizontalHeader()->setFixedHeight(20);//标题高度
 	 mTableView->horizontalHeader()->setBackgroundRole(QPalette::Base);//标题颜色
 	 mTableView->horizontalHeader()->setHighlightSections(false);//不高亮标题
+	 mTableView->setSelectionMode(QAbstractItemView::SingleSelection);//只能选择单行
 	
 	
 	

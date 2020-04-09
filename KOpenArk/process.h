@@ -50,6 +50,13 @@ BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ArkModInfo *pOutData, 
 BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcThreads(PCHAR pIndata, ULONG cbInData, ArkThreadInfo *pOutData, ULONG cbOutData);//得到进程的所有线程信息
+/*
+ThreadId ：线程的id
+
+return bool
+*/
+BOOLEAN ArkSusPendOrResumeThread(ArkThreadSuspendParam *ThreadParam, ULONG cbInData, PVOID pOutData, ULONG cbOutData);//暂停或恢复线程
+BOOLEAN ArkLookUpSuspendCount(PVOID *ThreadIdPointer, ULONG cbInData, ULONG * SuspendCount, ULONG cbOutData);//查看线程的暂停次数
 
 /*
 得到系统模块

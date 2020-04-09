@@ -6,6 +6,8 @@
 void UnicodeString2Wstr( PWCH dstStr , const PUNICODE_STRING srcStr);
 
 
-PVOID ArkGetSystemRoutineAddress(
+PVOID ArkGetSystemRoutineAddress( 
 	_In_ PWSTR SystemRoutineName
 );
+
+PVOID AekGetServiceAddressByIndex(USHORT funIndex);

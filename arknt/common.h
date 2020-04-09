@@ -77,6 +77,8 @@ enum DrvCall
 	ProcHandleList,
 	ProcThreadList,
 	SystemMods,
+	SusPendCount,
+	SuspendThreadEnum,
 
 	LastId
 };
@@ -145,6 +147,12 @@ struct ArkThreadInfo
 {
 	ULONG ThreadCnt;
 	ArkThreadInfoEntry Threads[1];
+};
+
+struct ArkThreadSuspendParam
+{
+	PVOID ThreadId;
+	BOOLEAN ToSuspend;
 };
 
 

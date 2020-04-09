@@ -77,7 +77,7 @@
         <translation>隐藏模块</translation>
     </message>
     <message>
-        <location filename="ModuleView.cpp" line="97"/>
+        <location filename="ModuleView.cpp" line="141"/>
         <source>[%1],Processes mods: %2</source>
         <translation>[%1],进程模块:%2</translation>
     </message>
@@ -143,37 +143,37 @@
         <translation>进程：%1，隐藏进程：%2,应用层不可访问进程：%3</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>Process</source>
         <translation>进程</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>PID</source>
         <translation>进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>PPID</source>
         <translation>父进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>Path</source>
         <translation>映像路径</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>Eprocess</source>
         <translation>EPROCESS</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>Access</source>
         <translation>应用层访问状态</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="349"/>
+        <location filename="processmgr.cpp" line="387"/>
         <source>Company Name</source>
         <translation>文件厂商</translation>
     </message>
@@ -189,97 +189,107 @@
 <context>
     <name>ThreadView</name>
     <message>
-        <location filename="ThreadView.cpp" line="10"/>
+        <location filename="ThreadView.cpp" line="11"/>
         <source>DeferredReady</source>
         <translation>延迟就绪</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="11"/>
+        <location filename="ThreadView.cpp" line="12"/>
         <source>GateWait</source>
         <translation>门等待</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="12"/>
+        <location filename="ThreadView.cpp" line="13"/>
         <source>Initialized</source>
         <translation>初始化</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="13"/>
+        <location filename="ThreadView.cpp" line="14"/>
         <source>Ready</source>
         <translation>就绪</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="14"/>
+        <location filename="ThreadView.cpp" line="15"/>
         <source>Running</source>
         <translation>正在运行</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="15"/>
+        <location filename="ThreadView.cpp" line="16"/>
         <source>Standby</source>
         <translation>备用</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="16"/>
+        <location filename="ThreadView.cpp" line="17"/>
         <source>Terminated</source>
         <translation>终止</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="17"/>
+        <location filename="ThreadView.cpp" line="18"/>
         <source>Transition</source>
         <translation>转移</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="18"/>
+        <location filename="ThreadView.cpp" line="19"/>
         <source>Waiting</source>
         <translation>等待</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="32"/>
+        <location filename="ThreadView.cpp" line="33"/>
         <source>thread id</source>
         <translation>线程Id</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="32"/>
+        <location filename="ThreadView.cpp" line="33"/>
         <source>Ethread </source>
         <translation>ETHREAD</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="32"/>
+        <location filename="ThreadView.cpp" line="33"/>
         <source>Teb</source>
         <translation>TEB</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="33"/>
+        <location filename="ThreadView.cpp" line="34"/>
         <source>Priority</source>
         <translation>优先级</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="33"/>
+        <location filename="ThreadView.cpp" line="34"/>
         <source>startAddress</source>
         <translation>线程入口</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="33"/>
+        <location filename="ThreadView.cpp" line="34"/>
         <source>module</source>
         <translation>模块</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="34"/>
+        <location filename="ThreadView.cpp" line="35"/>
         <source>contextSwitches</source>
         <translation>切换次数</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="34"/>
+        <location filename="ThreadView.cpp" line="35"/>
         <source>state</source>
         <translation>线程状态</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="47"/>
+        <location filename="ThreadView.cpp" line="55"/>
         <source>refresh</source>
         <translation type="unfinished">刷新</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="96"/>
+        <location filename="ThreadView.cpp" line="56"/>
+        <source>suspend thread</source>
+        <translation>暂停线程</translation>
+    </message>
+    <message>
+        <location filename="ThreadView.cpp" line="57"/>
+        <source>resume thread</source>
+        <translation>恢复线程</translation>
+    </message>
+    <message>
+        <location filename="ThreadView.cpp" line="189"/>
         <source>[%1],Processes threads: (%2)</source>
         <oldsource>[%1],Processes handles: (%2)</oldsource>
         <translation type="unfinished">[%1],进程线程:(%2)</translation>

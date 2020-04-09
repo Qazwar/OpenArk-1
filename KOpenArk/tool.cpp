@@ -18,3 +18,17 @@ PVOID ArkGetSystemRoutineAddress(
 
 	return MmGetSystemRoutineAddress(&systemRoutineName);
 }
+
+PVOID AekGetServiceAddressByIndex(USHORT funIndex)
+{
+	int tableIndex = funIndex & 0x1000;
+	PULONG OffsetTable;
+	ULONG offset;
+
+
+	OffsetTable = (PULONG)NT::KeServiceDescriptorTable[tableIndex].Base;
+	offset = OffsetTable[funIndex & 0xfff] >> 4;
+
+
+	return PTR_ADD_OFFSET(OffsetTable,offset);
+}

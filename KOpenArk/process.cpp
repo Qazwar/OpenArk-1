@@ -448,20 +448,89 @@ BOOLEAN ArkGetProcThreads(PCHAR pIndata, ULONG cbInData, ArkThreadInfo * pOutDat
 	return true;
 }
 
+/*
+设置线程状态 终结位清零
+设置线程状态为等待，内核禁用apc设置为0，可插入apc对列设为真
+调用NtSuspendThread
+
+*/
+
+
+BOOLEAN ArkSusPendOrResumeThread(ArkThreadSuspendParam *ThreadParam, ULONG cbInData, PVOID  pOutData, ULONG cbOutData)
+{
+	PETHREAD thread = 0;
+	NTSTATUS st;
+	PVOID threadId;
+	char preMode;
+	HANDLE hThread = 0;
+	ULONG suspendCount;
+	BOOLEAN toSuspend;
+	
+
+	threadId = ThreadParam->ThreadId;
+	toSuspend = ThreadParam->ToSuspend;
+	st = PsLookupThreadByThreadId(threadId, &thread);
+	ObOpenObjectByPointer(thread, OBJ_KERNEL_HANDLE, 0, GENERIC_ALL, *PsThreadType, 0, &hThread);
+
+	if (thread && hThread)
+	{
+		thread->Terminated = 0;
+		thread->Tcb.ApcQueueable = 1;
+		thread->Tcb.State = KTHREAD_STATE::Waiting;
+		thread->Tcb.KernelApcDisable = 0;
+		preMode =  KeToKernekModel(KeGetCurrentThread());
+		if(toSuspend)
+		{
+			NT::NtSuspendThread(hThread, &suspendCount);
+		}
+		else
+		{
+			NT::NtResumeThread(hThread, &suspendCount);
+		}
+		KeResumePreviousMode(KeGetCurrentThread(), preMode);
+	}
+
+	if (thread)ObpDecodeObject(thread);
+	if (hThread)ZwClose(hThread);
+
+	return true;
+}
+
+BOOLEAN ArkLookUpSuspendCount(PVOID *ThreadIdPointer, ULONG cbInData, ULONG * SuspendCount, ULONG cbOutData)
+{
+	PETHREAD thread;
+	NTSTATUS st;
+	PVOID threadId;
+
+	threadId = *ThreadIdPointer;
+	st = PsLookupThreadByThreadId(threadId, &thread);
+
+	if (NT_SUCCESS(st))
+	{
+		*SuspendCount = thread->Tcb.SuspendCount;
+		ObpDecodeObject(thread);
+	}
+	return true;
+}
+
 BOOLEAN ArkGetSystemModInfo(PCHAR pIndata, ULONG cbInData, ArkModInfo * ModInfo, ULONG cbOutData)
 {
 	PLDR_DATA_TABLE_ENTRY nextMod = (PLDR_DATA_TABLE_ENTRY)NT::PsLoadedModuleList->Flink;
 	int numOfMod = 0;
+	auto tempModInfo = ModInfo;
 
-	while ((PLDR_DATA_TABLE_ENTRY)NT::PsLoadedModuleList != nextMod)
+	for (;(PLDR_DATA_TABLE_ENTRY)NT::PsLoadedModuleList != nextMod;
+		nextMod = (PLDR_DATA_TABLE_ENTRY)nextMod->InLoadOrderLinks.Flink,
+		numOfMod++,
+		ModInfo++
+		)
 	{
 		ModInfo->RegionBase = (ULONG_PTR)nextMod->DllBase;
 		ModInfo->RegionSize = nextMod->SizeOfImage;
 		memcpy( ModInfo->Path,nextMod->FullDllName.Buffer,  nextMod->FullDllName.Length);
-		numOfMod++;
 	}
 
-	ModInfo->NumberOfMods = numOfMod;
+	tempModInfo->NumberOfMods = numOfMod;
 	return true;
 }
 

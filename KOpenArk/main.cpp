@@ -244,9 +244,11 @@ DispatchDeviceControl(IN PDEVICE_OBJECT pDevObj, IN PIRP pIrp)
 		ParamInfo *pParem = (ParamInfo*)pIoBuffer;
 
 		RtlZeroMemory(pParem->pOutData, pParem->cbOutData);
-			
+		if (pParem->FunIdx < DrvCall::LastId)
+		{
+			status = DrvCallTable[pParem->FunIdx](pParem->pInData, pParem->cbInData, pParem->pOutData, pParem->cbOutData);
+		}
 
-		status = DrvCallTable[pParem->FunIdx](pParem->pInData, pParem->cbInData, pParem->pOutData, pParem->cbOutData);
 		// Return success
 		status = status ? STATUS_SUCCESS : STATUS_INVALID_PARAMETER;
 	}
