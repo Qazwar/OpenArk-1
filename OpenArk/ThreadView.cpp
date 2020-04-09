@@ -63,9 +63,19 @@ void ThreadView::SetContextMenu()
 			ulong suspendCount;
 			BOOLEAN result;
 			auto actList = mMenu.actions();
-
-			if (mTableView->currentIndex().isValid() == 0)
+			//mTableView->setCurrentIndex(QModelIndex());
+			/*auto index = mTableView->selectionModel()->currentIndex();
+			qDebug() << index.row();
+			qDebug() << index.column();*/
+			QPoint pt = mTableView->mapFromGlobal(QCursor::pos());
+			int height = mTableView->horizontalHeader()->height();
+			QPoint pt2(0, height);
+			pt -= pt2;
+			//qDebug() << mTableView->indexAt(pt).row();
+			if (mTableView->indexAt(pt).isValid() == 0)
 			{
+				//qDebug() << pos.x();
+				//qDebug() << pos.y();
 				actList.at(1)->setEnabled(false);
 				actList.at(2)->setEnabled(false);
 			}

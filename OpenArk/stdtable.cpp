@@ -60,6 +60,7 @@ void StdTable::InitStdTableView()
 
 	mSortModel->setSourceModel(mSourceModel);
 	mTableView->setModel(mSortModel);
+	mTableView->clearSelection();
 	
 	//ÏÔÊ¾·½Ê½
 	 mTableView->setSortingEnabled(true);
