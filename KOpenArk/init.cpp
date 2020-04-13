@@ -139,6 +139,8 @@ BOOLEAN InitUnExportByNtkrnl()
 	LOADUNEXPORT(InitObTypeIndexTable);
 	LOADUNEXPORT(InitPsLoadedModuleList);
 	LOADUNEXPORT(InitKeServiceDescriptorTable);
+	LOADUNEXPORT(InitPspTerminateThreadByPointer);
+	LOADUNEXPORT(InitKiInsertQueueApc);
 
 	return true;
 }
@@ -267,6 +269,8 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[SystemMods] = (DrvCallFun)ArkGetSystemModInfo;
 	DrvCallTable[SusPendCount] = (DrvCallFun)ArkLookUpSuspendCount;
 	DrvCallTable[SuspendThreadEnum] = (DrvCallFun)ArkSusPendOrResumeThread;
+	DrvCallTable[TerminateThread] = (DrvCallFun)ArkTerminateThread;
+	DrvCallTable[ForceTerminateThread] = (DrvCallFun)ArkForceTerminateThread;
 
 	return true;
 }
@@ -358,6 +362,91 @@ BOOLEAN InitPsLoadedModuleList()
 
 
 	return BOOLEAN();
+}
+
+BOOLEAN InitPspTerminateThreadByPointer()
+{
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 100;
+	ZydisDecodedInstruction instruction;
+
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"PsTerminateSystemThread");
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if ((GETDWORD(curDisAddr) & 0xFF) == 0xE8)
+		{
+			ULONG offset = GETDWORD(curDisAddr + 1);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + instruction.length;
+			dstAddr.LowPart += offset;
+
+
+			NT::PspTerminateThreadByPointer = (FunPspTerminateThreadByPointer)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+}
+
+BOOLEAN InitKiInsertQueueApc()
+{
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 100;
+	ZydisDecodedInstruction instruction;
+
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"KeInsertQueueApc");
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if ((GETDWORD(curDisAddr) & 0xFF) == 0xE8)
+		{
+			ULONG offset = GETDWORD(curDisAddr + 1);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + instruction.length;
+			dstAddr.LowPart += offset;
+
+
+			NT::KiInsertQueueApc = (FunKiInsertQueueApc)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+	
 }
 
 BOOLEAN InitNtServiceByIndex()

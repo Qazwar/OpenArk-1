@@ -56,7 +56,49 @@ ThreadId ：线程的id
 return bool
 */
 BOOLEAN ArkSusPendOrResumeThread(ArkThreadSuspendParam *ThreadParam, ULONG cbInData, PVOID pOutData, ULONG cbOutData);//暂停或恢复线程
+
+
+
 BOOLEAN ArkLookUpSuspendCount(PVOID *ThreadIdPointer, ULONG cbInData, ULONG * SuspendCount, ULONG cbOutData);//查看线程的暂停次数
+
+/*
+终结指定id的线程
+*/
+BOOLEAN ArkTerminateThread(
+	PVOID ThreadId, 
+	ULONG cbInData, 
+	ULONG * SuspendCount, 
+	ULONG cbOutData);
+
+/*
+强制终结指定id的线程
+*/
+BOOLEAN ArkForceTerminateThread(
+	PVOID ThreadId, 
+	ULONG cbInData, 
+	ULONG * SuspendCount, 
+	ULONG cbOutData);
+
+
+
+/*
+终结线程通过指定的线程对象
+*/
+BOOLEAN ArkTermianteThreadByThread(
+	PETHREAD Thread,
+	BOOLEAN InitTerminateFalg
+);
+
+
+/*
+
+提醒线程对象
+*/
+NTSTATUS ArkAlterThread(
+	HANDLE Handle,
+	PETHREAD Thread
+);
+
 
 /*
 得到系统模块
@@ -70,7 +112,18 @@ ArkGetSystemModInfo
 	ULONG cbOutData
 );
 
+/*
+位结束线程做准备
+*/
+BOOLEAN ArkInitTerminateThread(PETHREAD Thread);
 
+
+BOOLEAN ArkTerminateSystemThread(PETHREAD Thread);
+
+/*
+结束内核线程挂入的内核历程
+*/
+void ArkTerminateThreadKernelRoutine(PKAPC Apc);
 
 //汇编
 

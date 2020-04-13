@@ -189,6 +189,7 @@
     <ClInclude Include="..\arknt\ntobapi.h" />
     <ClInclude Include="..\arknt\ntps.h" />
     <ClInclude Include="..\arknt\ntwow64.h" />
+    <ClInclude Include="..\arknt\ntzwapi.h" />
     <ClInclude Include="ex.h" />
     <ClInclude Include="kark.h" />
     <ClInclude Include="Init.h" />
@@ -201,6 +202,9 @@
     <ClInclude Include="dyndata.h" />
     <ClInclude Include="thread.h" />
     <ClInclude Include="tool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

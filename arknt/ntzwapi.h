@@ -3,8 +3,17 @@
 
 
 
+EXTERN_C
+{
 
+NTSYSAPI
+NTSTATUS
+NTAPI
+ZwAlertThread(
+	__in HANDLE ThreadHandle
+);
 
+}
 
 
 

@@ -79,6 +79,8 @@ enum DrvCall
 	SystemMods,
 	SusPendCount,
 	SuspendThreadEnum,
+	TerminateThread,
+	ForceTerminateThread,
 
 	LastId
 };

@@ -367,3 +367,14 @@ typedef struct _KPROCESS                                               // 139 el
 	/*0x4C4*/     UINT8        _PADDING0_[0x4];
 	/*0x4C8*/     struct _PO_DIAG_STACK_RECORD* TimerResolutionStackRecord;
 } *PEPROCESS;
+
+
+EXTERN_C
+{
+NTSYSAPI
+NTSTATUS
+PsTerminateSystemThread(
+	__in NTSTATUS ExitStatus
+);
+
+}

@@ -72,8 +72,18 @@ typedef NTSTATUS
 	__in HANDLE ThreadHandle,
 	__out_opt PULONG PreviousSuspendCount
 );
-
-
+typedef VOID
+(*FunKiInsertQueueApc)(
+	IN PKAPC Apc,
+	IN KPRIORITY Increment
+);
+typedef
+NTSTATUS
+(*FunPspTerminateThreadByPointer)(
+	IN PETHREAD Thread,
+	IN NTSTATUS ExitStatus,
+	IN BOOLEAN DirectTerminate
+);
 
 
 #ifndef _DYNDATA_PRIVATE
@@ -101,6 +111,8 @@ namespace NT
 	EXTERN POBJECT_DIRECTORY	ObpRootDirectoryObject;
 	EXTERN PHANDLE_TABLE		*PPspCidTable;
 	EXTERN PKSERVICE_TABLE_DESCRIPTOR		KeServiceDescriptorTable;
+	EXTERN FunKiInsertQueueApc		KiInsertQueueApc;
+	EXTERN FunPspTerminateThreadByPointer		PspTerminateThreadByPointer;
 	EXTERN ObjectType			ArrObjectType[ObjectType::LastObjectType];
 
 	//ntkrnlµ¼³ö

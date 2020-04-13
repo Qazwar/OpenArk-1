@@ -513,6 +513,153 @@ BOOLEAN ArkLookUpSuspendCount(PVOID *ThreadIdPointer, ULONG cbInData, ULONG * Su
 	return true;
 }
 
+BOOLEAN ArkTerminateThread(PVOID ThreadId, ULONG cbInData, ULONG * SuspendCount, ULONG cbOutData)
+{
+
+	PETHREAD thread;
+	NTSTATUS st;
+	
+
+	ThreadId = *(PVOID*)ThreadId;
+	st = PsLookupThreadByThreadId(ThreadId, &thread);
+
+	if (NT_SUCCESS(st))
+	{
+		ArkTermianteThreadByThread(thread, 0);
+		ObDereferenceObject(thread);
+	}
+	return true;
+}
+
+BOOLEAN ArkForceTerminateThread(PVOID ThreadId, ULONG cbInData, ULONG * SuspendCount, ULONG cbOutData)
+{
+	PETHREAD thread;
+	NTSTATUS st;
+
+
+	ThreadId = *(PVOID*)ThreadId;
+	st = PsLookupThreadByThreadId(ThreadId, &thread);
+
+	if (NT_SUCCESS(st))
+	{
+		ArkTermianteThreadByThread(thread, 1);
+		ObDereferenceObject(thread);
+	}
+	return true;
+}
+
+
+BOOLEAN ArkInitTerminateThread(PETHREAD Thread)
+{
+	Thread->Tcb.SystemThread = 0;
+	Thread->BreakOnTermination = 0;
+	Thread->Terminated = 0;
+	if (Thread->Tcb.State == KTHREAD_STATE::Terminated)
+	{
+		Thread->Tcb.State = KTHREAD_STATE::Initialized;
+	}
+	Thread->Tcb.SpecialApcDisable = 0;
+
+
+	return true;
+}
+
+
+void ArkTerminateThreadKernelRoutine(PKAPC Apc)
+{
+	PETHREAD curThread;
+
+	ExFreePool(Apc);
+	curThread = KeGetCurrentThread();
+	curThread->Tcb.SystemThread = 1;
+	curThread->BreakOnTermination = 0;
+	curThread->Terminated = 0;
+	PsTerminateSystemThread(0);
+}
+
+
+BOOLEAN ArkTerminateSystemThread(PETHREAD Thread)
+{
+	PKAPC apc;
+	BOOLEAN result;
+
+	apc = (PKAPC)ExAllocatePool(POOL_TYPE::PagedPool, sizeof(KAPC));
+	if (apc)
+	{
+		RtlZeroMemory(apc, sizeof(apc));
+		apc->Type = ApcObject;
+		apc->Size = sizeof(apc);
+		apc->ApcStateIndex = OriginalApcEnvironment;
+		apc->Thread = Thread;
+		apc->Reserved[0] = ArkTerminateThreadKernelRoutine;
+		result = KeInsertQueueApc(apc, 0, 0, 0);
+		if (!result)
+		{
+			ExFreePool(apc);
+		}
+	}
+
+	return result;
+}
+
+
+
+BOOLEAN ArkTermianteThreadByThread(PETHREAD Thread, BOOLEAN InitTerminateFalg)
+{
+	NTSTATUS st;
+	HANDLE handle;
+	BOOLEAN result = false;
+
+	st = ObOpenObjectByPointer(Thread, OBJ_KERNEL_HANDLE, 0, GENERIC_ALL, *PsThreadType, 0, &handle);
+	if (NT_SUCCESS(st))
+	{
+		ArkAlterThread(handle, Thread);
+		if (PsInitialSystemProcess == IoThreadToProcess(Thread))// 如果是系统线程
+		{
+			ArkInitTerminateThread(Thread);
+			result = ArkTerminateSystemThread(Thread);
+		}
+		else
+		{
+			if (InitTerminateFalg)
+				ArkInitTerminateThread(Thread);
+
+			st = NT::PspTerminateThreadByPointer(Thread, 0, 0);
+			result = NT_SUCCESS(st) ? 1 : 0;
+			
+		}
+		ZwClose(handle);
+	}
+	return result;
+}
+
+NTSTATUS ArkAlterThread(HANDLE Handle, PETHREAD Thread)
+{
+	NTSTATUS st;
+	UCHAR kernelAlterd;
+	UCHAR userAlterd;
+	PETHREAD curThread;
+	char preMode;
+
+	Thread->Tcb.Alertable = 1;
+	kernelAlterd = Thread->Tcb.Alerted[KernelMode];
+	userAlterd = Thread->Tcb.Alerted[UserMode];
+
+	Thread->Tcb.Alerted[KernelMode] = 0;
+	Thread->Tcb.Alerted[UserMode] = 0;
+
+	curThread = KeGetCurrentThread();
+	preMode = KeToKernekModel(curThread);
+
+	st = ZwAlertThread(Handle);
+
+	KeResumePreviousMode(curThread, preMode);
+	Thread->Tcb.Alerted[KernelMode] = kernelAlterd;
+	Thread->Tcb.Alerted[UserMode] = userAlterd;
+
+	return st;
+}
+
 BOOLEAN ArkGetSystemModInfo(PCHAR pIndata, ULONG cbInData, ArkModInfo * ModInfo, ULONG cbOutData)
 {
 	PLDR_DATA_TABLE_ENTRY nextMod = (PLDR_DATA_TABLE_ENTRY)NT::PsLoadedModuleList->Flink;
@@ -533,6 +680,8 @@ BOOLEAN ArkGetSystemModInfo(PCHAR pIndata, ULONG cbInData, ArkModInfo * ModInfo,
 	tempModInfo->NumberOfMods = numOfMod;
 	return true;
 }
+
+
 
 void GetModInfoByAvlNode(PMMVAD VadNode, ArkModInfo * ModInfo)
 {

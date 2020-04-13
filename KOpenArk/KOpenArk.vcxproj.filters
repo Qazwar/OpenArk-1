@@ -131,10 +131,16 @@
     <ClInclude Include="..\arknt\ntps.h">
       <Filter>arknt</Filter>
     </ClInclude>
+    <ClInclude Include="..\arknt\ntzwapi.h">
+      <Filter>arknt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="kasm.asm">
       <Filter>Source Files</Filter>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

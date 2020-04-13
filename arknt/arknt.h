@@ -9,6 +9,7 @@
 #include <amd64.h>
 #include <ntke.h>
 #include <ntps.h>
+#include <ntzwapi.h>
 
 
 

@@ -655,9 +655,53 @@ typedef struct      _KTHREAD                                         // 89 eleme
 	/*0x4A4*/     UINT8        _PADDING1_[0x4];
 }ETHREAD, *PETHREAD;
 
+typedef enum _KOBJECTS {
+	EventNotificationObject = 0,
+	EventSynchronizationObject = 1,
+	MutantObject = 2,
+	ProcessObject = 3,
+	QueueObject = 4,
+	SemaphoreObject = 5,
+	ThreadObject = 6,
+	GateObject = 7,
+	TimerNotificationObject = 8,
+	TimerSynchronizationObject = 9,
+	Spare2Object = 10,
+	Spare3Object = 11,
+	Spare4Object = 12,
+	Spare5Object = 13,
+	Spare6Object = 14,
+	Spare7Object = 15,
+	Spare8Object = 16,
+	Spare9Object = 17,
+	ApcObject,
+	DpcObject,
+	DeviceQueueObject,
+	EventPairObject,
+	InterruptObject,
+	ProfileObject,
+	ThreadedDpcObject,
+	MaximumKernelObject
+} KOBJECTS;
+typedef enum _KAPC_ENVIRONMENT {
+	OriginalApcEnvironment,//原始环境
+	AttachedApcEnvironment,//挂靠环境
+	CurrentApcEnvironment,//thread->apcindex
+	InsertApcEnvironment//挂靠时的参数目标环境，表示将来有可能发生变化
+} KAPC_ENVIRONMENT;
+EXTERN_C{
+
+	NTSYSAPI
+	BOOLEAN
+	KeInsertQueueApc(
+	__inout PRKAPC Apc,
+	__in_opt PVOID SystemArgument1,
+	__in_opt PVOID SystemArgument2,
+	__in KPRIORITY Increment//在将apc插入目标线程进程以后是否需要暂时提高线程的调度优先级，时apc尽早执行
+	);
 
 
-
+}
 
 
 

@@ -21,13 +21,15 @@ BOOLEAN InitExportByNtkrnl();
 
 BOOLEAN InitDriver();
 
-BOOLEAN InitUnExportByNtkrnl();
 BOOLEAN InitOffset();
 
 //初始化未导出变量
+BOOLEAN InitUnExportByNtkrnl();
 BOOLEAN InitPspCidTable();
 BOOLEAN InitObTypeIndexTable();
 BOOLEAN InitPsLoadedModuleList();
+BOOLEAN InitPspTerminateThreadByPointer();
+BOOLEAN InitKiInsertQueueApc();
 /*
 
 初始化未导出的系统服务
