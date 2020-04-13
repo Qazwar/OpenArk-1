@@ -276,7 +276,7 @@
     <message>
         <location filename="ThreadView.cpp" line="55"/>
         <source>refresh</source>
-        <translation type="unfinished">刷新</translation>
+        <translation>刷新</translation>
     </message>
     <message>
         <location filename="ThreadView.cpp" line="56"/>
@@ -289,10 +289,20 @@
         <translation>恢复线程</translation>
     </message>
     <message>
-        <location filename="ThreadView.cpp" line="189"/>
+        <location filename="ThreadView.cpp" line="58"/>
+        <source>terminate thread</source>
+        <translation>结束线程</translation>
+    </message>
+    <message>
+        <location filename="ThreadView.cpp" line="59"/>
+        <source>force terminate thread</source>
+        <translation>强制结束线程</translation>
+    </message>
+    <message>
+        <location filename="ThreadView.cpp" line="206"/>
         <source>[%1],Processes threads: (%2)</source>
         <oldsource>[%1],Processes handles: (%2)</oldsource>
-        <translation type="unfinished">[%1],进程线程:(%2)</translation>
+        <translation>[%1],进程线程:(%2)</translation>
     </message>
 </context>
 <context>

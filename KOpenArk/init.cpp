@@ -269,7 +269,7 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[SystemMods] = (DrvCallFun)ArkGetSystemModInfo;
 	DrvCallTable[SusPendCount] = (DrvCallFun)ArkLookUpSuspendCount;
 	DrvCallTable[SuspendThreadEnum] = (DrvCallFun)ArkSusPendOrResumeThread;
-	DrvCallTable[TerminateThread] = (DrvCallFun)ArkTerminateThread;
+	DrvCallTable[TerminateThreadFunIndex] = (DrvCallFun)ArkTerminateThread;
 	DrvCallTable[ForceTerminateThread] = (DrvCallFun)ArkForceTerminateThread;
 
 	return true;

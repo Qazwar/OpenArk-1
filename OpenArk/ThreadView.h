@@ -46,6 +46,8 @@ private slots:
 	void OnNouse();
 	void OnSuspendThread();
 	void OnResumeThread();
+	void OnTermianteThread();
+	void OnForceTermianteThread();
 
 private:
 	QMenu mMenu;

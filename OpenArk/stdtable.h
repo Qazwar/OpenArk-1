@@ -23,6 +23,7 @@ public:
 	ULONG_PTR GetColDataFromHex(int Col);
 	ULONG_PTR GetColDataFromInt(int Col);
 	QString GetColDataFromString(int Col);
+	bool IsValidCurPos();
 private:
 	void InitStdTableView();
 

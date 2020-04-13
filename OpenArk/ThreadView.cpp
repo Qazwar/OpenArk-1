@@ -55,6 +55,8 @@ void ThreadView::SetContextMenu()
 	mMenu.addAction(tr("refresh"), this, &ThreadView::OnRefresh);
 	mMenu.addAction(tr("suspend thread"), this, &ThreadView::OnSuspendThread);
 	mMenu.addAction(tr("resume thread"), this, &ThreadView::OnResumeThread);
+	mMenu.addAction(tr("terminate thread"), this, &ThreadView::OnTermianteThread);
+	mMenu.addAction(tr("force terminate thread"), this, &ThreadView::OnForceTermianteThread);
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 	connect(this, &ProcessMgr::customContextMenuRequested, this, [&](const QPoint &pos)
@@ -63,21 +65,19 @@ void ThreadView::SetContextMenu()
 			ulong suspendCount;
 			BOOLEAN result;
 			auto actList = mMenu.actions();
-			//mTableView->setCurrentIndex(QModelIndex());
-			/*auto index = mTableView->selectionModel()->currentIndex();
-			qDebug() << index.row();
-			qDebug() << index.column();*/
+		
 			QPoint pt = mTableView->mapFromGlobal(QCursor::pos());
 			int height = mTableView->horizontalHeader()->height();
 			QPoint pt2(0, height);
 			pt -= pt2;
-			//qDebug() << mTableView->indexAt(pt).row();
+			
 			if (mTableView->indexAt(pt).isValid() == 0)
 			{
-				//qDebug() << pos.x();
-				//qDebug() << pos.y();
+				
 				actList.at(1)->setEnabled(false);
 				actList.at(2)->setEnabled(false);
+				actList.at(3)->setEnabled(false);
+				actList.at(4)->setEnabled(false);
 			}
 			else
 			{
@@ -104,6 +104,8 @@ void ThreadView::SetContextMenu()
 						actList.at(2)->setEnabled(false);
 					}
 				}
+				actList.at(3)->setEnabled(true);
+				actList.at(4)->setEnabled(true);
 			}
 
 
@@ -241,6 +243,35 @@ void ThreadView::OnResumeThread()
 	param.FunIdx = DrvCall::SuspendThreadEnum;
 
 	result = OpenArk::IoCallDriver(param);
+}
+
+void ThreadView::OnTermianteThread()
+{
+	ParamInfo param;
+	ULONG_PTR threadId;
+
+	RtlZeroMemory(&param, sizeof(param));
+	threadId = GetColDataFromInt(Col::Tid);
+	param.pInData = (PCHAR)&threadId;
+	param.cbInData = sizeof(threadId);
+	param.FunIdx = DrvCall::TerminateThreadFunIndex;
+
+	OpenArk::IoCallDriver(param);
+
+}
+
+void ThreadView::OnForceTermianteThread()
+{
+	ParamInfo param;
+	ULONG_PTR threadId;
+
+	RtlZeroMemory(&param, sizeof(param));
+	threadId = GetColDataFromInt(Col::Tid);
+	param.pInData = (PCHAR)&threadId;
+	param.cbInData = sizeof(threadId);
+	param.FunIdx = DrvCall::ForceTerminateThread;
+
+	OpenArk::IoCallDriver(param);
 }
 
 

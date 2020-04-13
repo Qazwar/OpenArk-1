@@ -53,6 +53,16 @@ QString StdTable::GetColDataFromString(int Col)
 
 }
 
+bool StdTable::IsValidCurPos()
+{
+	QPoint pt = mTableView->mapFromGlobal(QCursor::pos());
+	int height = mTableView->horizontalHeader()->height();
+	QPoint pt2(0, height);
+	pt -= pt2;
+
+	return mTableView->indexAt(pt).isValid();
+}
+
 void StdTable::InitStdTableView()
 {
 	mSourceModel = new QStandardItemModel;
