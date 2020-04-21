@@ -30,6 +30,7 @@ BOOLEAN InitObTypeIndexTable();
 BOOLEAN InitPsLoadedModuleList();
 BOOLEAN InitPspTerminateThreadByPointer();
 BOOLEAN InitKiInsertQueueApc();
+BOOLEAN InitPsGetNextProcess();
 /*
 
 初始化未导出的系统服务
@@ -46,6 +47,7 @@ BOOLEAN InitKeServiceDescriptorTable();//初始化系统服务表
 		return false;		\
     }
 
-#define LOADUNEXPORT(name)   if(!name())  return false;
+#define LOADUNEXPORT(name)   if(!name()) \
+		{ dprintf(#name); return false;}  
 		
 #endif // !INIT_H

@@ -19,10 +19,12 @@ public:
 	static bool IoCallDriver(ParamInfo param);
 	BOOLEAN SeEnablePrivilege();
 	void ShowMessage(QString text);
+	void InitView();
 		 
 
 	~OpenArk();
 
 private:
 	Ui::OpenArkClass ui;
+	BOOLEAN mInitSucess = 0;
 };

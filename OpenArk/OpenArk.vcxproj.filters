@@ -68,6 +68,21 @@
     <ClCompile Include="ThreadView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WindowView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SsdtView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowSdtView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HookView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="stdtable.h">
@@ -92,6 +107,18 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ThreadView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="WindowView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SsdtView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="HookView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ShadowSdtView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -141,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qtwrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

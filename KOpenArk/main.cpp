@@ -141,8 +141,8 @@ DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING pRegistryString)
 	}
 	__except (1)
 	{
-		DBGERRINFO;
-		return false;
+		dprintf("¼ÓÔØÇý¶¯Ê§°Ü");
+		return STATUS_UNSUCCESSFUL;
 	}
 
 

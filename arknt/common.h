@@ -12,7 +12,7 @@
 
 #else
 #define MAX_PATH 260
-
+typedef void* HWND;
 
 #endif // ARK_MODE_USER
 
@@ -81,7 +81,10 @@ enum DrvCall
 	SuspendThreadEnum,
 	TerminateThreadFunIndex,
 	ForceTerminateThread,
-
+	QueryHwnd,
+	GetAllSsdtFunAddr,
+	GetAllShadowSdtFunAddr,
+	TestHook,
 	LastId
 };
 
@@ -157,8 +160,31 @@ struct ArkThreadSuspendParam
 	BOOLEAN ToSuspend;
 };
 
+//ÎÄ¼þÏà¹Ø¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£
+typedef struct _FILE_REQUEST_CREATE
+{
+	HANDLE FileHandle;
+	ULONG ShareAccess;
+	ULONG DesiredAccess;
+	ULONG CreateDisposition;
+	PCHAR FileName;
+} FILE_REQUEST_CREATE, *PFILE_REQUEST_CREATE;
+
+typedef struct _FILE_REQUEST_READ
+{
+	HANDLE FileHandle;
+	ULONG Length;
+	ULONG ReadLength;
+	PCHAR Buffer;
+} FILE_REQUEST_READ, *PFILE_REQUEST_READ;
 
 
 
+//´°¿ÚÏà¹Ø
+struct  ArkWindowInfo
+{
+	HWND Hwnd;
+	PVOID ProcessId;
+};
 
 #endif // !COMMON_H

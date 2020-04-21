@@ -10,10 +10,25 @@ QStandardItem * MakeItem(PWSTR text)
 	return new  QStandardItem(QString::fromWCharArray(text));
 
 }
+
+QStandardItem * MakeItem(PCHAR text)
+{
+	return new  QStandardItem(QString::fromLocal8Bit(text));
+}
+
 QStandardItem * MakeItem(QString text)
 {
 	return new  QStandardItem(text);
 
+}
+PWSTR GetFileNameFromFullPath(PWSTR Path)
+{
+	auto p = wcsrchr(Path, L'\\');
+	if (p)
+	{
+		return p + 1;
+	}
+	return PWSTR();
 }
 QStandardItem * MakeItem(PVOID num)
 {

@@ -39,7 +39,7 @@ enum {
 //#define  _FILE_OBJECT FILE_OBJECT 
 
 typedef struct _KSERVICE_TABLE_DESCRIPTOR {
-	PULONG_PTR Base;
+	PLONG Base;
 	PULONG Count;
 	ULONG Limit;
 	PUCHAR Number;
@@ -85,6 +85,11 @@ NTSTATUS
 	IN BOOLEAN DirectTerminate
 );
 
+typedef
+PEPROCESS
+(*FunPsGetNextProcess)(
+	IN PEPROCESS Process
+	);
 
 #ifndef _DYNDATA_PRIVATE
 #define EXTERN extern
@@ -99,9 +104,11 @@ namespace NT
 {
 	//ntoskrnl信息
 	EXTERN PEPROCESS			SystemProcess;
+	EXTERN PEPROCESS			CsrssProcess;
 	EXTERN PCHAR				ImageBaseCopyNt;
 	EXTERN PCHAR				ImageBaseRunNt;
 	EXTERN ULONG				SizeOfNtImage;
+	EXTERN PEPROCESS			PsIdleProcess;
 	EXTERN WCHAR				NtFullName[];
 	EXTERN USHORT				OsVersion;
 	EXTERN PLIST_ENTRY			PsLoadedModuleList;
@@ -111,9 +118,15 @@ namespace NT
 	EXTERN POBJECT_DIRECTORY	ObpRootDirectoryObject;
 	EXTERN PHANDLE_TABLE		*PPspCidTable;
 	EXTERN PKSERVICE_TABLE_DESCRIPTOR		KeServiceDescriptorTable;
+	EXTERN PKSERVICE_TABLE_DESCRIPTOR		KeServiceDescriptorTableShadow;
 	EXTERN FunKiInsertQueueApc		KiInsertQueueApc;
 	EXTERN FunPspTerminateThreadByPointer		PspTerminateThreadByPointer;
+	EXTERN FunNtUserBuildHwndList			NtUserBuildHwndList;
+	EXTERN FunNtUserQueryWindow			NtUserQueryWindow;
+	EXTERN FunPsGetNextProcess		PsGetNextProcess;
 	EXTERN ObjectType			ArrObjectType[ObjectType::LastObjectType];
+
+
 
 	//ntkrnl导出
 	EXTERN POBJECT_TYPE						IoFileObjectType;

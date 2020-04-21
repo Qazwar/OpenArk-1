@@ -311,10 +311,19 @@ typedef enum _OBJECT_INFORMATION_CLASS {
 
 
 
-
-
-
-
+	NTSYSAPI
+	NTSTATUS
+		ObCreateObject(
+			IN KPROCESSOR_MODE ProbeMode,
+			IN POBJECT_TYPE ObjectType,
+			IN POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
+			IN KPROCESSOR_MODE OwnershipMode,
+			IN OUT PVOID ParseContext OPTIONAL,
+			IN ULONG ObjectBodySize,
+			IN ULONG PagedPoolCharge,
+			IN ULONG NonPagedPoolCharge,
+			OUT PVOID *Object
+		);
 
 
 

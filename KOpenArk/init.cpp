@@ -51,6 +51,11 @@ BOOLEAN CheckVersion()
 */
 BOOLEAN InitNtInfo()
 {
+	//得到空闲进程
+	NT::PsIdleProcess = IoThreadToProcess(GetCurrentPrcb()->IdleThread);
+
+
+
 	__try
 	{
 		PLDR_DATA_TABLE_ENTRY  pFlink;
@@ -61,6 +66,7 @@ BOOLEAN InitNtInfo()
 
 		while (pFlink != (PLDR_DATA_TABLE_ENTRY)NT::DriverObject->DriverSection)
 		{
+
 			if (vaNtBuildNumber > pFlink->DllBase && (ULONG_PTR)vaNtBuildNumber < (ULONG_PTR)pFlink->DllBase + pFlink->SizeOfImage)
 			{
 				NT::ImageBaseRunNt = (PCHAR)pFlink->DllBase;
@@ -141,6 +147,7 @@ BOOLEAN InitUnExportByNtkrnl()
 	LOADUNEXPORT(InitKeServiceDescriptorTable);
 	LOADUNEXPORT(InitPspTerminateThreadByPointer);
 	LOADUNEXPORT(InitKiInsertQueueApc);
+	LOADUNEXPORT(InitPsGetNextProcess);
 
 	return true;
 }
@@ -271,6 +278,11 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[SuspendThreadEnum] = (DrvCallFun)ArkSusPendOrResumeThread;
 	DrvCallTable[TerminateThreadFunIndex] = (DrvCallFun)ArkTerminateThread;
 	DrvCallTable[ForceTerminateThread] = (DrvCallFun)ArkForceTerminateThread;
+	//DrvCallTable[OpenFile] = (DrvCallFun)ArkOpenFile;
+	DrvCallTable[QueryHwnd] = (DrvCallFun)ArkGetWindowsForProcess;
+	DrvCallTable[GetAllSsdtFunAddr] = (DrvCallFun)ArkGetAllSsdtFunAddr;
+	DrvCallTable[GetAllShadowSdtFunAddr] = (DrvCallFun)ArkGetAllShadowSdtFunAddr;
+	DrvCallTable[TestHook] = (DrvCallFun)ArkTestHook;
 
 	return true;
 }
@@ -411,7 +423,7 @@ BOOLEAN InitKiInsertQueueApc()
 	ZydisDecoder			decoder;
 	ZydisFormatter			formatter;
 	ULONG_PTR			curDisAddr;
-	const ZyanUSize length = 100;
+	const ZyanUSize length = 0x140;
 	ZydisDecodedInstruction instruction;
 
 
@@ -449,10 +461,55 @@ BOOLEAN InitKiInsertQueueApc()
 	
 }
 
+BOOLEAN InitPsGetNextProcess()
+{
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 0x300;
+	ZydisDecodedInstruction instruction;
+
+
+	curDisAddr = (ULONG_PTR)ArkGetServiceAddressByIndex(206);
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if ((GETDWORD(curDisAddr) & 0xFF) == 0xE8 && ((GETDWORD(curDisAddr + instruction.length) & 0xffffff) == 0xf88b48))
+		{
+			ULONG offset = GETDWORD(curDisAddr + 1);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + instruction.length;
+			dstAddr.LowPart += offset;
+
+
+			NT::PsGetNextProcess = (FunPsGetNextProcess)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+}
+
+#define SHADOW_SSDT  0x1000
 BOOLEAN InitNtServiceByIndex()
 {
-	NT::NtSuspendThread = (FunNtSuspendThread)AekGetServiceAddressByIndex(0x17b);
-	NT::NtResumeThread = (FunNtSuspendThread)AekGetServiceAddressByIndex(79);
+	NT::NtSuspendThread = (FunNtSuspendThread)ArkGetServiceAddressByIndex(0x17b);
+	NT::NtResumeThread = (FunNtSuspendThread)ArkGetServiceAddressByIndex(79);
+	NT::NtUserBuildHwndList = (FunNtUserBuildHwndList)ArkGetServiceAddressByIndex(28 | SHADOW_SSDT);
+	NT::NtUserQueryWindow = (FunNtUserQueryWindow)ArkGetServiceAddressByIndex(16 | SHADOW_SSDT);
 
 
 
@@ -499,6 +556,8 @@ BOOLEAN InitKeServiceDescriptorTable()
 
 
 			NT::KeServiceDescriptorTable = (PKSERVICE_TABLE_DESCRIPTOR)dstAddr.QuadPart;
+			NT::KeServiceDescriptorTableShadow = (PKSERVICE_TABLE_DESCRIPTOR)(dstAddr.QuadPart + sizeof(KSERVICE_TABLE_DESCRIPTOR)*2);
+
 			return true;
 		}
 		curDisAddr += instruction.length;

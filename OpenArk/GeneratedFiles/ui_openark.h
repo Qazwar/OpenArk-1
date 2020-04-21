@@ -26,6 +26,11 @@ public:
     QGridLayout *gridLayout;
     QTabWidget *tabWidget;
     QWidget *tabProcess;
+    QWidget *tabKernelHook;
+    QGridLayout *gridLayout_3;
+    QTabWidget *tabWidgetKernelHook;
+    QWidget *tabSSDT;
+    QWidget *tabShadowSSDT;
     QWidget *tabObjDir;
     QGridLayout *gridLayout_2;
     QStatusBar *statusBar;
@@ -46,6 +51,24 @@ public:
         tabProcess = new QWidget();
         tabProcess->setObjectName(QString::fromUtf8("tabProcess"));
         tabWidget->addTab(tabProcess, QString());
+        tabKernelHook = new QWidget();
+        tabKernelHook->setObjectName(QString::fromUtf8("tabKernelHook"));
+        gridLayout_3 = new QGridLayout(tabKernelHook);
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setContentsMargins(11, 11, 11, 11);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
+        tabWidgetKernelHook = new QTabWidget(tabKernelHook);
+        tabWidgetKernelHook->setObjectName(QString::fromUtf8("tabWidgetKernelHook"));
+        tabSSDT = new QWidget();
+        tabSSDT->setObjectName(QString::fromUtf8("tabSSDT"));
+        tabWidgetKernelHook->addTab(tabSSDT, QString());
+        tabShadowSSDT = new QWidget();
+        tabShadowSSDT->setObjectName(QString::fromUtf8("tabShadowSSDT"));
+        tabWidgetKernelHook->addTab(tabShadowSSDT, QString());
+
+        gridLayout_3->addWidget(tabWidgetKernelHook, 0, 0, 1, 1);
+
+        tabWidget->addTab(tabKernelHook, QString());
         tabObjDir = new QWidget();
         tabObjDir->setObjectName(QString::fromUtf8("tabObjDir"));
         gridLayout_2 = new QGridLayout(tabObjDir);
@@ -64,6 +87,7 @@ public:
         retranslateUi(OpenArkClass);
 
         tabWidget->setCurrentIndex(1);
+        tabWidgetKernelHook->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(OpenArkClass);
@@ -73,6 +97,9 @@ public:
     {
         OpenArkClass->setWindowTitle(QApplication::translate("OpenArkClass", "OpenArk", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabProcess), QApplication::translate("OpenArkClass", "Process", nullptr));
+        tabWidgetKernelHook->setTabText(tabWidgetKernelHook->indexOf(tabSSDT), QApplication::translate("OpenArkClass", "SSDT", nullptr));
+        tabWidgetKernelHook->setTabText(tabWidgetKernelHook->indexOf(tabShadowSSDT), QApplication::translate("OpenArkClass", "Shadow SSDT", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tabKernelHook), QApplication::translate("OpenArkClass", "\345\206\205\346\240\270\351\222\251\345\255\220", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabObjDir), QApplication::translate("OpenArkClass", "ObjDirectory", nullptr));
     } // retranslateUi
 

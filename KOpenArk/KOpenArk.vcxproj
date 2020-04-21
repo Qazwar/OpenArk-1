@@ -120,6 +120,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
     <OutDir>..\bin\</OutDir>
+    <EnableInf2cat>false</EnableInf2cat>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
@@ -156,9 +157,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Inf Include="KOpenArk.inf" />
-  </ItemGroup>
-  <ItemGroup>
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +166,7 @@
     <ClCompile Include="ex.cpp" />
     <ClCompile Include="fs.cpp" />
     <ClCompile Include="init.cpp" />
+    <ClCompile Include="kernelhook.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="native.cpp" />
     <ClCompile Include="ob.cpp" />
@@ -175,6 +174,7 @@
     <ClCompile Include="process.cpp" />
     <ClCompile Include="thread.cpp" />
     <ClCompile Include="tool.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\arknt\amd64.h" />
@@ -188,11 +188,13 @@
     <ClInclude Include="..\arknt\ntmm.h" />
     <ClInclude Include="..\arknt\ntobapi.h" />
     <ClInclude Include="..\arknt\ntps.h" />
+    <ClInclude Include="..\arknt\ntse.h" />
     <ClInclude Include="..\arknt\ntwow64.h" />
     <ClInclude Include="..\arknt\ntzwapi.h" />
     <ClInclude Include="ex.h" />
     <ClInclude Include="kark.h" />
     <ClInclude Include="Init.h" />
+    <ClInclude Include="kernelhook.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="native.h" />
     <ClInclude Include="ntfill.h" />
@@ -202,6 +204,7 @@
     <ClInclude Include="dyndata.h" />
     <ClInclude Include="thread.h" />
     <ClInclude Include="tool.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -13,6 +13,7 @@
 #include "common.h"
 #include "pe.h"
 #include "ob.h"
+#include "window.h"
 #include "dyndata.h"
 #include "tool.h"
 #include "fs.h"
@@ -20,6 +21,7 @@
 #include "ex.h"
 #include "native.h"
 #include "thread.h"
+#include "kernelhook.h"
 
 
 
@@ -37,7 +39,7 @@
 //Debugging
 
 #ifdef DBG
-#define dprintf(Format, ...) DbgPrint("KProcessHacker: " Format, __VA_ARGS__)
+#define dprintf(Format, ...) DbgPrint("OpenArk: " Format, __VA_ARGS__)
 #define DBGERRINFO  DbgPrint("%s--%d", __FILE__,__LINE__);
 #else
 #define dprintf

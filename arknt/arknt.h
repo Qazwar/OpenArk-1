@@ -10,6 +10,7 @@
 #include <ntke.h>
 #include <ntps.h>
 #include <ntzwapi.h>
+#include <ntse.h>
 
 
 

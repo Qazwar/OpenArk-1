@@ -577,6 +577,49 @@ void ArkTerminateThreadKernelRoutine(PKAPC Apc)
 	PsTerminateSystemThread(0);
 }
 
+PEPROCESS ArkGetProcess(PCHAR ProcName)
+{
+	
+	PEPROCESS process;
+
+	for (process = NT::PsIdleProcess;
+		process != 0;
+		process = NT::PsGetNextProcess(process == NT::PsIdleProcess ? NULL : process)
+		)
+	{
+		
+		if (!strncmp( (const char*)process->ImageFileName, ProcName, sizeof(process->ImageFileName)))
+		{
+			return process;
+		}
+		
+	}
+	return 0;
+}
+#pragma warning (disable : 4244)
+BOOLEAN ArkGetAllSsdtFunAddr(PVOID, PVOID, PVOID *FunAddr, ULONG ReturnSize)
+{
+	
+	ULONG funLimit;
+	PEPROCESS csrss = 0;
+	PLONG OffsetTable = 0;
+	long offset;
+	KAPC_STATE apcState;
+	
+
+	funLimit = NT::KeServiceDescriptorTable->Limit;
+	ProbeForWrite( FunAddr, funLimit * sizeof(PVOID),8);
+	OffsetTable = NT::KeServiceDescriptorTable->Base;
+
+	for (ULONG i = 0; i < funLimit; i++)
+	{
+		offset = OffsetTable[i] >> 4;
+		FunAddr[i] = PTR_ADD_OFFSET(OffsetTable, offset);
+	}
+
+	return true;
+}
+
 
 BOOLEAN ArkTerminateSystemThread(PETHREAD Thread)
 {
@@ -731,6 +774,22 @@ void TraverseAvlMid(PMMVAD VadNode, ArkModInfo *ModInfo)
 		//到这里此节点的左节点为null
 		VadNode = VadNode->RightChild;
 	}
+}
+
+PEPROCESS ArkGetNextProcess(PEPROCESS Process)
+{
+	PEPROCESS newProcess = NULL;
+	PLIST_ENTRY listEntry;
+	if (Process)
+	{
+		listEntry = Process->ActiveProcessLinks.Flink;
+		newProcess = CONTAINING_RECORD(listEntry, _KPROCESS, ActiveProcessLinks);
+	}
+	else
+	{
+		newProcess = NT::PsIdleProcess;
+	}
+	return newProcess;
 }
 
 

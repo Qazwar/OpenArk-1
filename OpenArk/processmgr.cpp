@@ -7,6 +7,7 @@
 #include <TlHelp32.h>
 #include "HandleView.h"
 #include "ThreadView.h"
+#include "WindowView.h"
 
 #pragma comment (lib,"Version.lib")
 ProcessMgr::ProcessMgr(QWidget *parent)
@@ -186,11 +187,16 @@ int ProcessMgr::GetHideProcessCnt(StuProcInfo * procInfo)
 
 void ProcessMgr::SetContextMenu()
 {
+
+
 	mMenu.addAction(tr("refresh"), this,&ProcessMgr::OnRefresh);
 	mMenu.addAction(tr("hide process"), this,&ProcessMgr::OnHideProcess);
 	mMenu.addAction(tr("look process moudle"), this,&ProcessMgr::OnLookProcMod);
 	mMenu.addAction(tr("look process handle"), this,&ProcessMgr::OnLookProcHandle);
 	mMenu.addAction(tr("look process threads"), this,&ProcessMgr::OnLookProcThreads);
+	mMenu.addAction(tr("test hook"), this,&ProcessMgr::OnPrintTest);
+	auto lookUp = mMenu.addMenu(tr("look up"));
+	lookUp->addAction(tr("look process windows"), this, &ProcessMgr::OnLookProcWindows);
 
 
 	setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -364,18 +370,37 @@ void ProcessMgr::OnLookProcThreads()
 
 }
 
+void ProcessMgr::OnLookProcWindows()
+{
+	static WindowView *windowView = 0;
+	QString procName;
+
+	auto procId = GetColDataFromInt(Col::Pid);
+	procName = GetColDataFromString(Col::Name);
+
+	if (!windowView)
+	{
+		windowView = new WindowView(this, (LPVOID)procId, procName);
+	}
+	else
+	{
+		windowView->mProcId = (LPVOID)procId;
+		windowView->mProcName = procName;
+		windowView->OnRefresh();
+	}
+	windowView->show();
+}
+
 void ProcessMgr::OnPrintTest()
 {
-	DWORD returnSize;
-	bool ret = DeviceIoControl(
-		Ark::Device,
-		IOCTRL_REC_FROM_APP,
-		0,
-		0,
-		NULL,
-		0,
-		&returnSize,
-		NULL);
+	ParamInfo param;
+	param.pInData = 0;
+	param.cbInData = 0;
+	param.pOutData = (PCHAR)0;
+	param.cbOutData = 0;
+	param.FunIdx = DrvCall::TestHook;
+
+	auto result = OpenArk::IoCallDriver(param);
 
 
 	

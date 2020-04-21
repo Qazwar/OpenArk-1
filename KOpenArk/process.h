@@ -1,24 +1,73 @@
 #pragma once
-
+class process
+{
+public:
+	process();
+	~process();
+};
 
 //函数声明
 //进程
 
-void ArkEnumHandleTable(PHANDLE_TABLE pHandleTable, StuProcInfo *pOutData, ULONG cbOutData, ArkEX_ENUMERATE_HANDLE_ROUTINE funEnumHandleProcedure, PVOID enumParam);
-ULONG_PTR  PsGetProcessIdFromHandleTable(ULONG_PTR pEprocess);
-NTSTATUS  PsGetAllProcessInfomation(StuProcInfo *pOutData, ULONG cbOutData);
-void  PsGetProcessInfo(ULONG_PTR pObjectBody, StuProcInfo *pOutData, ULONG cbOutData, PVOID param);
-BOOLEAN  PsGetProcessPath(PEPROCESS Process, PVOID ProcId, OUT PWSTR Buffer, IN ULONG BufferLength, PULONG ReturnLength);
-int  GetIdlelProcessInfomatio(StuProcInfo *pOutData, ULONG cbOutData);
-void  FillProcessInfo(ULONG_PTR pEprocess, StuProcInfo *pOutData, ULONG cbOutData);
-int  GetIdlelProcessInfomatio(StuProcInfo *pOutData, ULONG cbOutData);
-PHANDLE_TABLE_ENTRY ExpLookupHandleTableEntry(IN PHANDLE_TABLE HandleTable,IN EXHANDLE tHandle);
+void ArkEnumHandleTable
+(PHANDLE_TABLE pHandleTable, 
+	StuProcInfo *pOutData, 
+	ULONG cbOutData, 
+	ArkEX_ENUMERATE_HANDLE_ROUTINE funEnumHandleProcedure, 
+	PVOID enumParam);
+
+ULONG_PTR  
+PsGetProcessIdFromHandleTable
+(ULONG_PTR pEprocess);
+
+NTSTATUS  
+PsGetAllProcessInfomation
+(StuProcInfo *pOutData, 
+	ULONG cbOutData);
+
+
+void  PsGetProcessInfo
+(ULONG_PTR pObjectBody,
+	StuProcInfo *pOutData, 
+	ULONG cbOutData, 
+	PVOID param);
+
+
+BOOLEAN  
+PsGetProcessPath(PEPROCESS Process,
+	PVOID ProcId, 
+	OUT PWSTR Buffer,
+	IN ULONG BufferLength,
+	PULONG ReturnLength);
+
+
+int  GetIdlelProcessInfomatio
+(StuProcInfo *pOutData,
+	ULONG cbOutData);
+
+void  FillProcessInfo
+(ULONG_PTR pEprocess, 
+	StuProcInfo *pOutData,
+	ULONG cbOutData);
+
+
+int  GetIdlelProcessInfomatio
+(StuProcInfo *pOutData, 
+	ULONG cbOutData);
+
+PHANDLE_TABLE_ENTRY 
+ExpLookupHandleTableEntry
+(IN PHANDLE_TABLE HandleTable,
+	IN EXHANDLE tHandle);
+
+
 BOOLEAN PsGetProcessPathByPeb(PEPROCESS process, PVOID procId, PWSTR path,_Inout_ int *pathLen);
 
 void GetModInfoByAvlNode(PMMVAD vadNode,ArkModInfo *modInfo);
 void TraverseAvlMid(PMMVAD vadNode, ArkModInfo *modInfo);
 
-
+//得到下一个进程
+PEPROCESS ArkGetNextProcess(PEPROCESS Process);
 
 
 
@@ -43,9 +92,26 @@ void CallbackGetThreadInfo(PETHREAD Thread, PVOID *ThreadInfo);
 
 
 //调用函数
-BOOLEAN  ArkGetProcList(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);
-BOOLEAN  ArkHideProcess(PCHAR pIndata, ULONG cbInData, StuProcInfo *pOutData, ULONG cbOutData);
-BOOLEAN ArkGetModListForProc(PCHAR pIndata, ULONG cbInData, ArkModInfo *pOutData, ULONG cbOutData);
+BOOLEAN  ArkGetProcList
+(PCHAR pIndata, 
+	ULONG cbInData,
+	StuProcInfo *pOutData, 
+	ULONG cbOutData);
+
+//隐藏进程
+BOOLEAN  ArkHideProcess(
+	PCHAR pIndata, 
+	ULONG cbInData, 
+	StuProcInfo *pOutData,
+	ULONG cbOutData);
+
+
+BOOLEAN ArkGetModListForProc(
+	PCHAR pIndata, 
+	ULONG cbInData, 
+	ArkModInfo *pOutData, 
+	ULONG cbOutData);
+
 BOOLEAN ArkHideMod(HideModParam *pIndata, ULONG cbInData, ArkModInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandleInfo(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
 BOOLEAN ArkGetProcHandles(PCHAR pIndata, ULONG cbInData, ArkHandleInfo *pOutData, ULONG cbOutData);
@@ -105,8 +171,7 @@ NTSTATUS ArkAlterThread(
 得到系统模块
 */
 BOOLEAN 
-ArkGetSystemModInfo
-(
+ArkGetSystemModInfo(
 	PCHAR pIndata,
 	ULONG cbInData,
 	ArkModInfo *pOutData,
@@ -125,6 +190,21 @@ BOOLEAN ArkTerminateSystemThread(PETHREAD Thread);
 结束内核线程挂入的内核历程
 */
 void ArkTerminateThreadKernelRoutine(PKAPC Apc);
+
+
+
+
+/*
+得到进程地址通过进程名
+*/
+PEPROCESS ArkGetProcess(PCHAR ProcName);
+
+
+
+/*
+得到SSDT表的函数地址
+*/
+BOOLEAN ArkGetAllSsdtFunAddr(PVOID, PVOID, PVOID *FunAddr, ULONG ReturnSize);
 
 //汇编
 

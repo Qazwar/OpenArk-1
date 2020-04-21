@@ -10,4 +10,4 @@ PVOID ArkGetSystemRoutineAddress(
 	_In_ PWSTR SystemRoutineName
 );
 
-PVOID AekGetServiceAddressByIndex(USHORT funIndex);
+PVOID ArkGetServiceAddressByIndex(USHORT funIndex);

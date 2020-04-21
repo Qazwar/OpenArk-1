@@ -25,6 +25,30 @@
         <string>Process</string>
        </attribute>
       </widget>
+      <widget class="QWidget" name="tabKernelHook">
+       <attribute name="title">
+        <string>内核钩子</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QTabWidget" name="tabWidgetKernelHook">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tabSSDT">
+           <attribute name="title">
+            <string>SSDT</string>
+           </attribute>
+          </widget>
+          <widget class="QWidget" name="tabShadowSSDT">
+           <attribute name="title">
+            <string>Shadow SSDT</string>
+           </attribute>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="tabObjDir">
        <attribute name="title">
         <string>ObjDirectory</string>
