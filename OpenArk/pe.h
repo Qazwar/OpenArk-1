@@ -51,7 +51,7 @@ PVOID PeGetProcAddress(CHAR *lpImage, CHAR* funName);
 
 PCHAR PeStretchImage(PCHAR lpFile);
 
-BOOLEAN PeFixRelocTable(PCHAR BaseAddress, ULONG Delta);
+BOOLEAN PeFixRelocTable(PCHAR BaseAddress, LONG Delta);
 
 ULONG PeGetProcRva(PCHAR imageBase, PCHAR funName);
 

@@ -25,8 +25,9 @@ private slots:
 
 private:
 	static PCHAR mShadowSdtFunName[];
-	PLONG mShaodwSdtBase;
+	PVOID *mShaodwSdtBase;
 	long mLimit;
 	QMenu mMenu;
+	ULONG_PTR mWin32kBase;
 };
 

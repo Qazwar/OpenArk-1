@@ -42,30 +42,33 @@ BOOLEAN ArkGetAllShadowSdtFunAddr(PVOID, PVOID, PVOID * FunAddr, ULONG ReturnSiz
 {
 	ULONG funLimit;
 	PEPROCESS csrss = 0;
-	PLONG OffsetTable = 0;
+	PLONG offsetTable = 0;
 	long offset;
 	KAPC_STATE apcState;
 
 
-	funLimit = NT::KeServiceDescriptorTableShadow->Limit;
+	funLimit = NT::KeServiceDescriptorTableShadow[1].Limit;
 	ProbeForWrite(FunAddr, funLimit * sizeof(PVOID), 8);
+	offsetTable = (PLONG)ExAllocatePool(PagedPool, funLimit * sizeof(PVOID));
 	csrss = ArkGetProcess("csrss.exe");
 
 
 	if (csrss)
 	{
 		KeStackAttachProcess(csrss, &apcState);
-		OffsetTable = NT::KeServiceDescriptorTableShadow[1].Base;
+		RtlCopyMemory(offsetTable, NT::KeServiceDescriptorTableShadow[1].Base, funLimit * sizeof(PVOID));
+		KeUnstackDetachProcess(&apcState);
+		
 
-		for (int i = 0; i < funLimit; i++)
+		for (ULONG i = 0; i < funLimit; i++)
 		{
-			offset = OffsetTable[i] >> 4;
-			FunAddr[i] = PTR_ADD_OFFSET(OffsetTable, offset);
+			offset = offsetTable[i] >> 4;
+			FunAddr[i] = PTR_ADD_OFFSET(NT::KeServiceDescriptorTableShadow[1].Base, offset);
 		}
 
-		KeUnstackDetachProcess(&apcState);
 
 	}
+	ExFreePool(offsetTable);
 	return true;
 }
 BOOLEAN ArkTestHook()

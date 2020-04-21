@@ -248,7 +248,7 @@ PCHAR PeStretchImage(PCHAR lpFile)
 	return lpImage;
 }
 
-BOOLEAN PeFixRelocTable(PCHAR baseAddress, ULONG delta)
+BOOLEAN PeFixRelocTable(PCHAR baseAddress, ULONG_PTR delta)
 {
 
 	

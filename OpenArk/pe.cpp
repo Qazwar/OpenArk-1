@@ -240,7 +240,7 @@ PCHAR PeStretchImage(PCHAR lpFile)
 	return lpImage;
 }
 
-BOOLEAN PeFixRelocTable(PCHAR baseAddress, ULONG delta)
+BOOLEAN PeFixRelocTable(PCHAR baseAddress, ULONG_PTR delta)
 {
 
 	
@@ -287,7 +287,7 @@ BOOLEAN PeFixRelocTable(PCHAR baseAddress, ULONG delta)
 			if (type == IMAGE_REL_BASED_DIR64)
 			{
 				longLongPtr = (PULONG_PTR)(address + offset);
-				*longLongPtr = (*longLongPtr) + delta;
+				*longLongPtr = *longLongPtr + delta;
 			}
 			typeOffset++;
 		}
@@ -345,17 +345,28 @@ PCHAR PeLoader(PCHAR ExePath,  ULONG_PTR RelocBase, BOOL DoImport)
 	QFile qfile(ExePath);
 	PCHAR  mappedBase;
 	PCHAR imageBase;
-	BOOLEAN sucess = 0;
+	BOOLEAN sucess = 1;
 
 	if (qfile.open(QIODevice::ReadOnly))
 	{
 		mappedBase = (PCHAR)qfile.map(0, qfile.size());
 		imageBase = PeStretchImage(mappedBase);
+		auto orignalBase = ((PIMAGE_OPTIONAL_HEADER)OPTHDROFFSET(imageBase))->ImageBase;
+
 		if (imageBase && RelocBase)
 		{
-			if (PeFixRelocTable(imageBase, (ULONG_PTR)imageBase - RelocBase))
+			ULONG_PTR delta = RelocBase - orignalBase;
+			if (!PeFixRelocTable(imageBase, delta))
 			{
-				sucess = 1;
+				sucess = 0;
+			}
+			
+		}
+		else
+		{
+			if (!PeFixRelocTable(imageBase, (ULONG_PTR)orignalBase - (ULONG_PTR)imageBase ))
+			{
+				sucess = 0;
 			}
 		}
 	}

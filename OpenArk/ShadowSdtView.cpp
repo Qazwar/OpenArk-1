@@ -870,30 +870,49 @@ void ShadowSdtView::OnRefresh()
 {
 	static BOOLEAN refrshed = 0;
 	PVOID *curServiceAddress = (PVOID *)Ark::Buffer;
-
+	auto sysModInfo = ModuleView::GetSystemModInfo();
+	auto modNum = sysModInfo->NumberOfMods;
+	
+	
 
 	ParamInfo param;
 	param.pOutData = (PCHAR)curServiceAddress;
 	param.cbOutData = SIZE4M;
 	param.FunIdx = DrvCall::GetAllShadowSdtFunAddr;
+	OpenArk::IoCallDriver(param);
+
+
+	//得到win32k基质
+	for (int i = 0; i < modNum; i++)
+	{
+		auto modName = GetFileNameFromFullPath(sysModInfo[i].Path);
+		if (modName)
+		{
+			if (wcsicmp(modName, L"win32k.sys") == 0)
+			{
+				mWin32kBase = sysModInfo[i].RegionBase;
+				break;
+			}
+		}
+	}
 
 	if (!refrshed)
 	{
 		qDebug() << "ShadowSdtView refrshed";
 		PCHAR imageBase = 0;
 		//得到所有的服务表函数的原始偏移
-		imageBase = PeLoader("C:\\Windows\\System32\\win32k.sys", 0, 0);
+		imageBase = PeLoader("C:\\Windows\\System32\\win32k.sys",mWin32kBase, 0);
 		if (imageBase)
 		{
 			PLONG W32pServiceTable;
 			W32pServiceTable = (PLONG)PeGetProcAddress(imageBase, "W32pServiceTable");
 			mLimit = *(PLONG)PeGetProcAddress(imageBase, "W32pServiceLimit");
-			mShaodwSdtBase = (PLONG)new char[mLimit * sizeof(long)];
-			memcpy(mShadowSdtFunName, W32pServiceTable, mLimit * sizeof(long));
+			mShaodwSdtBase = (PVOID*)new char[mLimit * sizeof(PVOID)];
+			memcpy(mShaodwSdtBase, W32pServiceTable, mLimit * sizeof(PVOID));
 			delete imageBase;
 			for (int i = 0; i < mLimit; i++)
 			{
-				mShaodwSdtBase[i] = mShaodwSdtBase[i] >> 4;
+				mShaodwSdtBase[i];;
 			}
 			refrshed = 1;
 		}
@@ -902,46 +921,31 @@ void ShadowSdtView::OnRefresh()
 		for (int i = 0; i <  mLimit; i++)
 		{
 			mSourceModel->setItem(i, Col::FunName, MakeItem(mShadowSdtFunName[i]));
-			mSourceModel->setItem(i, Col::Hook, MakeItem(QString()));
+			mSourceModel->setItem(i, Col::Hook, new QStandardItem());
 			mSourceModel->setItem(i, Col::CurFunAddr, MakeItem(curServiceAddress[i]));
-			mSourceModel->setItem(i, Col::InMod, MakeItem(QString()));
+			mSourceModel->setItem(i, Col::InMod, new QStandardItem());
 			mSourceModel->setItem(i, Col::Serial, MakeItem(i));
-			mSourceModel->setItem(i, Col::OriginalAddr, MakeItem(QString()));
+			mSourceModel->setItem(i, Col::OriginalAddr, new QStandardItem());
 		}
 	}
 	
 	//已经得到原始偏移和现在的地址
 	
-	auto sysModInfo = ModuleView::GetSystemModInfo();
-	auto modNum = sysModInfo->NumberOfMods;
-	ULONG_PTR win32kBase = 0;
-	//得到win32k基质
-	for (int j = 0; j < modNum; j++)
-	{
-		auto modName = GetFileNameFromFullPath(sysModInfo->Path);
-		if (modName)
-		{
-			if (wcsicmp(modName, L"win32k.sys") == 0)
-			{
-				win32kBase = sysModInfo->RegionBase;
-			}
-		}
-	}
+	
 	int hookCnt = 0;
 	for (int i = 0; i < mLimit; i++)
 	{
 		for (int j = 0; j < modNum; j++)
 		{
-			if ((ULONG_PTR)curServiceAddress[i] >= sysModInfo->RegionBase && 
-				(ULONG_PTR)curServiceAddress[i] < sysModInfo->RegionBase + sysModInfo->RegionSize)
+			if ((ULONG_PTR)curServiceAddress[i] >= sysModInfo[j].RegionBase && 
+				(ULONG_PTR)curServiceAddress[i] < sysModInfo[j].RegionBase + sysModInfo[j].RegionSize)
 			{
 				mSourceModel->item(i, Col::InMod)->setText(QString::fromWCharArray(sysModInfo[j].Path));
-
-
+				break;
 			}
 		}
-		mSourceModel->item(i, Col::OriginalAddr)->setText(ToHexQstring(win32kBase + mShaodwSdtBase[i]));
-		if ((ULONG_PTR)curServiceAddress[i] != win32kBase + mShaodwSdtBase[i])
+		mSourceModel->item(i, Col::OriginalAddr)->setText(ToHexQstring((qulonglong) mShaodwSdtBase[i]));
+		if ((ULONG_PTR)curServiceAddress[i] != (ULONG_PTR) mShaodwSdtBase[i])
 		{
 			mSourceModel->item(i, Col::Hook)->setText("hook");
 			hookCnt++;
