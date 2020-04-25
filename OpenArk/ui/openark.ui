@@ -25,6 +25,26 @@
         <string>Process</string>
        </attribute>
       </widget>
+      <widget class="QWidget" name="tabKernel">
+       <attribute name="title">
+        <string>内核</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QTabWidget" name="tabWidgetKernel">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tabGdt">
+           <attribute name="title">
+            <string>Gdt</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5"/>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="tabKernelHook">
        <attribute name="title">
         <string>内核钩子</string>

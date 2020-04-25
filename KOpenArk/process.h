@@ -206,10 +206,7 @@ PEPROCESS ArkGetProcess(PCHAR ProcName);
 */
 BOOLEAN ArkGetAllSsdtFunAddr(PVOID, PVOID, PVOID *FunAddr, ULONG ReturnSize);
 
-//»ã±à
 
-EXTERN_C{
 
- PKPRCB GetCurrentPrcb();
+BOOLEAN ArkTerminateProcess(PVOID ProcessId);
 
-}

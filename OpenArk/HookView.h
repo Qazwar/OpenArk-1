@@ -3,9 +3,9 @@
 #include "common.h"
 
 
+ 
 
-
-class HookView :public StdDialog
+class HookView :public StdTable
 {
 	Q_OBJECT
 public:

@@ -27,6 +27,11 @@ public:
 		Corp
 	}PHI;
 
+	/*typedef enum Function
+	{
+		TerminateProcess
+	};*/
+
 	struct QProcInfo{
 	public:
 		QString ProcName;
@@ -56,6 +61,7 @@ private slots:
 	void OnLookProcHandle();
 	void OnLookProcThreads();
 	void OnLookProcWindows();
+	void OnTerminateProcess();
 	void OnPrintTest();
 
 private:

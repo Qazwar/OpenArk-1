@@ -282,7 +282,8 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[QueryHwnd] = (DrvCallFun)ArkGetWindowsForProcess;
 	DrvCallTable[GetAllSsdtFunAddr] = (DrvCallFun)ArkGetAllSsdtFunAddr;
 	DrvCallTable[GetAllShadowSdtFunAddr] = (DrvCallFun)ArkGetAllShadowSdtFunAddr;
-	DrvCallTable[TestHook] = (DrvCallFun)ArkTestHook;
+	DrvCallTable[CallIdxTerminate] = (DrvCallFun)ArkTerminateProcess;
+	DrvCallTable[CallIdxGdtInfo] = (DrvCallFun)ArkGetGdtInfo;
 
 	return true;
 }
@@ -510,6 +511,7 @@ BOOLEAN InitNtServiceByIndex()
 	NT::NtResumeThread = (FunNtSuspendThread)ArkGetServiceAddressByIndex(79);
 	NT::NtUserBuildHwndList = (FunNtUserBuildHwndList)ArkGetServiceAddressByIndex(28 | SHADOW_SSDT);
 	NT::NtUserQueryWindow = (FunNtUserQueryWindow)ArkGetServiceAddressByIndex(16 | SHADOW_SSDT);
+	NT::NtTerminateProcess = (FunNtTerminateProcess)ArkGetServiceAddressByIndex(NT::ServiceSerial::NtTerminateProcess);
 
 
 

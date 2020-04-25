@@ -11,3 +11,14 @@ PVOID ArkGetSystemRoutineAddress(
 );
 
 PVOID ArkGetServiceAddressByIndex(USHORT funIndex);
+
+//»ã±à
+
+EXTERN_C
+{
+
+	PKPRCB GetCurrentPrcb();
+
+	void ArkReadGdtr(ArkGdtr *Gdt);
+
+}

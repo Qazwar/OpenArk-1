@@ -410,7 +410,7 @@ PCHAR SsdtView::mSsdtFunName[] = {
 
 };
 
-SsdtView::SsdtView(QWidget *parent) :StdDialog(parent)
+SsdtView::SsdtView(QWidget *parent) :StdTable(parent)
 {
 
 	InitView();

@@ -22,6 +22,8 @@
 #include "native.h"
 #include "thread.h"
 #include "kernelhook.h"
+#include "drivermod.h"
+#include "kernel.h"
 
 
 

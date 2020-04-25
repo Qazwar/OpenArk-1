@@ -4,27 +4,27 @@
 
 
 
-class SsdtView :public StdTable
+
+class GdtView :public StdTable
 {
 	Q_OBJECT
 public:
 
 	enum Col {
-		Serial,
-		FunName,
-		CurFunAddr,
-		Hook,
-		OriginalAddr,
-		InMod,
+		CpuSerial,
+		Selector,
+		Base,
+		Limit,
+		Grantity,
+		Dpl,
+		Type,
 		LastCol
 	};
 
-	SsdtView(QWidget *parent = 0);
-	~SsdtView();
+	GdtView(QWidget *parent);
+	~GdtView();
 	void InitView();
 	void SetContextMenu();
-
-
 
 
 private slots:
@@ -34,7 +34,5 @@ private slots:
 
 private:
 	QMenu mMenu;
-	static PCHAR mSsdtFunName[];
-	
 };
 

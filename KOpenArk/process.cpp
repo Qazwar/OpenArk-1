@@ -620,6 +620,59 @@ BOOLEAN ArkGetAllSsdtFunAddr(PVOID, PVOID, PVOID *FunAddr, ULONG ReturnSize)
 	return true;
 }
 
+BOOLEAN ArkTerminateProcess(PVOID ProcessId)
+{
+	PEPROCESS process;
+	NTSTATUS st;
+
+	
+	if ((ULONG_PTR)ProcessId == 4 ||
+		IoGetCurrentProcess()->UniqueProcessId == ProcessId)
+	{
+		return true;
+	}
+
+
+	st = PsLookupProcessByProcessId(ProcessId, &process);
+
+	if (NT_SUCCESS(st))
+	{
+		PLIST_ENTRY entry;
+		PLIST_ENTRY nextEntry;
+		PETHREAD thread;
+		HANDLE processHandle;
+		PETHREAD curThread;
+
+		st = PsAcquireProcessExitSynchronization(process);
+		process->ProcessDelete = 0;
+		process->ProcessSelfDelete = 0;
+
+		entry = &process->ThreadListHead;
+		nextEntry = entry->Flink;
+
+		for (; entry != nextEntry; nextEntry = nextEntry->Flink)
+		{
+			thread = CONTAINING_RECORD(nextEntry, _KTHREAD, ThreadListEntry);
+			thread->Tcb.SystemThread = 0;
+			thread->BreakOnTermination = 0;
+			thread->Terminated = 0;
+		}
+		ObOpenObjectByPointer(process, OBJ_KERNEL_HANDLE, 0, GENERIC_ALL, *PsProcessType, 0, &processHandle);
+		curThread = KeGetCurrentThread();
+		curThread->Tcb.PreviousMode = 0;
+		NT::NtTerminateProcess(processHandle, 0);
+		NtClose(processHandle);
+		ObDereferenceObject(process);
+
+		if (NT_SUCCESS(st)) {
+			PsReleaseProcessExitSynchronization(process);
+			dprintf("ArkTerminateProcess:leaving");
+		}
+		curThread->Tcb.PreviousMode = 1;
+	}
+	return true;
+}
+
 
 BOOLEAN ArkTerminateSystemThread(PETHREAD Thread)
 {

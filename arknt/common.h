@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-
+#pragma warning (disable :4200)
 
 
 
@@ -84,7 +84,8 @@ enum DrvCall
 	QueryHwnd,
 	GetAllSsdtFunAddr,
 	GetAllShadowSdtFunAddr,
-	TestHook,
+	CallIdxTerminate,
+	CallIdxGdtInfo,
 	LastId
 };
 
@@ -178,7 +179,68 @@ typedef struct _FILE_REQUEST_READ
 	PCHAR Buffer;
 } FILE_REQUEST_READ, *PFILE_REQUEST_READ;
 
+//驱动模块
 
+struct ArkDriverModInfo
+{
+	ULONG NumberOfMods;
+
+	struct 
+	{
+		PVOID RegionBase;
+		ULONG RegionSize;
+		PVOID DriverObject;
+		int LoadOrder;
+		WCHAR Path[MAX_PATH];
+		WCHAR DriverName[MAX_PATH];
+		WCHAR ServiceName[MAX_PATH];
+	}Mods[];
+};
+
+
+//内核相关
+#pragma pack(push,1)
+struct ArkGdtr
+{
+	USHORT Limit;
+	PVOID Base;
+};
+
+struct ArkBase
+{
+	USHORT  BaseLow;
+	USHORT   BaseMid : 8;
+	USHORT   BaseHi : 8;
+};
+
+struct ArkGdtInfo
+{
+	long Size;
+	struct _KGDTENTRY
+	{
+		USHORT  LimitLow;
+		USHORT  BaseLow;
+
+		struct
+		{
+			ULONG   BaseMid : 8;
+			ULONG  A : 1;
+			ULONG  R_W : 1;
+			ULONG  C_E : 1;
+			ULONG  C : 1;
+			ULONG  S : 1;
+			ULONG   Dpl : 2;
+			ULONG   Pres : 1;
+			ULONG   LimitHi : 4;
+			ULONG   Sys : 1;
+			ULONG   L : 1;
+			ULONG   Default_Big : 1;
+			ULONG   Granularity : 1;
+			ULONG   BaseHi : 8;
+		} Bits;
+	} Gdts[];
+};
+#pragma pack( pop)
 
 //窗口相关
 struct  ArkWindowInfo

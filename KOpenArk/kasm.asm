@@ -23,4 +23,11 @@ mov rax, 0fffff8000418f58bh
 jmp  rax
 FakeTerminate endp
 
+ArkReadGdtr proc
+
+sgdt  fword ptr [rcx]
+ret
+
+ArkReadGdtr endp
+
 end 

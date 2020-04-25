@@ -83,6 +83,9 @@
     <ClCompile Include="pe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gdt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="stdtable.h">
@@ -119,6 +122,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ShadowSdtView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="gdt.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

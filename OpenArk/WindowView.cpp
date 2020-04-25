@@ -132,7 +132,7 @@ void WindowView::OnRefresh()
 			mSourceModel->setItem(hwndCnt, Col::ClassName, MakeItem(strClassName));
 			mSourceModel->setItem(hwndCnt, Col::Hwnd, MakeItem(hwndInfo->Hwnd));
 			mSourceModel->setItem(hwndCnt, Col::IsVisible, MakeItem(visble[isVisble]));
-			mSourceModel->setItem(hwndCnt, Col::ProcessId, MakeItem((DWORD)hwndInfo->ProcessId));
+			mSourceModel->setItem(hwndCnt, Col::ProcessId, MakeItem(*(DWORD*)&hwndInfo->ProcessId));
 			mSourceModel->setItem(hwndCnt, Col::ThreadId, MakeItem(threadId));
 			mSourceModel->setItem(hwndCnt, Col::Title,MakeItem(windowTitle));
 			hwndCnt++;

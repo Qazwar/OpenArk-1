@@ -7,8 +7,6 @@ extern DrvCallFun  DrvCallTable[DrvCall::LastId];//µ÷ÓÃ±í
 
 
 
-
-
 BOOLEAN InitDrvCallTable();
 
 BOOLEAN InitVarible();

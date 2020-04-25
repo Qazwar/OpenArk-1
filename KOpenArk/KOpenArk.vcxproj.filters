@@ -58,6 +58,12 @@
     <ClCompile Include="kernelhook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="drivermod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Init.h">
@@ -142,6 +148,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="kernelhook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drivermod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

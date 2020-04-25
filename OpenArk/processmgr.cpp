@@ -194,7 +194,7 @@ void ProcessMgr::SetContextMenu()
 	mMenu.addAction(tr("look process moudle"), this,&ProcessMgr::OnLookProcMod);
 	mMenu.addAction(tr("look process handle"), this,&ProcessMgr::OnLookProcHandle);
 	mMenu.addAction(tr("look process threads"), this,&ProcessMgr::OnLookProcThreads);
-	mMenu.addAction(tr("test hook"), this,&ProcessMgr::OnPrintTest);
+	mMenu.addAction(tr("terminate process"), this,&ProcessMgr::OnTerminateProcess);
 	auto lookUp = mMenu.addMenu(tr("look up"));
 	lookUp->addAction(tr("look process windows"), this, &ProcessMgr::OnLookProcWindows);
 
@@ -391,16 +391,33 @@ void ProcessMgr::OnLookProcWindows()
 	windowView->show();
 }
 
+void ProcessMgr::OnTerminateProcess()
+{
+	QString procName;
+	auto procId = GetColDataFromInt(Col::Pid);
+	
+	
+
+	ParamInfo param;
+	param.pInData = (PCHAR)procId;
+	param.cbInData = 8;
+	param.pOutData = 0;
+	param.cbOutData = 0;
+	param.FunIdx = DrvCall::CallIdxTerminate;
+
+	auto result = OpenArk::IoCallDriver(param);
+}
+
 void ProcessMgr::OnPrintTest()
 {
-	ParamInfo param;
+	/*ParamInfo param;
 	param.pInData = 0;
 	param.cbInData = 0;
 	param.pOutData = (PCHAR)0;
 	param.cbOutData = 0;
 	param.FunIdx = DrvCall::TestHook;
 
-	auto result = OpenArk::IoCallDriver(param);
+	auto result = OpenArk::IoCallDriver(param);*/
 
 
 	

@@ -72,9 +72,8 @@
         <translation>当前函数地址所在模块</translation>
     </message>
     <message>
-        <location filename="HookView.cpp" line="42"/>
         <source>refresh</source>
-        <translation>刷新</translation>
+        <translation type="vanished">刷新</translation>
     </message>
 </context>
 <context>
@@ -195,8 +194,8 @@
     </message>
     <message>
         <location filename="processmgr.cpp" line="197"/>
-        <source>test hook</source>
-        <translation type="unfinished"></translation>
+        <source>terminate process</source>
+        <translation>结束进程</translation>
     </message>
     <message>
         <location filename="processmgr.cpp" line="198"/>
@@ -214,39 +213,52 @@
         <translation>进程：%1，隐藏进程：%2,应用层不可访问进程：%3</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>Process</source>
         <translation>进程</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>PID</source>
         <translation>进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>PPID</source>
         <translation>父进程ID</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>Path</source>
         <translation>映像路径</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>Eprocess</source>
         <translation>EPROCESS</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>Access</source>
         <translation>应用层访问状态</translation>
     </message>
     <message>
-        <location filename="processmgr.cpp" line="412"/>
+        <location filename="processmgr.cpp" line="429"/>
         <source>Company Name</source>
         <translation>文件厂商</translation>
+    </message>
+</context>
+<context>
+    <name>ShadowSdtView</name>
+    <message>
+        <location filename="ShadowSdtView.cpp" line="853"/>
+        <source>refresh</source>
+        <translation type="unfinished">刷新</translation>
+    </message>
+    <message>
+        <location filename="ShadowSdtView.cpp" line="959"/>
+        <source>Shadow SSDT function[%1],beHooked fun: %2</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

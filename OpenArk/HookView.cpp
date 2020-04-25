@@ -7,7 +7,7 @@ void HookView::OnRefresh()
 {
 }
 
-HookView::HookView(QWidget *parent) :StdDialog(parent)
+HookView::HookView(QWidget *parent) :StdTable(parent)
 {
 
 	InitView();

@@ -4,6 +4,7 @@
 #include "common.h"
 #include "SsdtView.h"
 #include "ShadowSdtView.h"
+#include "gdt.h"
 
 
 #define ARKNAMESPACE
@@ -44,6 +45,8 @@ void OpenArk::OnTabChanged(bool checked)
 	QTabWidget *curTabWidget = 0;
 
 	if (!mInitSucess) return;
+	if (Ark::Device == INVALID_HANDLE_VALUE) return;
+
 	if (tabText.compare(tr("kernel hook"), Qt::CaseInsensitive) == 0)
 	{
 		curTabWidget = ui.tabWidgetKernelHook;
@@ -222,6 +225,8 @@ void OpenArk::InitView()
 	CreateTabPage(objView, ui.tabObjDir, ui.tabWidget);
 	auto shadowSdt = new ShadowSdtView(this);
 	CreateTabPage(shadowSdt, ui.tabShadowSSDT, ui.tabWidgetKernelHook);
+	auto gdtView = new GdtView(this);
+	CreateTabPage(gdtView, ui.tabGdt, ui.tabWidgetKernel);
 
 	ui.tabWidgetKernelHook->setCurrentIndex(0);
 	ui.tabWidget->setCurrentIndex(0);
