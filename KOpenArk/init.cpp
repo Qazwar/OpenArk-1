@@ -148,6 +148,10 @@ BOOLEAN InitUnExportByNtkrnl()
 	LOADUNEXPORT(InitPspTerminateThreadByPointer);
 	LOADUNEXPORT(InitKiInsertQueueApc);
 	LOADUNEXPORT(InitPsGetNextProcess);
+	LOADUNEXPORT(InitPspCreateProcessNotifyRoutine);
+	LOADUNEXPORT(InitPspCreateThreadNotifyRoutine);
+	LOADUNEXPORT(InitPspLoadImageNotifyRoutine);
+	LOADUNEXPORT(InitCallbackListHead);
 
 	return true;
 }
@@ -284,6 +288,8 @@ BOOLEAN InitDrvCallTable()
 	DrvCallTable[GetAllShadowSdtFunAddr] = (DrvCallFun)ArkGetAllShadowSdtFunAddr;
 	DrvCallTable[CallIdxTerminate] = (DrvCallFun)ArkTerminateProcess;
 	DrvCallTable[CallIdxGdtInfo] = (DrvCallFun)ArkGetGdtInfo;
+	DrvCallTable[CallIdxGetDriverInfo] = (DrvCallFun)ArkGetDriverModsInfo;
+	DrvCallTable[CallIdxGetCallbackInfo] = (DrvCallFun)ArkGetCallBackInfo;
 
 	return true;
 }
@@ -338,9 +344,16 @@ BOOLEAN InitObTypeIndexTable()
 		if (!wcscmp((*(PUNICODE_STRING)((char*)(*pObjectType) + 0x10)).Buffer, L"Directory")) {
 			dirType = *pObjectType;
 			NT::ArrObjectType[ObjectType::DirectoryType].TypeIndex = dirType->Index;
+			NT::ArrObjectType[ObjectType::DirectoryType].ObjectType = dirType;
 		}
 		else if (!wcscmp((*(PUNICODE_STRING)((char*)(*pObjectType) + 0x10)).Buffer, L"SymbolicLink")) {
 			NT::ArrObjectType[ObjectType::SymbolinkType].TypeIndex = (*pObjectType)->Index;
+			NT::ArrObjectType[ObjectType::SymbolinkType].ObjectType = *pObjectType;
+		}
+		else if (!wcscmp((*(PUNICODE_STRING)((char*)(*pObjectType) + 0x10)).Buffer, L"Driver"))
+		{
+			NT::ArrObjectType[ObjectType::DriverType].TypeIndex = (*pObjectType)->Index;
+			NT::ArrObjectType[ObjectType::DriverType].ObjectType = *pObjectType;
 		}
 		pObjectType++;
 	}
@@ -496,6 +509,191 @@ BOOLEAN InitPsGetNextProcess()
 
 
 			NT::PsGetNextProcess = (FunPsGetNextProcess)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+}
+
+BOOLEAN InitPspCreateProcessNotifyRoutine()
+{
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 0x140;
+	ZydisDecodedInstruction instruction;
+
+	int tempoffset;
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"PsSetCreateProcessNotifyRoutine");
+	tempoffset = *(int*)(curDisAddr + 4);
+	*(int*)&curDisAddr = LODWORD(curDisAddr) + 8 + tempoffset;
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if (instruction.length == 7 && ((GETDWORD(curDisAddr) & 0xFFFFFF) == 0x358d4c))
+		{
+			ULONG offset = GETDWORD(curDisAddr + 3);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + instruction.length;
+			dstAddr.LowPart += offset;
+
+
+			NT::PspCreateProcessNotifyRoutine = (PVOID*)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+
+}
+
+
+BOOLEAN InitPspCreateThreadNotifyRoutine()
+{
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 0x140;
+	ZydisDecodedInstruction instruction;
+
+	int tempoffset;
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"PsSetCreateThreadNotifyRoutine");
+
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if (instruction.length == 7 && ((GETDWORD(curDisAddr) & 0xFFFFFF) == 0x0d8d48))
+		{
+			ULONG offset = GETDWORD(curDisAddr + 3);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + instruction.length;
+			dstAddr.LowPart += offset;
+
+
+			NT::PspCreateThreadNotifyRoutine = (PVOID*)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+
+}
+
+BOOLEAN InitPspLoadImageNotifyRoutine()
+{
+
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 0x140;
+	ZydisDecodedInstruction instruction;
+
+	int tempoffset;
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"PsSetLoadImageNotifyRoutine");
+
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if (instruction.length == 7 && ((GETDWORD(curDisAddr) & 0xFFFFFF) == 0x0d8d48))
+		{
+			ULONG offset = GETDWORD(curDisAddr + 3);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + instruction.length;
+			dstAddr.LowPart += offset;
+
+
+			NT::PspLoadImageNotifyRoutine = (PVOID*)dstAddr.QuadPart;
+			return true;
+		}
+		curDisAddr += instruction.length;
+	}
+
+	return false;
+}
+
+BOOLEAN InitCallbackListHead()
+{
+
+	ZydisDecoder			decoder;
+	ZydisFormatter			formatter;
+	ULONG_PTR			curDisAddr;
+	const ZyanUSize length = 0x140;
+	ZydisDecodedInstruction instruction;
+
+	int tempoffset;
+
+	curDisAddr = (ULONG_PTR)ArkGetSystemRoutineAddress(L"CmUnRegisterCallback");
+
+	if (!curDisAddr)
+	{
+		return false;
+	}
+
+	ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
+	ZydisFormatterInit(&formatter, ZYDIS_FORMATTER_STYLE_INTEL);
+
+
+	for (int i = 0; i < length; i += instruction.length)
+	{
+		int cnt = 0;
+
+		if (!ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(&decoder, (PVOID)curDisAddr, length - instruction.length, &instruction)))
+			break;
+
+
+		if (instruction.length == 5 && ((GETDWORD(curDisAddr) & 0xFFFFFF) == 0x548d48))
+		{
+			curDisAddr += instruction.length;
+			ULONG offset = GETDWORD(curDisAddr  + 3);
+			LARGE_INTEGER dstAddr;
+			dstAddr.QuadPart = (LONGLONG)curDisAddr + 7;
+			dstAddr.LowPart += offset;
+
+
+			NT::CallbackListHead = (PLIST_ENTRY)dstAddr.QuadPart;
 			return true;
 		}
 		curDisAddr += instruction.length;

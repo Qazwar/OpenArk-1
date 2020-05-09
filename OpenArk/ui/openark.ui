@@ -18,11 +18,16 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabProcess">
        <attribute name="title">
         <string>Process</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabDriverMod">
+       <attribute name="title">
+        <string>驱动模块</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="tabKernel">
@@ -31,10 +36,15 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidgetKernel">
+         <widget class="MyTabWidget" name="tabWidgetKernel">
           <property name="currentIndex">
            <number>0</number>
           </property>
+          <widget class="QWidget" name="tabSysCallbak">
+           <attribute name="title">
+            <string>系统回调</string>
+           </attribute>
+          </widget>
           <widget class="QWidget" name="tabGdt">
            <attribute name="title">
             <string>Gdt</string>
@@ -51,7 +61,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidgetKernelHook">
+         <widget class="MyTabWidget" name="tabWidgetKernelHook">
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -82,6 +92,14 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MyTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header location="global">mytabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../res/openark.qrc"/>
  </resources>

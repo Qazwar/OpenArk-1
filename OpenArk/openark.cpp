@@ -5,6 +5,8 @@
 #include "SsdtView.h"
 #include "ShadowSdtView.h"
 #include "gdt.h"
+#include "DriverModView.h"
+#include "SysCallBackView.h"
 
 
 #define ARKNAMESPACE
@@ -40,24 +42,15 @@ OpenArk::OpenArk(QWidget *parent)
 
 void OpenArk::OnTabChanged(bool checked)
 {
-	int index = ui.tabWidget->currentIndex();
-	auto tabText = ui.tabWidget->tabText(index);
-	QTabWidget *curTabWidget = 0;
 
 	if (!mInitSucess) return;
 	if (Ark::Device == INVALID_HANDLE_VALUE) return;
-
-	if (tabText.compare(tr("kernel hook"), Qt::CaseInsensitive) == 0)
+	if (Ark::Instance)
 	{
-		curTabWidget = ui.tabWidgetKernelHook;
-		auto dsd = curTabWidget->currentWidget();
-		qDebug() << curTabWidget->currentWidget()->windowTitle();
-		auto result = QMetaObject::invokeMethod(curTabWidget->currentWidget(), "OnRefresh");
-		return;
+		Ark::Instance->ShowMessage(QString());
+
 	}
 	auto result = QMetaObject::invokeMethod(ui.tabWidget->currentWidget(), "OnRefresh"); 
-	
-
 }
 
 bool OpenArk::InitTargetDev()
@@ -227,6 +220,11 @@ void OpenArk::InitView()
 	CreateTabPage(shadowSdt, ui.tabShadowSSDT, ui.tabWidgetKernelHook);
 	auto gdtView = new GdtView(this);
 	CreateTabPage(gdtView, ui.tabGdt, ui.tabWidgetKernel);
+	auto driverModView = new DriverModView(this);
+	CreateTabPage(driverModView, ui.tabDriverMod, ui.tabWidget);
+	auto syscallbackView = new SysCallBackView(this);
+	CreateTabPage(syscallbackView, ui.tabSysCallbak, ui.tabWidgetKernel);
+
 
 	ui.tabWidgetKernelHook->setCurrentIndex(0);
 	ui.tabWidget->setCurrentIndex(0);

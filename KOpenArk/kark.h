@@ -24,6 +24,7 @@
 #include "kernelhook.h"
 #include "drivermod.h"
 #include "kernel.h"
+#include "syscallback.h"
 
 
 

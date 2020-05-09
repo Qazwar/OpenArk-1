@@ -16,6 +16,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QWidget>
+#include <mytabwidget.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -26,14 +27,16 @@ public:
     QGridLayout *gridLayout;
     QTabWidget *tabWidget;
     QWidget *tabProcess;
+    QWidget *tabDriverMod;
     QWidget *tabKernel;
     QGridLayout *gridLayout_4;
-    QTabWidget *tabWidgetKernel;
+    MyTabWidget *tabWidgetKernel;
+    QWidget *tabSysCallbak;
     QWidget *tabGdt;
     QGridLayout *gridLayout_5;
     QWidget *tabKernelHook;
     QGridLayout *gridLayout_3;
-    QTabWidget *tabWidgetKernelHook;
+    MyTabWidget *tabWidgetKernelHook;
     QWidget *tabSSDT;
     QWidget *tabShadowSSDT;
     QWidget *tabObjDir;
@@ -56,14 +59,20 @@ public:
         tabProcess = new QWidget();
         tabProcess->setObjectName(QString::fromUtf8("tabProcess"));
         tabWidget->addTab(tabProcess, QString());
+        tabDriverMod = new QWidget();
+        tabDriverMod->setObjectName(QString::fromUtf8("tabDriverMod"));
+        tabWidget->addTab(tabDriverMod, QString());
         tabKernel = new QWidget();
         tabKernel->setObjectName(QString::fromUtf8("tabKernel"));
         gridLayout_4 = new QGridLayout(tabKernel);
         gridLayout_4->setSpacing(6);
         gridLayout_4->setContentsMargins(11, 11, 11, 11);
         gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
-        tabWidgetKernel = new QTabWidget(tabKernel);
+        tabWidgetKernel = new MyTabWidget(tabKernel);
         tabWidgetKernel->setObjectName(QString::fromUtf8("tabWidgetKernel"));
+        tabSysCallbak = new QWidget();
+        tabSysCallbak->setObjectName(QString::fromUtf8("tabSysCallbak"));
+        tabWidgetKernel->addTab(tabSysCallbak, QString());
         tabGdt = new QWidget();
         tabGdt->setObjectName(QString::fromUtf8("tabGdt"));
         gridLayout_5 = new QGridLayout(tabGdt);
@@ -81,7 +90,7 @@ public:
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        tabWidgetKernelHook = new QTabWidget(tabKernelHook);
+        tabWidgetKernelHook = new MyTabWidget(tabKernelHook);
         tabWidgetKernelHook->setObjectName(QString::fromUtf8("tabWidgetKernelHook"));
         tabSSDT = new QWidget();
         tabSSDT->setObjectName(QString::fromUtf8("tabSSDT"));
@@ -110,7 +119,7 @@ public:
 
         retranslateUi(OpenArkClass);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(3);
         tabWidgetKernel->setCurrentIndex(0);
         tabWidgetKernelHook->setCurrentIndex(0);
 
@@ -122,6 +131,8 @@ public:
     {
         OpenArkClass->setWindowTitle(QApplication::translate("OpenArkClass", "OpenArk", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabProcess), QApplication::translate("OpenArkClass", "Process", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tabDriverMod), QApplication::translate("OpenArkClass", "\351\251\261\345\212\250\346\250\241\345\235\227", nullptr));
+        tabWidgetKernel->setTabText(tabWidgetKernel->indexOf(tabSysCallbak), QApplication::translate("OpenArkClass", "\347\263\273\347\273\237\345\233\236\350\260\203", nullptr));
         tabWidgetKernel->setTabText(tabWidgetKernel->indexOf(tabGdt), QApplication::translate("OpenArkClass", "Gdt", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabKernel), QApplication::translate("OpenArkClass", "\345\206\205\346\240\270", nullptr));
         tabWidgetKernelHook->setTabText(tabWidgetKernelHook->indexOf(tabSSDT), QApplication::translate("OpenArkClass", "SSDT", nullptr));

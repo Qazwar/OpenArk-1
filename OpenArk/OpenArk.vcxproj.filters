@@ -86,6 +86,15 @@
     <ClCompile Include="gdt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DriverModView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SysCallBackView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyTabWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="stdtable.h">
@@ -125,6 +134,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="gdt.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DriverModView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SysCallBackView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -177,6 +192,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTabWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

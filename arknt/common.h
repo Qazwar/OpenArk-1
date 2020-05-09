@@ -86,6 +86,8 @@ enum DrvCall
 	GetAllShadowSdtFunAddr,
 	CallIdxTerminate,
 	CallIdxGdtInfo,
+	CallIdxGetDriverInfo,
+	CallIdxGetCallbackInfo,
 	LastId
 };
 
@@ -191,7 +193,7 @@ struct ArkDriverModInfo
 		ULONG RegionSize;
 		PVOID DriverObject;
 		int LoadOrder;
-		WCHAR Path[MAX_PATH];
+		WCHAR DriverPath[MAX_PATH];
 		WCHAR DriverName[MAX_PATH];
 		WCHAR ServiceName[MAX_PATH];
 	}Mods[];
@@ -249,4 +251,31 @@ struct  ArkWindowInfo
 	PVOID ProcessId;
 };
 
+
+
+//系统回调
+struct ArkSysCallBack
+{
+	enum CallBackType
+	{
+		CreateProcessType,
+		CreateThread,
+		LoadImageType,
+		CmpCallback,
+		BugCheckCallback,
+		BugCheckReasonCallback,
+		Shutdown,
+		PlugPlay,
+		FsNotifyChange,
+		PriorityCallBack,
+		PowerSettingCallbak,
+		CoalescingCallbak,
+		IopTimer,
+		LastType
+	};
+	CallBackType Type;
+	PVOID CallBackRecord;
+	PVOID CallBackRoutine;
+
+};
 #endif // !COMMON_H

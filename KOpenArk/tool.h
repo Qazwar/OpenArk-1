@@ -12,6 +12,9 @@ PVOID ArkGetSystemRoutineAddress(
 
 PVOID ArkGetServiceAddressByIndex(USHORT funIndex);
 
+int ArkGetFileNameLenFromParam(PWSTR FileName);
+PWSTR ArkGetFileNameFromFullPath(PWSTR Path);
+PWSTR ArkGetFileNameFromUnicodeString(UNICODE_STRING Path);
 //»ã±à
 
 EXTERN_C

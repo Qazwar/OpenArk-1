@@ -547,6 +547,10 @@ namespace NT
 	EXTERN FunNtUserQueryWindow			NtUserQueryWindow;
 	EXTERN FunPsGetNextProcess		PsGetNextProcess;
 	EXTERN FunNtTerminateProcess		NtTerminateProcess;
+	EXTERN PVOID		*PspCreateProcessNotifyRoutine;//
+	EXTERN PVOID		*PspCreateThreadNotifyRoutine;
+	EXTERN PVOID		*PspLoadImageNotifyRoutine;
+	EXTERN PLIST_ENTRY		CallbackListHead;
 	EXTERN ObjectType			ArrObjectType[ObjectType::LastObjectType];
 
 

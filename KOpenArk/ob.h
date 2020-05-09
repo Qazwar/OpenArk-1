@@ -17,12 +17,14 @@ BOOLEAN ObQueryNameFileObject(
 
 struct ObjectType
 {
+public:
 	enum 
 	{
 		DirectoryType,
 		SymbolinkType,
 		FileType,
-		LastObjectType
+		DriverType,
+		LastObjectType,
 	};
 
 	int TypeIndex;

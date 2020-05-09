@@ -29,6 +29,10 @@ BOOLEAN InitPsLoadedModuleList();
 BOOLEAN InitPspTerminateThreadByPointer();
 BOOLEAN InitKiInsertQueueApc();
 BOOLEAN InitPsGetNextProcess();
+BOOLEAN InitPspCreateProcessNotifyRoutine();
+BOOLEAN InitPspCreateThreadNotifyRoutine();
+BOOLEAN InitPspLoadImageNotifyRoutine();
+BOOLEAN InitCallbackListHead();
 /*
 
 初始化未导出的系统服务

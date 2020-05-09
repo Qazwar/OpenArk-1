@@ -174,6 +174,8 @@ void GdtView::OnRefresh()
 
 		gdtInfo = (ArkGdtInfo *)((ULONG_PTR)gdtInfo + gdtInfo->Size);
 	}
+	
+	Ark::Instance->ShowMessage(QString());
 }
 
 

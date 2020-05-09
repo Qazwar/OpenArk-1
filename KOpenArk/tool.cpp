@@ -58,3 +58,43 @@ PVOID ArkGetServiceAddressByIndex(USHORT funIndex)
 
 	return PTR_ADD_OFFSET(OffsetTable,offset);
 }
+
+int ArkGetFileNameLenFromParam(PWSTR FileName)
+{
+	int i = 0;
+	if (FileName)
+	{
+
+		while (*FileName != L' ' &&  *FileName != 0)
+		{
+			i++;
+			FileName++;
+		}
+
+	}
+
+	return i;
+}
+PWSTR ArkGetFileNameFromFullPath(PWSTR Path)
+{
+	auto p = wcsrchr(Path, L'\\');
+	if (p)
+	{
+		return p + 1;
+	}
+	return PWSTR();
+}
+
+PWSTR ArkGetFileNameFromUnicodeString(UNICODE_STRING Path)
+{
+	int len = Path.Length / 2;
+	for (int i = 0; i < len; i++)
+	{
+		if (Path.Buffer[len - i] == L'\\')
+		{
+			return &Path.Buffer[len - i + 1];
+		}
+	}
+	
+	return PWSTR();
+}

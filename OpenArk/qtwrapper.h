@@ -12,3 +12,5 @@ QStandardItem * MakeItem(PVOID num);
 QStandardItem * MakeItem(qulonglong num);
 QStandardItem * MakeItem(QString text);
 PWSTR GetFileNameFromFullPath(PWSTR Path);
+int ArkGetFileNameLenFromParam(PWSTR FileName);
+PWSTR ArkGetCovertPath(PWSTR Path);

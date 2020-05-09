@@ -183,12 +183,9 @@
 <context>
     <name>OpenArk</name>
     <message>
+        <location filename="openark.cpp" line="52"/>
         <source>kernel hook</source>
-        <translation type="vanished">内核钩子</translation>
-    </message>
-    <message>
-        <source>kernel</source>
-        <translation type="vanished">内核</translation>
+        <translation>内核钩子</translation>
     </message>
 </context>
 <context>
@@ -430,12 +427,8 @@
     </message>
     <message>
         <location filename="SysCallBackView.cpp" line="121"/>
-        <source>createprocess  %1  thread %2   loadimage %3  reg %4</source>
-        <translation>创建进程 %1 创建线程 %2 加载模块 %3 注册表 %4</translation>
-    </message>
-    <message>
         <source>createprocess  %1</source>
-        <translation type="vanished">创建进程 %1</translation>
+        <translation>创建进程 %1</translation>
     </message>
 </context>
 <context>

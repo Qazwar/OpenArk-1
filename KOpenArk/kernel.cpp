@@ -1,5 +1,5 @@
 #include "kark.h"
-
+#pragma warning (disable:4334)
 
 
 kernel::kernel()
